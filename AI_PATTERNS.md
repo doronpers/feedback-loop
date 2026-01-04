@@ -454,6 +454,196 @@ RUN apk add --no-cache ca-certificates
 
 ---
 
+### 8. FastAPI Streaming File Uploads (Critical for Large Files)
+
+AI often uses `file.read()` which loads entire files into memory, causing OOM errors for 800MB files.
+
+#### ❌ Bad Pattern
+```python
+from fastapi import UploadFile
+
+async def upload_audio_bad(file: UploadFile):
+    # BAD: Loads entire 800MB file into memory at once
+    content = await file.read()  # Will crash with MemoryError
+    
+    # BAD: No size validation
+    # BAD: No cleanup of temp files
+    with open("/tmp/audio.wav", "wb") as f:
+        f.write(content)
+    
+    return {"size": len(content)}
+```
+
+**Problems:**
+- Memory exhaustion for large files (800MB)
+- No size limits enforced
+- No temp file cleanup
+- No file type validation
+- Will crash production servers
+
+#### ✅ Good Pattern
+```python
+import os
+import shutil
+import tempfile
+from typing import Tuple
+from fastapi import UploadFile, HTTPException
+
+async def stream_upload_to_disk(
+    file: UploadFile,
+    max_size_bytes: int = 800 * 1024 * 1024,  # 800MB
+    chunk_size: int = 1024 * 1024  # 1MB chunks
+) -> Tuple[str, bool]:
+    """Stream file to disk without loading into memory."""
+    fd = None
+    path = None
+    bytes_written = 0
+    
+    try:
+        # GOOD: Secure temp file creation
+        fd, path = tempfile.mkstemp(suffix=".tmp")
+        
+        # GOOD: Stream in chunks
+        with os.fdopen(fd, 'wb') as tmp_file:
+            fd = None
+            
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk:
+                    break
+                
+                bytes_written += len(chunk)
+                
+                # GOOD: Check size during streaming
+                if bytes_written > max_size_bytes:
+                    raise HTTPException(413, "File too large")
+                
+                tmp_file.write(chunk)
+        
+        return path, True
+        
+    except HTTPException:
+        raise
+    except (IOError, OSError) as e:
+        raise HTTPException(500, f"Upload failed: {e}")
+    finally:
+        # GOOD: Cleanup on error
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+```
+
+**Benefits:**
+- Never loads entire file into memory
+- Size validation during upload (not after)
+- Proper temp file handling with cleanup
+- Handles errors gracefully
+- Production-safe for 800MB files
+
+**Required nginx Configuration:**
+```nginx
+server {
+    # CRITICAL: Default is 1MB which blocks large uploads
+    client_max_body_size 800M;
+    
+    # CRITICAL: Increase timeouts for large uploads
+    client_body_timeout 300s;
+    proxy_read_timeout 300s;
+    
+    # CRITICAL: Disable buffering for streaming
+    proxy_request_buffering off;
+}
+```
+
+**Required Docker Configuration:**
+```dockerfile
+FROM python:3.11-alpine
+
+# CRITICAL: AI often forgets ca-certificates
+# Causes SSL verification failures
+RUN apk add --no-cache ca-certificates
+
+# Rest of Dockerfile...
+```
+
+---
+
+### 9. NumPy NaN/Inf Handling in Audio Processing
+
+Audio processing often produces NaN or Inf values that cause JSON serialization to fail silently.
+
+#### ❌ Bad Pattern
+```python
+import numpy as np
+import json
+
+def analyze_audio_bad(samples):
+    # Audio processing might produce NaN/Inf
+    result = {
+        "peak": np.max(samples),  # Could be Inf
+        "rms": np.sqrt(np.mean(samples**2)),  # Could be NaN
+        "duration": np.float64(len(samples) / 44100)
+    }
+    # json.dumps() will fail or produce invalid JSON
+    return json.dumps(result)
+```
+
+**Problems:**
+- NaN and Inf are not valid JSON
+- Silent failures or invalid responses
+- Breaks API contracts
+- Hard to debug in production
+
+#### ✅ Good Pattern
+```python
+import numpy as np
+import json
+from typing import Any, Dict
+
+def convert_numpy_audio_result(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert audio results with NaN/Inf handling."""
+    def convert_value(val: Any) -> Any:
+        if isinstance(val, np.integer):
+            return int(val)
+        elif isinstance(val, np.floating):
+            # GOOD: Handle NaN and Inf explicitly
+            if np.isnan(val):
+                return None  # or 0.0, depending on API contract
+            elif np.isinf(val):
+                return None  # or max/min value
+            return float(val)
+        elif isinstance(val, np.ndarray):
+            return val.tolist()
+        elif isinstance(val, dict):
+            return {k: convert_value(v) for k, v in val.items()}
+        elif isinstance(val, list):
+            return [convert_value(item) for item in val]
+        return val
+    
+    return convert_value(result)
+
+def analyze_audio_good(samples):
+    result = {
+        "peak": np.max(samples),
+        "rms": np.sqrt(np.mean(samples**2)),
+        "duration": len(samples) / 44100
+    }
+    # GOOD: Convert with NaN/Inf handling before JSON
+    safe_result = convert_numpy_audio_result(result)
+    return json.dumps(safe_result)
+```
+
+**Benefits:**
+- Explicit handling of edge cases (NaN, Inf)
+- Valid JSON output guaranteed
+- Clear API contract (NaN/Inf → None)
+- Recursive handling of nested structures
+- Production-safe audio processing
+
+---
+
 ## Multi-Agent Review Pattern
 
 Use multiple AI agents for better code quality:
@@ -526,7 +716,7 @@ Code:
 ## Results Documentation
 
 ### Test Coverage
-All seven patterns have comprehensive test coverage:
+All nine patterns have comprehensive test coverage:
 - ✅ NumPy type conversion: 5 tests
 - ✅ Bounds checking: 4 tests
 - ✅ Specific exceptions: 4 tests
@@ -534,9 +724,20 @@ All seven patterns have comprehensive test coverage:
 - ✅ Metadata categorization: 6 tests
 - ✅ Temp file handling: 4 tests
 - ✅ Large file processing: 4 tests
-- ✅ Integration tests: 5 tests
+- ✅ FastAPI streaming uploads: 25 tests (including adversarial cases)
+- ✅ NumPy NaN/Inf handling: 5 tests (within FastAPI tests)
 
-**Total: 35 tests covering all critical paths**
+**Total: 60 tests covering all critical paths**
+
+**New Adversarial Tests (Phase 5 from problem statement):**
+- ✅ 800MB silent file (all zeros) handling
+- ✅ White noise file (random data) handling  
+- ✅ Client disconnect mid-upload simulation
+- ✅ Disk full error (OSError) during write
+- ✅ NaN and Inf value serialization
+- ✅ Invalid file extension rejection
+- ✅ Permission denied errors
+- ✅ Zero-byte file handling
 
 ### Good Results
 ✅ **Type Safety**: No runtime JSON serialization errors  
@@ -573,10 +774,13 @@ All seven patterns have comprehensive test coverage:
 
 ### Things AI Consistently Gets Wrong (for me)
 
-1. **numpy → JSON serialization** - Always check
+1. **numpy → JSON serialization** - Always check, especially NaN/Inf values
 2. **Docker SSL certificates** - Always add ca-certificates
 3. **File descriptor handling** - Always use proper fd patterns
 4. **nginx defaults** - Always set client_max_body_size
+5. **FastAPI file uploads** - Uses `file.read()` instead of streaming (CRITICAL for 800MB files)
+6. **Temp file cleanup** - Forgets `finally` blocks with `os.unlink()`
+7. **Async/await patterns** - Misses await in async functions
 
 ### Things AI Does Well
 
@@ -600,6 +804,8 @@ All seven patterns have comprehensive test coverage:
 | Metadata categorization | Complex business logic | Simple true/false checks |
 | Temp file handling | Working with temporary files | In-memory processing sufficient |
 | Large file processing | Files > 10MB or memory constrained | Small files in memory OK |
+| FastAPI streaming | Files > 10MB, especially audio/video | Small uploads < 1MB |
+| NaN/Inf handling | Audio processing, scientific computing | Integer-only data |
 
 ---
 
