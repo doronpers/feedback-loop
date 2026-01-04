@@ -23,8 +23,6 @@ logging.basicConfig(
     format='%(levelname)s - %(name)s - %(message)s'
 )
 
-logger = logging.getLogger(__name__)
-
 
 def demo_numpy_conversion():
     """Demonstrate NumPy type conversion."""

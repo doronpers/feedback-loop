@@ -62,7 +62,7 @@ def get_first_item_good(items: List[Any]) -> Optional[Any]:
         First item or None if list is empty
     """
     # GOOD: Bounds checking before list access
-    if not items or len(items) == 0:
+    if not items:
         logger.debug("List is empty, returning None")
         return None
     return items[0]
@@ -174,7 +174,7 @@ class DataProcessor:
             JSON string or None on error
         """
         # GOOD: Bounds checking before list access
-        if not items or len(items) == 0:
+        if not items:
             logger.debug("Empty items list provided")
             return None
         

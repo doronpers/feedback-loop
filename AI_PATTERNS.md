@@ -91,7 +91,7 @@ logger = logging.getLogger(__name__)
 
 def get_first_item_good(items):
     """Get first item with bounds checking."""
-    if not items or len(items) == 0:
+    if not items:
         logger.debug("List is empty, returning None")
         return None
     return items[0]
