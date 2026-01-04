@@ -4,6 +4,8 @@ This module demonstrates antipatterns that should be avoided in production code.
 """
 
 import json
+import os
+import tempfile
 import numpy as np
 
 
@@ -84,3 +86,30 @@ class DataProcessor:
             "first_value": first
         }
         return json.dumps(metrics)
+
+
+def write_temp_file_bad(data):
+    """Write data to a temporary file without proper handling."""
+    # BAD: Using None for fd - this is a common AI mistake
+    path = tempfile.mktemp()  # Deprecated and insecure
+    
+    # BAD: No error handling, no cleanup on failure
+    with open(path, 'wb') as f:
+        f.write(data)
+    
+    # BAD: File is not cleaned up - left on disk
+    return path
+
+
+def process_large_file_bad(file_path):
+    """Process large files without proper memory management."""
+    # BAD: Reading entire file into memory at once
+    # This will crash for 800MB files
+    with open(file_path, 'rb') as f:
+        data = f.read()  # Could cause MemoryError
+    
+    # BAD: No file size validation
+    return {
+        "size": len(data),
+        "path": file_path
+    }
