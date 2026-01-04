@@ -13,7 +13,6 @@ Key Constraints Addressed:
 
 import logging
 import os
-import shutil
 import tempfile
 from typing import Any, Dict, Optional, Tuple
 import numpy as np
@@ -33,7 +32,7 @@ async def stream_upload_to_disk(
     Stream large file uploads directly to disk without loading into memory.
     
     This is the CRITICAL pattern AI often gets wrong by using file.read()
-    which crashes on 800MB payloads. Use shutil.copyfileobj for streaming.
+    which crashes on 800MB payloads. This uses manual chunking with async reads.
     
     Args:
         file: FastAPI UploadFile object
@@ -64,12 +63,12 @@ async def stream_upload_to_disk(
         # GOOD: Use mkstemp for secure temp file creation
         fd, path = tempfile.mkstemp(suffix=".tmp")
         
-        # GOOD: Stream file in chunks using shutil.copyfileobj
+        # GOOD: Stream file in chunks using manual async reads
         # This prevents loading entire 800MB file into memory
         with os.fdopen(fd, 'wb') as tmp_file:
             fd = None  # fd now managed by file object
             
-            # Stream file contents
+            # Stream file contents chunk by chunk
             while True:
                 chunk = await file.read(chunk_size)
                 if not chunk:

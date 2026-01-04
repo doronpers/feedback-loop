@@ -3,7 +3,7 @@ Reusable and improvable AI-assisted development patterns
 
 ## Overview
 
-This repository demonstrates best practices for robust, maintainable Python code and provides a feedback loop framework for continuous improvement.
+This repository demonstrates best practices for robust, maintainable Python code and provides a feedback loop framework for continuous improvement. Includes specialized patterns for FastAPI backends with massive audio-processing constraints (up to 800MB files).
 
 ## Key Patterns
 
@@ -12,6 +12,10 @@ This repository demonstrates best practices for robust, maintainable Python code
 3. **Specific Exceptions** - Use targeted exception handling, not bare `except:`
 4. **Structured Logging** - Use `logger.debug()` instead of `print()`
 5. **Metadata-Based Logic** - Prefer metadata over string matching
+6. **Temp File Handling** - Proper cleanup with try/finally blocks
+7. **Large File Processing** - Chunked reading for 800MB files
+8. **FastAPI Streaming Uploads** - Stream files to disk without loading into memory
+9. **NumPy NaN/Inf Handling** - Explicit handling of edge cases in audio processing
 
 ## Quick Start
 
@@ -23,7 +27,10 @@ pip install -r requirements.txt
 pytest tests/ -v
 
 # View examples
-python -c "from examples.good_patterns import *"
+python demo.py
+
+# Run FastAPI example (requires uvicorn)
+python examples/fastapi_audio_example.py
 ```
 
 ## Documentation

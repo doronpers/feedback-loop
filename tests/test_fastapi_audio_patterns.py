@@ -9,13 +9,12 @@ These tests focus on "silent failures" and edge cases that AI often misses:
 - Path traversal attacks in temp file creation
 """
 
-import asyncio
 import io
 import logging
 import os
 import pytest
 import tempfile
-from unittest.mock import AsyncMock, Mock, patch, MagicMock
+from unittest.mock import patch
 import numpy as np
 from fastapi import UploadFile, HTTPException
 from examples.fastapi_audio_patterns import (
