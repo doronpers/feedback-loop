@@ -1,0 +1,80 @@
+# Example nginx configuration for FastAPI Audio Processing API
+# Critical settings for handling 800MB file uploads
+
+server {
+    listen 80;
+    server_name api.example.com;
+
+    # CRITICAL: Increase client body size limit for large audio files
+    # Default is 1MB which will block 800MB uploads
+    client_max_body_size 800M;
+
+    # CRITICAL: Increase timeouts for large file uploads
+    # Default timeouts will cause uploads to fail
+    client_body_timeout 300s;
+    client_header_timeout 300s;
+    proxy_connect_timeout 300s;
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+    send_timeout 300s;
+
+    # Buffer settings for large uploads
+    client_body_buffer_size 128k;
+    client_header_buffer_size 1k;
+    large_client_header_buffers 4 16k;
+
+    # Proxy to FastAPI application
+    location /api/ {
+        proxy_pass http://fastapi_backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # CRITICAL: Disable buffering for streaming uploads
+        proxy_request_buffering off;
+        
+        # Allow large request bodies
+        proxy_max_temp_file_size 0;
+    }
+
+    # Health check endpoint (no auth required)
+    location /api/v1/health {
+        proxy_pass http://fastapi_backend:8000;
+        access_log off;
+    }
+}
+
+# SSL/TLS configuration (production)
+server {
+    listen 443 ssl http2;
+    server_name api.example.com;
+
+    # SSL certificates
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    # SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Same settings as HTTP block
+    client_max_body_size 800M;
+    client_body_timeout 300s;
+    client_header_timeout 300s;
+    proxy_connect_timeout 300s;
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+    send_timeout 300s;
+
+    location /api/ {
+        proxy_pass http://fastapi_backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_request_buffering off;
+        proxy_max_temp_file_size 0;
+    }
+}
