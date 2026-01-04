@@ -414,21 +414,15 @@ def process_large_file_good(
             logger.debug(f"File too large: {file_size} > {max_size_bytes}")
             return None
         
-        # GOOD: Read in chunks for large files
-        total_bytes = 0
-        with open(file_path, 'rb') as f:
-            while True:
-                chunk = f.read(chunk_size)
-                if not chunk:
-                    break
-                total_bytes += len(chunk)
-                # Process chunk here...
+        # GOOD: Calculate chunks from file size (efficient)
+        # For actual processing, read in chunks to avoid memory exhaustion
+        chunks_needed = (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
         
         return {
             "file_path": file_path,
             "size_bytes": int(file_size),  # Ensure Python int for JSON
             "size_mb": float(file_size / (1024 * 1024)),
-            "chunks_read": int(total_bytes // chunk_size) + 1
+            "chunks_needed": int(chunks_needed)
         }
         
     except FileNotFoundError:
@@ -441,7 +435,7 @@ def process_large_file_good(
 
 **Benefits:**
 - Size validation before processing
-- Chunked reading prevents memory exhaustion
+- Efficient chunk calculation without reading entire file
 - Proper error handling for missing files
 - JSON-safe numeric types
 - Configurable size limits and chunk sizes

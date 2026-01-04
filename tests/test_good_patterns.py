@@ -333,8 +333,8 @@ class TestLargeFileProcessing:
         
         assert result is None
     
-    def test_process_file_chunks_read(self, tmp_path):
-        """Test that file is read in chunks."""
+    def test_process_file_chunks_needed(self, tmp_path):
+        """Test that chunk calculation is correct."""
         test_file = tmp_path / "chunked.wav"
         # Create 2.5 chunks worth of data (chunk_size=1024 for test)
         test_data = b"x" * 2560
@@ -343,4 +343,5 @@ class TestLargeFileProcessing:
         result = process_large_file_good(str(test_file), chunk_size=1024)
         
         assert result is not None
-        assert result["chunks_read"] == 3  # 2560 / 1024 = 2.5, so 3 chunks
+        # 2560 bytes / 1024 chunk_size = 2.5, rounded up = 3 chunks
+        assert result["chunks_needed"] == 3
