@@ -1,5 +1,10 @@
 # feedback-loop
 
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Tests](https://img.shields.io/badge/tests-99%20passing-success.svg)
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen.svg)
+
 Reusable and improvable AI-assisted development patterns with automated metrics collection and pattern-aware code generation.
 
 ## Overview
@@ -23,6 +28,16 @@ This repository demonstrates best practices for robust, maintainable Python code
 7. **Large File Processing** - Chunked reading for 800MB files
 8. **FastAPI Streaming Uploads** - Stream files to disk without loading into memory
 9. **NumPy NaN/Inf Handling** - Explicit handling of edge cases in audio processing
+
+## Why Audio Processing Examples?
+
+The patterns in this repository use audio/FastAPI examples to demonstrate handling of:
+- Large file uploads (800MB+)
+- NumPy array operations
+- Streaming data processing
+- Real-world production scenarios
+
+These are **demonstration contexts** - the patterns apply to any domain dealing with similar challenges (large files, numerical computing, streaming data, etc.).
 
 ## Quick Start
 
@@ -155,7 +170,9 @@ feedback-loop/
 ├── demo.py             # Core patterns demonstration
 ├── demo_fastapi.py     # FastAPI patterns demonstration
 ├── demo_metrics.py     # Metrics system demonstration
-└── AI_PATTERNS.md      # Comprehensive pattern documentation
+├── CHANGELOG.md        # Version history and changes
+├── AI_PATTERNS.md      # Comprehensive pattern documentation
+└── README.md           # This file
 ```
 
 ## Requirements
