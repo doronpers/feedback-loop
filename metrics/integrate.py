@@ -368,8 +368,10 @@ def main():
     args = parser.parse_args()
     
     # Configure logging
+    # Use DEBUG level if --verbose flag is present, else INFO
+    log_level = logging.DEBUG if '--verbose' in sys.argv or '-v' in sys.argv else logging.INFO
     logging.basicConfig(
-        level=logging.INFO,
+        level=log_level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     

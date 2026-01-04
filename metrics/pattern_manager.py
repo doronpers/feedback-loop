@@ -99,6 +99,10 @@ class PatternManager:
     def _parse_patterns_from_markdown(self, content: str) -> List[Dict[str, Any]]:
         """Parse patterns from markdown content.
         
+        Note: This uses simple string parsing for compatibility and simplicity.
+        For production use with complex markdown, consider using a proper
+        markdown parser like 'markdown' or 'mistune'.
+        
         Args:
             content: Markdown content
             

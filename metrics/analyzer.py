@@ -204,8 +204,9 @@ class MetricsAnalyzer:
             second_half = timestamps[mid:]
             
             # Calculate rate of occurrences (per day)
-            first_days = (timestamps[mid-1] - timestamps[0]).days or 1
-            second_days = (timestamps[-1] - timestamps[mid]).days or 1
+            # Use max(1, days) to ensure we never divide by zero
+            first_days = max(1, (timestamps[mid-1] - timestamps[0]).days)
+            second_days = max(1, (timestamps[-1] - timestamps[mid]).days)
             
             first_rate = len(first_half) / first_days
             second_rate = len(second_half) / second_days

@@ -183,7 +183,14 @@ class TestMetricsCollector:
     def test_load_from_json(self):
         """Test loading from JSON."""
         collector = MetricsCollector()
-        json_str = '{"bugs": [{"pattern": "test", "count": 5}], "test_failures": [], "code_reviews": [], "performance_metrics": [], "deployment_issues": []}'
+        test_data = {
+            "bugs": [{"pattern": "test", "count": 5}],
+            "test_failures": [],
+            "code_reviews": [],
+            "performance_metrics": [],
+            "deployment_issues": []
+        }
+        json_str = json.dumps(test_data)
         
         collector.load_from_json(json_str)
         assert len(collector.data["bugs"]) == 1

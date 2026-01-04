@@ -8,7 +8,7 @@ import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -200,7 +200,7 @@ class PatternAwareGenerator:
         matched_patterns: List[Dict[str, Any]],
         apply_patterns: bool,
         min_confidence: float
-    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Prioritize patterns by severity and confidence.
         
         Args:
