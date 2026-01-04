@@ -6,6 +6,8 @@ Run this to see the patterns working correctly.
 
 import json
 import logging
+import os
+import tempfile
 import numpy as np
 from examples.good_patterns import (
     convert_numpy_types,
@@ -14,7 +16,10 @@ from examples.good_patterns import (
     parse_config_good,
     debug_processing_good,
     categorize_by_metadata_good,
-    DataProcessor
+    DataProcessor,
+    write_temp_file_good,
+    cleanup_temp_file_good,
+    process_large_file_good
 )
 
 # Configure logging to show debug messages
@@ -142,6 +147,62 @@ def demo_data_processor():
     print(f"✅ All patterns working together!")
 
 
+def demo_temp_file_handling():
+    """Demonstrate proper temp file handling."""
+    print("\n" + "="*60)
+    print("7. Temp File Handling Demo")
+    print("="*60)
+    
+    # Write temp file
+    test_data = b"This is test audio data content for processing"
+    path, success = write_temp_file_good(test_data)
+    
+    print(f"Data to write: {len(test_data)} bytes")
+    print(f"Write success: {success}")
+    print(f"Temp file path: {path}")
+    print(f"File exists: {os.path.exists(path)}")
+    
+    # Cleanup
+    cleanup_result = cleanup_temp_file_good(path)
+    print(f"\nCleanup success: {cleanup_result}")
+    print(f"File exists after cleanup: {os.path.exists(path)}")
+    print(f"✅ Temp file handled properly with cleanup!")
+
+
+def demo_large_file_processing():
+    """Demonstrate large file processing."""
+    print("\n" + "="*60)
+    print("8. Large File Processing Demo")
+    print("="*60)
+    
+    # Create a test file
+    fd, test_path = tempfile.mkstemp(suffix=".wav")
+    try:
+        # Write 5KB of test data
+        test_data = b"x" * 5120
+        with os.fdopen(fd, 'wb') as f:
+            f.write(test_data)
+        
+        print(f"Created test file: {test_path}")
+        print(f"File size: {len(test_data)} bytes")
+        
+        # Process with default settings (800MB max)
+        result = process_large_file_good(test_path)
+        print(f"\nProcessing result:")
+        for key, value in result.items():
+            print(f"  {key}: {value}")
+        
+        # Test size limit rejection
+        result_limited = process_large_file_good(test_path, max_size_bytes=1024)
+        print(f"\nWith 1KB limit: {result_limited}")
+        print(f"✅ Large file processed in chunks safely!")
+        
+    finally:
+        # Cleanup test file
+        if os.path.exists(test_path):
+            os.unlink(test_path)
+
+
 def main():
     """Run all demonstrations."""
     print("\n" + "="*60)
@@ -154,6 +215,8 @@ def main():
     demo_logging()
     demo_metadata_categorization()
     demo_data_processor()
+    demo_temp_file_handling()
+    demo_large_file_processing()
     
     print("\n" + "="*60)
     print("Demo Complete!")

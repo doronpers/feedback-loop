@@ -5,6 +5,7 @@ Validates that all best practices work correctly.
 
 import json
 import logging
+import os
 import numpy as np
 import pytest
 from examples.good_patterns import (
@@ -14,7 +15,10 @@ from examples.good_patterns import (
     parse_config_good,
     debug_processing_good,
     categorize_by_metadata_good,
-    DataProcessor
+    DataProcessor,
+    write_temp_file_good,
+    cleanup_temp_file_good,
+    process_large_file_good
 )
 
 
@@ -246,3 +250,97 @@ class TestDataProcessor:
         
         assert result is None
         assert "Empty items list" in caplog.text
+
+
+class TestTempFileHandling:
+    """Test proper temp file handling patterns."""
+    
+    def test_write_temp_file_success(self, tmp_path):
+        """Test writing data to temp file successfully."""
+        test_data = b"test audio data content"
+        path, success = write_temp_file_good(test_data)
+        
+        try:
+            assert success is True
+            assert path != ""
+            assert os.path.exists(path)
+            
+            # Verify content
+            with open(path, 'rb') as f:
+                content = f.read()
+            assert content == test_data
+        finally:
+            # Cleanup
+            cleanup_temp_file_good(path)
+    
+    def test_write_temp_file_and_cleanup(self):
+        """Test that cleanup properly removes temp file."""
+        test_data = b"temporary content"
+        path, success = write_temp_file_good(test_data)
+        
+        assert success is True
+        assert os.path.exists(path)
+        
+        # Cleanup should succeed
+        cleanup_result = cleanup_temp_file_good(path)
+        assert cleanup_result is True
+        assert not os.path.exists(path)
+    
+    def test_cleanup_empty_path(self):
+        """Test cleanup with empty path returns True."""
+        result = cleanup_temp_file_good("")
+        assert result is True
+    
+    def test_cleanup_nonexistent_file(self, tmp_path):
+        """Test cleanup of nonexistent file."""
+        nonexistent = str(tmp_path / "does_not_exist.tmp")
+        result = cleanup_temp_file_good(nonexistent)
+        assert result is True
+
+
+class TestLargeFileProcessing:
+    """Test large file processing patterns."""
+    
+    def test_process_small_file(self, tmp_path):
+        """Test processing a small file."""
+        test_file = tmp_path / "test.wav"
+        test_data = b"x" * 1024  # 1KB
+        test_file.write_bytes(test_data)
+        
+        result = process_large_file_good(str(test_file))
+        
+        assert result is not None
+        assert result["size_bytes"] == 1024
+        assert result["file_path"] == str(test_file)
+        assert isinstance(result["size_bytes"], int)
+        assert isinstance(result["size_mb"], float)
+    
+    def test_process_file_exceeds_max_size(self, tmp_path):
+        """Test that files exceeding max size are rejected."""
+        test_file = tmp_path / "large.wav"
+        test_data = b"x" * 100  # 100 bytes
+        test_file.write_bytes(test_data)
+        
+        # Set max size to 50 bytes
+        result = process_large_file_good(str(test_file), max_size_bytes=50)
+        
+        assert result is None
+    
+    def test_process_nonexistent_file(self, tmp_path):
+        """Test processing a file that doesn't exist."""
+        nonexistent = str(tmp_path / "nonexistent.wav")
+        result = process_large_file_good(nonexistent)
+        
+        assert result is None
+    
+    def test_process_file_chunks_read(self, tmp_path):
+        """Test that file is read in chunks."""
+        test_file = tmp_path / "chunked.wav"
+        # Create 2.5 chunks worth of data (chunk_size=1024 for test)
+        test_data = b"x" * 2560
+        test_file.write_bytes(test_data)
+        
+        result = process_large_file_good(str(test_file), chunk_size=1024)
+        
+        assert result is not None
+        assert result["chunks_read"] == 3  # 2560 / 1024 = 2.5, so 3 chunks

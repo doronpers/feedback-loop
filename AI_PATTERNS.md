@@ -2,6 +2,33 @@
 
 This document describes reusable patterns for AI-assisted development and demonstrates a feedback loop for continuous improvement.
 
+## 🎯 Workflow Philosophy
+
+**Core principle:** AI as a collaborative partner, not just a code generator.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MY DEVELOPMENT LOOP                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   1.  PLAN ──► 2. BUILD ──► 3. REVIEW ──► 4. ITERATE            │
+│      ▲           │            │              │                  │
+│      │           ▼            ▼              │                  │
+│      │       [AI Agent]  [AI Review]         │                  │
+│      │           │            │              │                  │
+│      └───────────┴────────────┴──────────────┘                  │
+│                                                                 │
+│   Key:  Humans guide, AI assists, both verify                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## 🔧 Tech Stack Context
+
+- **Backend**: Python 3.x, FastAPI, numpy, audio processing
+- **Frontend**: Vite, React/TypeScript
+- **Infrastructure**: Docker, nginx, SSL/TLS
+- **Deployment**: Render.com / cloud platforms
+
 ## The Feedback Loop Process
 
 ```
@@ -256,6 +283,215 @@ def categorize_by_metadata_good(item: Dict[str, Any]) -> str:
 
 ---
 
+### 6. Proper Temp File Handling
+
+AI often uses `None` for file descriptors or forgets proper cleanup. This pattern ensures safe temp file handling.
+
+#### ❌ Bad Pattern
+```python
+import tempfile
+
+def write_temp_file_bad(data):
+    # BAD: Using deprecated mktemp (insecure)
+    path = tempfile.mktemp()
+    
+    # BAD: No error handling, no cleanup on failure
+    with open(path, 'wb') as f:
+        f.write(data)
+    
+    # BAD: File is not cleaned up - left on disk
+    return path
+```
+
+**Problems:**
+- `mktemp` is deprecated and has security issues (race conditions)
+- No error handling if write fails
+- File is never cleaned up
+- File descriptor not properly managed
+
+#### ✅ Good Pattern
+```python
+import os
+import tempfile
+import logging
+
+logger = logging.getLogger(__name__)
+
+def write_temp_file_good(data: bytes) -> tuple[str, bool]:
+    """Write data to a temporary file with proper cleanup."""
+    fd = None
+    path = None
+    try:
+        # GOOD: Use mkstemp which returns both fd and path
+        fd, path = tempfile.mkstemp(suffix=".tmp")
+        
+        # GOOD: Use os.fdopen to convert fd to file object
+        with os.fdopen(fd, 'wb') as f:
+            f.write(data)
+            fd = None  # fd is now managed by the file object
+        
+        logger.debug(f"Successfully wrote {len(data)} bytes to {path}")
+        return path, True
+        
+    except (IOError, OSError) as e:
+        logger.debug(f"Failed to write temp file: {e}")
+        # GOOD: Clean up on error
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        if path is not None and os.path.exists(path):
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+        return "", False
+
+def cleanup_temp_file_good(path: str) -> bool:
+    """Clean up a temporary file safely."""
+    if not path:
+        return True
+    try:
+        if os.path.exists(path):
+            os.unlink(path)
+        return True
+    except OSError as e:
+        logger.debug(f"Failed to cleanup temp file {path}: {e}")
+        return False
+```
+
+**Benefits:**
+- Secure temp file creation with `mkstemp`
+- Proper file descriptor management
+- Cleanup on both success and failure
+- Safe cleanup function for later use
+- Specific exception handling
+
+---
+
+### 7. Large File Processing (up to 800MB)
+
+For audio processing workflows with large files, nginx defaults block uploads and memory can be exhausted.
+
+#### ❌ Bad Pattern
+```python
+def process_large_file_bad(file_path):
+    # BAD: Reading entire file into memory at once
+    # This will crash for 800MB files
+    with open(file_path, 'rb') as f:
+        data = f.read()  # Could cause MemoryError
+    
+    # BAD: No file size validation
+    return {"size": len(data)}
+```
+
+**Problems:**
+- Memory exhaustion for large files
+- No size validation before processing
+- No chunked reading strategy
+- Will crash servers with limited memory
+
+#### ✅ Good Pattern
+```python
+import os
+import logging
+from typing import Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
+
+def process_large_file_good(
+    file_path: str,
+    max_size_bytes: int = 800 * 1024 * 1024,  # 800MB default
+    chunk_size: int = 1024 * 1024  # 1MB chunks
+) -> Optional[Dict[str, Any]]:
+    """Process large files with proper memory management."""
+    try:
+        # GOOD: Check file size before loading
+        file_size = os.path.getsize(file_path)
+        
+        if file_size > max_size_bytes:
+            logger.debug(f"File too large: {file_size} > {max_size_bytes}")
+            return None
+        
+        # GOOD: Read in chunks for large files
+        total_bytes = 0
+        with open(file_path, 'rb') as f:
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                # Process chunk here...
+        
+        return {
+            "file_path": file_path,
+            "size_bytes": int(file_size),  # Ensure Python int for JSON
+            "size_mb": float(file_size / (1024 * 1024)),
+            "chunks_read": int(total_bytes // chunk_size) + 1
+        }
+        
+    except FileNotFoundError:
+        logger.debug(f"File not found: {file_path}")
+        return None
+    except (IOError, OSError) as e:
+        logger.debug(f"Error processing file: {e}")
+        return None
+```
+
+**Benefits:**
+- Size validation before processing
+- Chunked reading prevents memory exhaustion
+- Proper error handling for missing files
+- JSON-safe numeric types
+- Configurable size limits and chunk sizes
+
+**nginx Configuration (Required for Large Uploads):**
+```nginx
+# Set in nginx.conf or server block
+client_max_body_size 800M;
+```
+
+**Docker SSL Note:**
+```dockerfile
+# AI often forgets ca-certificates for HTTPS
+RUN apk add --no-cache ca-certificates
+```
+
+---
+
+## Multi-Agent Review Pattern
+
+Use multiple AI agents for better code quality:
+
+```
+┌──────────────────┐     ┌──────────────────┐
+│   Agent 1        │     │   Agent 2        │
+│   (Generator)    │────►│   (Reviewer)     │
+│   Creates code   │     │   Critiques it   │
+└──────────────────┘     └──────────────────┘
+         │                        │
+         ▼                        ▼
+┌─────────────────────────────────────────────┐
+│              Human Decision                  │
+│   Accept / Modify / Request Alternative     │
+└─────────────────────────────────────────────┘
+```
+
+### Review Prompt Template
+```
+Review this code for:
+1. Security issues (especially input validation)
+2. Error handling gaps
+3. Performance concerns for large files (up to 800MB)
+4. Testing blind spots
+
+Code:
+[paste code]
+```
+
+---
+
 ## Iteration Loop Example
 
 ### PLAN Phase
@@ -296,15 +532,17 @@ def categorize_by_metadata_good(item: Dict[str, Any]) -> str:
 ## Results Documentation
 
 ### Test Coverage
-All five patterns have comprehensive test coverage:
+All seven patterns have comprehensive test coverage:
 - ✅ NumPy type conversion: 5 tests
 - ✅ Bounds checking: 4 tests
 - ✅ Specific exceptions: 4 tests
 - ✅ Logger usage: 3 tests
 - ✅ Metadata categorization: 6 tests
+- ✅ Temp file handling: 4 tests
+- ✅ Large file processing: 4 tests
 - ✅ Integration tests: 5 tests
 
-**Total: 27 tests covering all critical paths**
+**Total: 35 tests covering all critical paths**
 
 ### Good Results
 ✅ **Type Safety**: No runtime JSON serialization errors  
@@ -312,6 +550,8 @@ All five patterns have comprehensive test coverage:
 ✅ **Debuggability**: Specific exception messages aid troubleshooting  
 ✅ **Observability**: Structured logging enables monitoring  
 ✅ **Maintainability**: Metadata-based logic is easy to extend  
+✅ **File Safety**: Proper temp file handling with cleanup  
+✅ **Memory Safety**: Large files processed in chunks  
 
 ### Bad Results (Before Improvements)
 ❌ **Type Errors**: JSON serialization crashes with NumPy types  
@@ -319,6 +559,37 @@ All five patterns have comprehensive test coverage:
 ❌ **Silent Failures**: Bare except hides real problems  
 ❌ **Poor Logging**: Print statements not captured in production  
 ❌ **Fragile Logic**: String matching causes false categorizations  
+❌ **File Leaks**: Temp files left on disk without cleanup  
+❌ **Memory Exhaustion**: Large files loaded entirely into memory  
+
+---
+
+## 📊 Workflow Metrics I Track
+
+| Metric | What It Tells Me |
+|--------|------------------|
+| AI suggestions accepted as-is | Am I prompting effectively? |
+| Bugs from AI code | What patterns to verify? |
+| Time to working feature | Is the workflow efficient? |
+| Rework after review | Where are the gaps? |
+
+---
+
+## 🧠 Lessons Learned
+
+### Things AI Consistently Gets Wrong (for me)
+
+1. **numpy → JSON serialization** - Always check
+2. **Docker SSL certificates** - Always add ca-certificates
+3. **File descriptor handling** - Always use proper fd patterns
+4. **nginx defaults** - Always set client_max_body_size
+
+### Things AI Does Well
+
+1. **Boilerplate generation** - FastAPI endpoints, Pydantic models
+2. **Test case generation** - Given good examples
+3. **Documentation** - Docstrings, README sections
+4. **Refactoring** - When given clear patterns to follow
 
 ---
 
@@ -333,10 +604,36 @@ All five patterns have comprehensive test coverage:
 | Specific exceptions | Handling expected errors | Re-raising all exceptions |
 | Logger.debug() | Adding debug information | User-facing messages |
 | Metadata categorization | Complex business logic | Simple true/false checks |
+| Temp file handling | Working with temporary files | In-memory processing sufficient |
+| Large file processing | Files > 10MB or memory constrained | Small files in memory OK |
 
 ---
 
 ## Prompt Engineering Tips
+
+### Design & Planning Prompt Pattern
+
+Use this pattern for AI-assisted design:
+
+```
+I'm building [specific feature].
+
+Context:
+- Tech: FastAPI, Docker, nginx
+- Constraint: [specific constraint]
+- Existing pattern: [reference to codebase]
+
+Help me design the approach. Consider:
+1. Edge cases
+2. Error handling
+3. Testing strategy
+```
+
+### AI Output Review Checklist
+
+- [ ] Does it align with my existing patterns?
+- [ ] Are the dependencies appropriate?
+- [ ] Did it miss any constraints I mentioned?
 
 ### For Better AI Assistance
 1. **Be Specific**: "Convert NumPy float64 to Python float before JSON" vs "Fix JSON"
@@ -358,6 +655,30 @@ All five patterns have comprehensive test coverage:
 
 **Good Prompt:**
 > "Replace bare `except:` clauses with specific exception handling for JSON parsing errors (JSONDecodeError), missing keys (KeyError), and type errors (TypeError). Use logger.debug() to log each case with context."
+
+### When AI Gets It Wrong
+
+**Pattern: Clarify and Constrain**
+```
+That solution doesn't handle [specific case].
+
+Additional context:
+- We're using [specific library/pattern]
+- The constraint is [specific constraint]
+- Here's an example that does work: [code snippet]
+
+Please revise.
+```
+
+### When AI Gets It Right
+
+**Document for future sessions:**
+```
+This pattern works well for [use case]:
+[code snippet with comments]
+
+Key insight: [what made this work]
+```
 
 ---
 

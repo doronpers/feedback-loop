@@ -5,7 +5,9 @@ This module demonstrates best practices for robust, maintainable code.
 
 import json
 import logging
-from typing import Any, Dict, List, Optional
+import os
+import tempfile
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 # Configure logging
@@ -188,3 +190,120 @@ class DataProcessor:
         }
         
         return json.dumps(metrics)
+
+
+def write_temp_file_good(data: bytes) -> Tuple[str, bool]:
+    """Write data to a temporary file with proper cleanup.
+    
+    This pattern ensures proper file descriptor handling that AI often gets wrong.
+    AI commonly uses None for fd or forgets to close/unlink the file.
+    
+    Args:
+        data: Binary data to write to temp file
+        
+    Returns:
+        Tuple of (file path, success status)
+    """
+    fd = None
+    path = None
+    try:
+        # GOOD: Use mkstemp which returns both fd and path
+        fd, path = tempfile.mkstemp(suffix=".tmp")
+        
+        # GOOD: Use os.fdopen to convert fd to file object and ensure it's closed
+        with os.fdopen(fd, 'wb') as f:
+            f.write(data)
+            fd = None  # fd is now managed by the file object
+        
+        logger.debug(f"Successfully wrote {len(data)} bytes to {path}")
+        return path, True
+        
+    except (IOError, OSError) as e:
+        logger.debug(f"Failed to write temp file: {e}")
+        # GOOD: Clean up on error
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        if path is not None and os.path.exists(path):
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+        return "", False
+
+
+def cleanup_temp_file_good(path: str) -> bool:
+    """Clean up a temporary file safely.
+    
+    Args:
+        path: Path to the temporary file to clean up
+        
+    Returns:
+        True if cleanup was successful, False otherwise
+    """
+    if not path:
+        return True
+        
+    try:
+        if os.path.exists(path):
+            os.unlink(path)
+            logger.debug(f"Cleaned up temp file: {path}")
+        return True
+    except OSError as e:
+        logger.debug(f"Failed to cleanup temp file {path}: {e}")
+        return False
+
+
+def process_large_file_good(
+    file_path: str,
+    max_size_bytes: int = 800 * 1024 * 1024,  # 800MB default
+    chunk_size: int = 1024 * 1024  # 1MB chunks
+) -> Optional[Dict[str, Any]]:
+    """Process large files (up to 800MB) with proper memory management.
+    
+    For audio processing workflows, this handles large file constraints
+    that nginx defaults would otherwise block.
+    
+    Args:
+        file_path: Path to the file to process
+        max_size_bytes: Maximum allowed file size (default 800MB)
+        chunk_size: Size of chunks for reading (default 1MB)
+        
+    Returns:
+        Dictionary with file info or None on error
+    """
+    try:
+        # GOOD: Check file size before loading into memory
+        file_size = os.path.getsize(file_path)
+        
+        if file_size > max_size_bytes:
+            logger.debug(f"File too large: {file_size} bytes > {max_size_bytes} bytes")
+            return None
+        
+        # GOOD: Read in chunks for large files
+        total_bytes = 0
+        with open(file_path, 'rb') as f:
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+        
+        result = {
+            "file_path": file_path,
+            "size_bytes": int(file_size),  # Ensure Python int for JSON
+            "size_mb": float(file_size / (1024 * 1024)),
+            "chunks_read": int(total_bytes // chunk_size) + 1
+        }
+        
+        logger.debug(f"Processed file: {result}")
+        return result
+        
+    except FileNotFoundError:
+        logger.debug(f"File not found: {file_path}")
+        return None
+    except (IOError, OSError) as e:
+        logger.debug(f"Error processing file: {e}")
+        return None
