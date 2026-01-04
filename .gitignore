@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Metrics system generated files
+metrics_data.json
+patterns.json
+demo_patterns.json
+generated_code.meta.json
+*.meta.json
