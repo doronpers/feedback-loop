@@ -281,8 +281,12 @@ class MetricsIntegration:
         return "\n".join(lines)
 
 
-def main():
-    """Main CLI entry point."""
+def main() -> int:
+    """Main CLI entry point.
+    
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
     parser = argparse.ArgumentParser(
         description="Metrics Collection and Pattern-Aware Code Generation System"
     )
