@@ -260,6 +260,11 @@ async def validate_audio_file_header(
         with open(file_path, 'rb') as f:
             header = f.read(12)  # Read enough for most audio formats
         
+        # Check if we got any data
+        if not header:
+            logger.debug(f"Empty file: {file_path}")
+            return False
+        
         if expected_magic_bytes and not header.startswith(expected_magic_bytes):
             logger.debug(f"Invalid magic bytes in {file_path}")
             return False
