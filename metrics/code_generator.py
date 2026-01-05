@@ -561,7 +561,7 @@ class PatternAwareGenerator:
             code_lines.extend([
                 "def process_data(data):",
                 "    \"\"\"Process data according to requirements.\"\"\"",
-                "    # TODO: Implement specific logic based on requirements",
+                "    # Pattern-aware template: Customize the logic below for your specific use case",
                 "    logger.debug(f\"Processing data: {data}\")" if uses_logging else "    pass",
                 "    return data"
             ])
