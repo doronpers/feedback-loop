@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Doctor - System health checker
+
+Diagnoses issues and provides fixes for common problems.
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def check(name: str, func, fix_func=None):
+    """Run a check and optionally apply fix."""
+    print(f"Checking {name}... ", end="", flush=True)
+    try:
+        result, message = func()
+        if result:
+            print(f"✓ {message}")
+            return True
+        else:
+            print(f"✗ {message}")
+            if fix_func:
+                print(f"  Attempting to fix... ", end="", flush=True)
+                if fix_func():
+                    print("✓ Fixed")
+                    return True
+                else:
+                    print("✗ Could not fix")
+            return False
+    except Exception as e:
+        print(f"✗ Error: {e}")
+        return False
+
+
+def check_python_version():
+    """Check Python version."""
+    version = sys.version_info
+    if version >= (3, 8):
+        return True, f"{version.major}.{version.minor}.{version.micro}"
+    return False, f"Python {version.major}.{version.minor} (need 3.8+)"
+
+
+def check_anthropic_key():
+    """Check for Anthropic API key."""
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        key = os.environ["ANTHROPIC_API_KEY"]
+        masked = key[:7] + "..." + key[-4:] if len(key) > 11 else "***"
+        return True, f"Found ({masked})"
+    return False, "Not set (LLM generation will use templates)"
+
+
+def check_pytest_plugin():
+    """Check if conftest.py exists."""
+    if Path("conftest.py").exists():
+        with open("conftest.py") as f:
+            if "MetricsPlugin" in f.read():
+                return True, "Installed"
+    return False, "Not found"
+
+
+def fix_pytest_plugin():
+    """Install pytest plugin."""
+    try:
+        import metrics
+        feedback_loop_path = Path(metrics.__file__).parent.parent
+        conftest_src = feedback_loop_path / "conftest.py"
+
+        if conftest_src.exists():
+            Path("conftest.py").write_text(conftest_src.read_text())
+            return True
+    except:
+        pass
+    return False
+
+
+def check_git_hook():
+    """Check if git pre-commit hook is installed."""
+    hook_path = Path(".git/hooks/pre-commit")
+    if hook_path.exists():
+        with open(hook_path) as f:
+            if "feedback loop" in f.read().lower():
+                return True, "Installed"
+    return False, "Not installed"
+
+
+def fix_git_hook():
+    """Install git pre-commit hook."""
+    try:
+        import metrics
+        feedback_loop_path = Path(metrics.__file__).parent.parent
+        hook_src = feedback_loop_path / "hooks" / "pre-commit"
+        hook_dst = Path(".git/hooks/pre-commit")
+
+        if hook_src.exists():
+            hook_dst.write_text(hook_src.read_text())
+            hook_dst.chmod(0o755)
+            return True
+    except:
+        pass
+    return False
+
+
+def check_github_workflow():
+    """Check if GitHub Actions workflow is installed."""
+    workflow_path = Path(".github/workflows/feedback-loop.yml")
+    if workflow_path.exists():
+        return True, "Installed"
+    if not Path(".github").exists():
+        return True, "No .github directory (not using GitHub Actions)"
+    return False, "Not installed"
+
+
+def fix_github_workflow():
+    """Install GitHub Actions workflow."""
+    try:
+        import metrics
+        feedback_loop_path = Path(metrics.__file__).parent.parent
+        workflow_src = feedback_loop_path / ".github" / "workflows" / "feedback-loop.yml"
+        workflow_dst = Path(".github/workflows/feedback-loop.yml")
+
+        if workflow_src.exists():
+            workflow_dst.parent.mkdir(parents=True, exist_ok=True)
+            workflow_dst.write_text(workflow_src.read_text())
+            return True
+    except:
+        pass
+    return False
+
+
+def check_metrics_collected():
+    """Check if metrics have been collected."""
+    metrics_file = Path("metrics_data.json")
+    if metrics_file.exists():
+        import json
+        with open(metrics_file) as f:
+            data = json.load(f)
+            total = sum(len(v) for v in data.values())
+            if total > 0:
+                return True, f"{total} events collected"
+            return False, "Metrics file exists but empty"
+    return False, "No metrics collected yet"
+
+
+def check_patterns_exist():
+    """Check if patterns have been analyzed."""
+    patterns_file = Path("patterns.json")
+    if patterns_file.exists():
+        import json
+        with open(patterns_file) as f:
+            data = json.load(f)
+            patterns = data.get("patterns", [])
+            if patterns:
+                return True, f"{len(patterns)} patterns"
+            return False, "Patterns file exists but empty"
+    return False, "No patterns analyzed yet"
+
+
+def check_package_installed():
+    """Check if feedback-loop is installed."""
+    try:
+        import metrics
+        return True, "Installed"
+    except ImportError:
+        return False, "Not installed"
+
+
+def check_git_repo():
+    """Check if in a git repository."""
+    if Path(".git").exists():
+        return True, "Git repository"
+    return False, "Not a git repository"
+
+
+def main():
+    """Run all checks."""
+    print("\n🔍 Feedback Loop Doctor - System Health Check")
+    print("=" * 60)
+    print()
+
+    all_passed = True
+
+    # Core system checks
+    print("Core System:")
+    all_passed &= check("Python version", check_python_version)
+    all_passed &= check("Package installed", check_package_installed)
+    all_passed &= check("API key", check_anthropic_key)
+    print()
+
+    # Repository checks
+    print("Repository Setup:")
+    all_passed &= check("Git repository", check_git_repo)
+    all_passed &= check("Pytest plugin", check_pytest_plugin, fix_pytest_plugin)
+    all_passed &= check("Git hook", check_git_hook, fix_git_hook)
+    all_passed &= check("GitHub workflow", check_github_workflow, fix_github_workflow)
+    print()
+
+    # Data checks
+    print("Data & Metrics:")
+    all_passed &= check("Metrics collected", check_metrics_collected)
+    all_passed &= check("Patterns analyzed", check_patterns_exist)
+    print()
+
+    # Summary
+    print("=" * 60)
+    if all_passed:
+        print("✅ All checks passed! System is healthy.")
+    else:
+        print("⚠️  Some checks failed. Review the output above.")
+        print()
+        print("Quick fixes:")
+        print("  - Set API key: export ANTHROPIC_API_KEY='your-key'")
+        print("  - Collect metrics: pytest --enable-metrics")
+        print("  - Analyze patterns: feedback-loop analyze")
+    print()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\nCheck cancelled.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nError: {e}", file=sys.stderr)
+        sys.exit(1)
