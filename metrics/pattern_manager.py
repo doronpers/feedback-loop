@@ -10,6 +10,7 @@ import os
 import re
 import uuid
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -23,16 +24,29 @@ class PatternManager:
         
         Args:
             pattern_library_path: Path to the pattern library JSON file
+        
+        Raises:
+            ValueError: If path contains traversal attempts (..)
         """
-        self.pattern_library_path = pattern_library_path
+        # Validate path to prevent path traversal
+        # Check for .. components before resolution to catch traversal attempts
+        # This prevents attacks like "../../etc/passwd" while allowing absolute paths
+        # for legitimate use cases (e.g., /tmp in tests)
+        if ".." in Path(pattern_library_path).parts:
+            raise ValueError(f"Path traversal detected in: {pattern_library_path}")
+        
+        # Resolve to absolute path for consistent path handling
+        resolved_path = Path(pattern_library_path).resolve()
+        self.pattern_library_path = str(resolved_path)
+        
         self.patterns: List[Dict[str, Any]] = []
         self.changelog: List[Dict[str, Any]] = []
         
         # Try to load existing patterns
-        if os.path.exists(pattern_library_path):
+        if os.path.exists(self.pattern_library_path):
             self.load_patterns()
         else:
-            logger.debug(f"Pattern library not found at {pattern_library_path}, will create new")
+            logger.debug(f"Pattern library not found at {self.pattern_library_path}, will create new")
     
     def load_patterns(self) -> None:
         """Load patterns from JSON file."""
@@ -67,7 +81,19 @@ class PatternManager:
         
         Args:
             md_path: Path to the AI_PATTERNS.md file
+        
+        Raises:
+            ValueError: If path contains traversal attempts (..)
         """
+        # Validate path to prevent path traversal
+        # Check for .. components before resolution to catch traversal attempts
+        if ".." in Path(md_path).parts:
+            raise ValueError(f"Path traversal detected in: {md_path}")
+        
+        # Resolve to absolute path
+        resolved_path = Path(md_path).resolve()
+        md_path = str(resolved_path)
+        
         if not os.path.exists(md_path):
             logger.debug(f"AI_PATTERNS.md not found at {md_path}")
             return
@@ -241,7 +267,7 @@ class PatternManager:
             pattern = self._find_pattern_by_name(pattern_name)
             if pattern:
                 old_freq = pattern.get("occurrence_frequency", 0)
-                pattern["occurrence_frequency"] = old_freq + int(count)
+                pattern["occurrence_frequency"] = old_freq + count
                 pattern["last_occurrence"] = datetime.now().isoformat()
                 
                 self._add_changelog_entry("updated_frequency", pattern_name, {
@@ -277,7 +303,7 @@ class PatternManager:
                 "bad_example": self._extract_bad_example_from_details(details),
                 "good_example": "",
                 "test_coverage": "",
-                "occurrence_frequency": int(count),
+                "occurrence_frequency": count,
                 "last_occurrence": datetime.now().isoformat(),
                 "severity": self._infer_severity_from_details(details),
                 "effectiveness_score": 0.5

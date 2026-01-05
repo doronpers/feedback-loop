@@ -16,15 +16,24 @@ logger = logging.getLogger(__name__)
 class MetricsCollector:
     """Collects and stores various types of usage metrics."""
     
+    # Expected metric categories
+    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews", 
+                        "performance_metrics", "deployment_issues"]
+    
     def __init__(self):
         """Initialize the metrics collector."""
         self.data: Dict[str, List[Dict[str, Any]]] = {
-            "bugs": [],
-            "test_failures": [],
-            "code_reviews": [],
-            "performance_metrics": [],
-            "deployment_issues": []
+            category: [] for category in self.METRIC_CATEGORIES
         }
+    
+    @classmethod
+    def get_metric_categories(cls) -> List[str]:
+        """Get the list of metric categories.
+        
+        Returns:
+            List of metric category names
+        """
+        return cls.METRIC_CATEGORIES.copy()
     
     def log_bug(
         self,
@@ -50,7 +59,7 @@ class MetricsCollector:
             "error": error,
             "code": code,
             "file_path": file_path,
-            "line": int(line),
+            "line": line,
             "stack_trace": stack_trace,
             "timestamp": datetime.now().isoformat(),
             "count": 1
@@ -159,7 +168,7 @@ class MetricsCollector:
             "pattern": pattern,
             "severity": severity,
             "file_path": file_path,
-            "line": int(line) if line else None,
+            "line": line,
             "suggestion": suggestion,
             "timestamp": datetime.now().isoformat()
         }
@@ -209,7 +218,7 @@ class MetricsCollector:
             "pattern": pattern,
             "environment": environment,
             "root_cause": root_cause,
-            "resolution_time_minutes": int(resolution_time_minutes) if resolution_time_minutes else None,
+            "resolution_time_minutes": resolution_time_minutes,
             "timestamp": datetime.now().isoformat()
         }
         
@@ -249,13 +258,7 @@ class MetricsCollector:
     
     def clear(self) -> None:
         """Clear all collected metrics."""
-        self.data = {
-            "bugs": [],
-            "test_failures": [],
-            "code_reviews": [],
-            "performance_metrics": [],
-            "deployment_issues": []
-        }
+        self.data = {category: [] for category in self.METRIC_CATEGORIES}
         logger.debug("Cleared all metrics")
     
     def load_from_json(self, json_str: str) -> None:

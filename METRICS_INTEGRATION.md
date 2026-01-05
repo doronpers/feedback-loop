@@ -62,15 +62,10 @@ The Metrics Integration System provides a feedback loop for continuous code qual
 
 ### Installation
 
+See [README.md](README.md) for installation instructions.
+
+Quick start for metrics system:
 ```bash
-# Clone repository
-git clone https://github.com/doronpers/feedback-loop.git
-cd feedback-loop
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run demo to see system in action
 python demo_metrics.py
 ```
 
