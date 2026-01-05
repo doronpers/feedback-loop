@@ -54,6 +54,8 @@ This repository includes 9 battle-tested patterns for Python development:
 
 ## Documentation
 
+**📚 [Complete Documentation Index](docs/INDEX.md)** - Full navigation guide
+
 ### 📘 Start Here
 - **[Getting Started](docs/GETTING_STARTED.md)** - 5-minute introduction for new users
 - **[Quick Reference](docs/QUICK_REFERENCE.md)** - Common patterns and commands at a glance
@@ -79,17 +81,27 @@ pytest tests/ --cov=. --cov-report=html    # With coverage
 
 ## The Feedback Loop
 
+The system continuously learns from your development:
+
 ```
-Code → Tests → Metrics → Analysis → Patterns → AI Generation → Better Code
-  ↑                                                                  ↓
-  └──────────────────────── Continuous Learning ────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    FEEDBACK LOOP CYCLE                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   Write Code  →  Run Tests  →  Auto-Collect Metrics        │
+│                                       ↓                     │
+│   Better AI   ←  Learn Patterns  ←  Analyze Data          │
+│      ↓                                                      │
+│   Prevent Future Bugs                                       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 **How it works:**
-1. Tests collect metrics automatically
+1. Tests automatically collect failure metrics
 2. Patterns emerge from common issues
-3. AI learns from pattern library
-4. Better code prevents future issues
+3. AI code generation learns from patterns
+4. Better code prevents recurring problems
 
 ## Project Structure
 
