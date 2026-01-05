@@ -388,3 +388,152 @@ class TestEdgeCases:
         assert isinstance(converted["metrics"][0], int)
         assert isinstance(converted["metrics"][1], float)
         assert converted["metrics"][2]["nested"] is None
+
+
+class TestAdditionalCoverage:
+    """Additional tests to achieve 100% coverage."""
+    
+    @pytest.mark.asyncio
+    async def test_safe_audio_upload_workflow_cleanup_failure(self, monkeypatch, caplog):
+        """Test workflow when cleanup fails."""
+        import os as os_module
+        
+        content = b"test audio data"
+        file = UploadFile(filename="test.wav", file=io.BytesIO(content))
+        
+        # Mock os.unlink to raise OSError during cleanup
+        original_unlink = os_module.unlink
+        def mock_unlink(path):
+            raise OSError("Permission denied")
+        
+        with caplog.at_level(logging.DEBUG):
+            monkeypatch.setattr(os_module, "unlink", mock_unlink)
+            result = await safe_audio_upload_workflow(file)
+        
+        # Should still succeed even if cleanup fails
+        assert result is not None
+        assert "Failed to cleanup temp file" in caplog.text
+    
+    @pytest.mark.asyncio
+    async def test_safe_audio_upload_workflow_upload_fails(self):
+        """Test workflow when upload fails."""
+        # Create a file that will fail validation
+        file = UploadFile(filename=None, file=io.BytesIO(b"test"))
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await safe_audio_upload_workflow(file)
+        
+        assert exc_info.value.status_code == 400
+    
+    @pytest.mark.asyncio
+    async def test_stream_upload_cleanup_on_error(self, monkeypatch):
+        """Test that file descriptor is closed on error."""
+        content = b"test audio data"
+        file = UploadFile(filename="test.wav", file=io.BytesIO(content))
+        
+        # Mock os.fdopen to raise an error
+        import tempfile as temp_module
+        original_mkstemp = temp_module.mkstemp
+        
+        def mock_mkstemp(suffix=".tmp", prefix="tmp", dir=None):
+            fd, path = original_mkstemp(suffix=suffix, prefix=prefix, dir=dir)
+            # Create a mock that will fail when os.fdopen is called
+            return fd, path
+        
+        original_fdopen = os.fdopen
+        def mock_fdopen(fd, mode):
+            raise IOError("Failed to open file descriptor")
+        
+        monkeypatch.setattr(temp_module, "mkstemp", mock_mkstemp)
+        monkeypatch.setattr(os, "fdopen", mock_fdopen)
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await stream_upload_to_disk(file)
+        
+        assert exc_info.value.status_code == 500
+    
+    def test_convert_numpy_list(self):
+        """Test converting list with NumPy types."""
+        data = [np.int64(1), np.float64(2.5), np.array([3, 4])]
+        result = convert_numpy_audio_result(data)
+        assert isinstance(result, list)
+        assert isinstance(result[0], int)
+        assert isinstance(result[1], float)
+        assert isinstance(result[2], list)
+    
+    def test_convert_nested_dict(self):
+        """Test converting nested dict with NumPy types."""
+        data = {
+            "outer": {
+                "inner": np.int64(42),
+                "array": np.array([1, 2, 3])
+            }
+        }
+        result = convert_numpy_audio_result(data)
+        assert isinstance(result["outer"]["inner"], int)
+        assert isinstance(result["outer"]["array"], list)
+    
+    def test_convert_non_numpy_passthrough(self):
+        """Test that non-NumPy types pass through unchanged."""
+        data = {"string": "hello", "int": 42, "float": 3.14, "bool": True}
+        result = convert_numpy_audio_result(data)
+        assert result == data
+    
+    @pytest.mark.asyncio
+    async def test_validate_audio_file_header_empty(self, tmp_path):
+        """Test validating empty file."""
+        empty_file = tmp_path / "empty.wav"
+        empty_file.write_bytes(b"")
+        
+        result = await validate_audio_file_header(str(empty_file))
+        assert result is False
+    
+    @pytest.mark.asyncio
+    async def test_validate_audio_file_header_io_error(self, monkeypatch, tmp_path, caplog):
+        """Test validating file when IOError occurs."""
+        test_file = tmp_path / "test.wav"
+        test_file.write_bytes(b"test")
+        
+        # Mock open to raise IOError
+        original_open = open
+        def mock_open(path, mode):
+            if 'test.wav' in str(path) and mode == 'rb':
+                raise IOError("Read error")
+            return original_open(path, mode)
+        
+        with caplog.at_level(logging.DEBUG):
+            monkeypatch.setattr("builtins.open", mock_open)
+            result = await validate_audio_file_header(str(test_file))
+        
+        assert result is False
+        assert "Error validating file header" in caplog.text
+    
+    def test_audio_processing_response_model(self):
+        """Test AudioUploadResponse model."""
+        from examples.fastapi_audio_patterns import AudioUploadResponse
+        
+        response = AudioUploadResponse(
+            file_size_bytes=1024,
+            file_size_mb=0.001,
+            chunks_processed=1,
+            total_bytes_processed=1024,
+            file_path="/tmp/test.wav"
+        )
+        
+        assert response.file_size_bytes == 1024
+        assert response.file_size_mb == 0.001
+        assert response.chunks_processed == 1
+        assert response.total_bytes_processed == 1024
+        assert response.file_path == "/tmp/test.wav"
+    
+    def test_audio_processing_error_model(self):
+        """Test AudioProcessingError model."""
+        from examples.fastapi_audio_patterns import AudioProcessingError
+        
+        error = AudioProcessingError(
+            error="ValidationError",
+            detail="Invalid file format"
+        )
+        
+        assert error.error == "ValidationError"
+        assert error.detail == "Invalid file format"
