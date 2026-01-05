@@ -2,8 +2,8 @@
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Tests](https://img.shields.io/badge/tests-99%20passing-success.svg)
-![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-119%20passing-success.svg)
+![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
 
 Reusable and improvable AI-assisted development patterns with automated metrics collection and pattern-aware code generation.
 
@@ -15,7 +15,7 @@ This repository demonstrates best practices for robust, maintainable Python code
 - **Metrics System**: Automated collection and analysis of code quality metrics
 - **Pattern-Aware Generation**: AI code generation using learned patterns
 - **FastAPI Patterns**: Specialized patterns for handling massive files (up to 800MB)
-- **Complete Testing**: 99 tests ensuring all patterns work correctly
+- **Complete Testing**: 119 tests with 91% coverage ensuring all patterns work correctly
 
 ## Core Patterns
 
@@ -97,9 +97,9 @@ pytest tests/test_good_patterns.py -v
 - **[examples/fastapi_audio_example.py](examples/fastapi_audio_example.py)** - Complete FastAPI application
 
 ### Tests
-- **[tests/test_good_patterns.py](tests/test_good_patterns.py)** - Core patterns test suite (38 tests)
-- **[tests/test_fastapi_audio_patterns.py](tests/test_fastapi_audio_patterns.py)** - FastAPI patterns tests (25 tests)
-- **[tests/test_metrics.py](tests/test_metrics.py)** - Metrics system tests (36 tests)
+- **[tests/test_good_patterns.py](tests/test_good_patterns.py)** - Core patterns test suite (43 tests)
+- **[tests/test_fastapi_audio_patterns.py](tests/test_fastapi_audio_patterns.py)** - FastAPI patterns tests (35 tests)
+- **[tests/test_metrics.py](tests/test_metrics.py)** - Metrics system tests (41 tests)
 
 ## Metrics System
 
@@ -163,7 +163,7 @@ feedback-loop/
 │   ├── pattern_manager.py  # Pattern library management
 │   ├── code_generator.py   # Pattern-aware code generation
 │   └── integrate.py    # CLI interface
-├── tests/              # Comprehensive test suite (99 tests)
+├── tests/              # Comprehensive test suite (119 tests, 91% coverage)
 │   ├── test_good_patterns.py
 │   ├── test_fastapi_audio_patterns.py
 │   └── test_metrics.py

@@ -58,6 +58,36 @@ class TestNumpyTypeConversion:
         assert isinstance(result["average"], float)
         assert isinstance(result["values"], list)
     
+    def test_convert_list_with_numpy(self):
+        """Test converting list containing NumPy types."""
+        data = [np.int64(1), np.float64(2.5), np.array([3, 4])]
+        result = convert_numpy_types(data)
+        assert isinstance(result, list)
+        assert isinstance(result[0], int)
+        assert isinstance(result[1], float)
+        assert isinstance(result[2], list)
+        assert result[0] == 1
+        assert result[1] == 2.5
+        assert result[2] == [3, 4]
+    
+    def test_convert_nested_list_with_numpy(self):
+        """Test converting nested list with NumPy types."""
+        data = [[np.int64(1), np.int64(2)], [np.float64(3.0), np.float64(4.0)]]
+        result = convert_numpy_types(data)
+        assert isinstance(result, list)
+        assert isinstance(result[0], list)
+        assert isinstance(result[0][0], int)
+        assert isinstance(result[1][0], float)
+    
+    def test_convert_non_numpy_types(self):
+        """Test that non-NumPy types are returned unchanged."""
+        # Test various non-numpy types
+        assert convert_numpy_types("hello") == "hello"
+        assert convert_numpy_types(42) == 42
+        assert convert_numpy_types(3.14) == 3.14
+        assert convert_numpy_types(True) is True
+        assert convert_numpy_types(None) is None
+    
     def test_process_data_json_serializable(self):
         """Test that processed data is JSON serializable."""
         data_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
@@ -217,6 +247,27 @@ class TestDataProcessor:
         assert processor.port == 5432  # Default value
         assert "Missing 'port' configuration key" in caplog.text
     
+    def test_init_with_missing_host_key(self, caplog):
+        """Test initialization with missing host configuration key."""
+        with caplog.at_level(logging.DEBUG):
+            config = {"port": 8080}
+            processor = DataProcessor(config)
+        
+        assert processor.host == "localhost"  # Default value
+        assert processor.port == 8080
+        assert "Missing 'host' configuration key" in caplog.text
+    
+    def test_init_with_missing_both_keys(self, caplog):
+        """Test initialization with both keys missing."""
+        with caplog.at_level(logging.DEBUG):
+            config = {}
+            processor = DataProcessor(config)
+        
+        assert processor.host == "localhost"  # Default value
+        assert processor.port == 5432  # Default value
+        assert "Missing 'host' configuration key" in caplog.text
+        assert "Missing 'port' configuration key" in caplog.text
+    
     def test_init_with_invalid_type(self, caplog):
         """Test initialization with invalid configuration type."""
         with caplog.at_level(logging.DEBUG):
@@ -296,6 +347,38 @@ class TestTempFileHandling:
         nonexistent = str(tmp_path / "does_not_exist.tmp")
         result = cleanup_temp_file_good(nonexistent)
         assert result is True
+    
+    def test_cleanup_with_permission_error(self, tmp_path, monkeypatch, caplog):
+        """Test cleanup when OSError occurs."""
+        test_file = tmp_path / "test.tmp"
+        test_file.write_text("test")
+        
+        # Mock os.unlink to raise OSError
+        def mock_unlink(path):
+            raise OSError("Permission denied")
+        
+        with caplog.at_level(logging.DEBUG):
+            monkeypatch.setattr(os, "unlink", mock_unlink)
+            result = cleanup_temp_file_good(str(test_file))
+        
+        assert result is False
+        assert "Failed to cleanup temp file" in caplog.text
+    
+    def test_write_temp_file_with_io_error(self, monkeypatch, caplog):
+        """Test write_temp_file_good when IOError occurs."""
+        import tempfile as temp_module
+        
+        # Mock tempfile.mkstemp to raise IOError
+        def mock_mkstemp(suffix=".tmp", prefix="tmp", dir=None, text=False):
+            raise IOError("Disk full")
+        
+        with caplog.at_level(logging.DEBUG):
+            monkeypatch.setattr(temp_module, "mkstemp", mock_mkstemp)
+            path, success = write_temp_file_good(b"test data")
+        
+        assert success is False
+        assert path == ""
+        assert "Failed to write temp file" in caplog.text
 
 
 class TestLargeFileProcessing:
@@ -345,3 +428,19 @@ class TestLargeFileProcessing:
         assert result is not None
         # 2560 bytes / 1024 chunk_size = 2.5, rounded up = 3 chunks
         assert result["chunks_needed"] == 3
+    
+    def test_process_file_with_io_error(self, tmp_path, monkeypatch, caplog):
+        """Test processing file when IOError occurs."""
+        test_file = tmp_path / "test.wav"
+        test_file.write_bytes(b"test")
+        
+        # Mock os.path.getsize to raise IOError
+        def mock_getsize(path):
+            raise IOError("Read error")
+        
+        with caplog.at_level(logging.DEBUG):
+            monkeypatch.setattr(os.path, "getsize", mock_getsize)
+            result = process_large_file_good(str(test_file))
+        
+        assert result is None
+        assert "Error processing file" in caplog.text
