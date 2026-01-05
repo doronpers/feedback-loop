@@ -16,14 +16,14 @@ logger = logging.getLogger(__name__)
 class MetricsCollector:
     """Collects and stores various types of usage metrics."""
     
+    # Expected metric categories
+    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews", 
+                        "performance_metrics", "deployment_issues"]
+    
     def __init__(self):
         """Initialize the metrics collector."""
         self.data: Dict[str, List[Dict[str, Any]]] = {
-            "bugs": [],
-            "test_failures": [],
-            "code_reviews": [],
-            "performance_metrics": [],
-            "deployment_issues": []
+            category: [] for category in self.METRIC_CATEGORIES
         }
     
     def log_bug(
@@ -249,13 +249,7 @@ class MetricsCollector:
     
     def clear(self) -> None:
         """Clear all collected metrics."""
-        self.data = {
-            "bugs": [],
-            "test_failures": [],
-            "code_reviews": [],
-            "performance_metrics": [],
-            "deployment_issues": []
-        }
+        self.data = {category: [] for category in self.METRIC_CATEGORIES}
         logger.debug("Cleared all metrics")
     
     def load_from_json(self, json_str: str) -> None:

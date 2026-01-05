@@ -10,6 +10,7 @@ import os
 import re
 import uuid
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -25,12 +26,15 @@ class PatternManager:
             pattern_library_path: Path to the pattern library JSON file
         """
         # Validate path to prevent path traversal
-        self.pattern_library_path = os.path.normpath(pattern_library_path)
-        if os.path.isabs(self.pattern_library_path):
-            # For absolute paths, check they don't escape intended directory
-            if '..' in self.pattern_library_path:
-                raise ValueError("Path traversal detected in pattern_library_path")
+        # Resolve to absolute path
+        resolved_path = Path(pattern_library_path).resolve()
         
+        # Check for path traversal attempts (.. components in normalized path)
+        # But allow absolute paths like /tmp for testing
+        if ".." in Path(pattern_library_path).parts:
+            raise ValueError(f"Path traversal detected in: {pattern_library_path}")
+        
+        self.pattern_library_path = str(resolved_path)
         self.patterns: List[Dict[str, Any]] = []
         self.changelog: List[Dict[str, Any]] = []
         
@@ -75,10 +79,11 @@ class PatternManager:
             md_path: Path to the AI_PATTERNS.md file
         """
         # Validate path to prevent path traversal
-        md_path = os.path.normpath(md_path)
-        if os.path.isabs(md_path):
-            if '..' in md_path:
-                raise ValueError("Path traversal detected in md_path")
+        if ".." in Path(md_path).parts:
+            raise ValueError(f"Path traversal detected in: {md_path}")
+        
+        resolved_path = Path(md_path).resolve()
+        md_path = str(resolved_path)
         
         if not os.path.exists(md_path):
             logger.debug(f"AI_PATTERNS.md not found at {md_path}")
