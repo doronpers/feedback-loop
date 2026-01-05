@@ -57,8 +57,8 @@ class MetricsIntegration:
                     if not isinstance(existing_data, dict):
                         logger.debug("Invalid metrics data format, starting fresh")
                         existing_data = {}
-                    # Validate expected keys using MetricsCollector constant
-                    for key in self.collector.METRIC_CATEGORIES:
+                    # Validate expected keys using MetricsCollector getter
+                    for key in MetricsCollector.get_metric_categories():
                         if key not in existing_data:
                             existing_data[key] = []
                         elif not isinstance(existing_data[key], list):

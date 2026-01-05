@@ -26,6 +26,15 @@ class MetricsCollector:
             category: [] for category in self.METRIC_CATEGORIES
         }
     
+    @classmethod
+    def get_metric_categories(cls) -> List[str]:
+        """Get the list of metric categories.
+        
+        Returns:
+            List of metric category names
+        """
+        return cls.METRIC_CATEGORIES.copy()
+    
     def log_bug(
         self,
         pattern: str,

@@ -24,17 +24,21 @@ class PatternManager:
         
         Args:
             pattern_library_path: Path to the pattern library JSON file
+        
+        Raises:
+            ValueError: If path contains traversal attempts (..)
         """
         # Validate path to prevent path traversal
-        # Resolve to absolute path
-        resolved_path = Path(pattern_library_path).resolve()
-        
-        # Check for path traversal attempts (.. components in normalized path)
-        # But allow absolute paths like /tmp for testing
+        # Check for .. components before resolution to catch traversal attempts
+        # This prevents attacks like "../../etc/passwd" while allowing absolute paths
+        # for legitimate use cases (e.g., /tmp in tests)
         if ".." in Path(pattern_library_path).parts:
             raise ValueError(f"Path traversal detected in: {pattern_library_path}")
         
+        # Resolve to absolute path for consistent path handling
+        resolved_path = Path(pattern_library_path).resolve()
         self.pattern_library_path = str(resolved_path)
+        
         self.patterns: List[Dict[str, Any]] = []
         self.changelog: List[Dict[str, Any]] = []
         
@@ -77,11 +81,16 @@ class PatternManager:
         
         Args:
             md_path: Path to the AI_PATTERNS.md file
+        
+        Raises:
+            ValueError: If path contains traversal attempts (..)
         """
         # Validate path to prevent path traversal
+        # Check for .. components before resolution to catch traversal attempts
         if ".." in Path(md_path).parts:
             raise ValueError(f"Path traversal detected in: {md_path}")
         
+        # Resolve to absolute path
         resolved_path = Path(md_path).resolve()
         md_path = str(resolved_path)
         
