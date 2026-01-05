@@ -1,87 +1,167 @@
 # AI Development Patterns & Feedback Loop
 
-This document describes reusable patterns for AI-assisted development and demonstrates a feedback loop for continuous improvement.
+**A practical, evolving guide for AI-assisted development across any coding task.**
+
+This isn't prescriptive—it documents patterns that work in real-world projects, from quick fixes to security-critical features. Adapt to your context.
+
+---
 
 ## 🎯 Workflow Philosophy
 
 **Core principle:** AI as a collaborative partner, not just a code generator.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    MY DEVELOPMENT LOOP                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│   0. ORIENT ──► 1. DEFINE ──► 2. DESIGN ──► 3. BUILD            │
-│      │            │             │             │                 │
-│      │            │             │             ▼                 │
-│      │            │             │         [AI Agent]            │
-│      │            │             │             │                 │
-│      │            │             │             ▼                 │
-│      │            │             │      4. VERIFY ◄──[AI Review] │
-│      │            │             │             │                 │
-│      │            │             │             ▼                 │
-│      │            │             │      4.5 CALIBRATE            │
-│      │            │             │             │                 │
-│      │            │             │             ▼                 │
-│      │            │             │         5. HARDEN             │
-│      │            │             │             │                 │
-│      │            ▼             ▼             ▼                 │
-│      └────────────┴─────────────┴─────────────┘                 │
-│                       (Feedback loops to all stages)            │
-│                                                                 │
-│   Key:  Humans guide, AI assists, both verify at gates          │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      THE ENHANCED DEVELOPMENT LOOP                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1.DEFINE ──► 2.DESIGN ──► 3.BUILD ──► 4.VERIFY ──► 5.HARDEN ──► 6.SHIP    │
+│     │           │            │           │            │           │         │
+│  [Human]    [AI+Human]   [AI+Human]  [Multi-AI]   [Security]   [CI/CD]     │
+│     │           │            │           │            │           │         │
+│     └───────────┴────────────┴───────────┴────────────┴───────────┘         │
+│                              ▲                                              │
+│                              │ Feedback & Iteration Loop                    │
+│                              └──────────────────────────────────────────────│
+│                                                                             │
+│   Key: Humans guide, AI assists, both verify, gates ensure quality          │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+**What this means in practice:**
+- Don't accept AI output blindly—verify against known patterns
+- Different stages use different tools (right tool for the job)
+- Quality gates prevent compounding errors
+- Context preservation is as important as code generation
+- **Not every task needs all stages** (see Workflow Variants section)
+
+---
+
 ## 🔧 Tech Stack Context
+
+**This workflow applies to any stack—examples use:**
 
 - **Backend**: Python 3.x, FastAPI, numpy, audio processing
 - **Frontend**: Vite, React/TypeScript
 - **Infrastructure**: Docker, nginx, SSL/TLS
 - **Deployment**: Render.com / cloud platforms
 
-## Development Stages
-
-### Stage 0: ORIENT 🧭 [System 2 Required]
-
-**Purpose:** Establish mental models and check assumptions before diving into work.
-
-**Key Questions:**
-- What mental model am I using for this problem?
-- What assumptions am I carrying from previous sessions?
-- Is this the right problem to solve right now?
-- What constraints are active? (time, resources, compliance)
-- What's the success criteria?
-
-**Why This Matters:**
-- Prevents solving the wrong problem efficiently
-- Surfaces hidden assumptions that cause rework
-- Aligns human intuition with AI capabilities
-- Reduces context pollution from prior sessions
-
-**Example Orient Checklist:**
-```markdown
-□ Problem clearly stated (not just symptoms)
-□ Constraints identified (performance, compliance, budget)
-□ Success criteria defined (measurable)
-□ Prior similar solutions reviewed (what worked/failed)
-□ Current mental model articulated (can explain to rubber duck)
-```
+**Adapt the patterns to your technologies.**
 
 ---
 
-### Stage 1: DEFINE 🎯 [System 2 Required]
+## 🚀 Quick Start for General Development
+
+**New to this workflow? Start here:**
+
+### For a Simple Bug Fix (15-30 min)
+1. **DEFINE** (mental): "Fix bug where X happens when Y"
+2. **BUILD** (with Copilot): Make the fix
+3. **VERIFY** (quick test): Run relevant tests
+4. **SHIP**: Commit and push
+
+### For a Standard Feature (2-4 hours)
+1. **DEFINE**: Write 2-sentence problem + success criteria
+2. **DESIGN**: Ask Claude/GPT-4 for approach
+3. **BUILD**: Implement with Copilot
+4. **VERIFY**: Different AI reviews code + run tests
+5. **SHIP**: CI/CD and merge
+
+### For Security-Critical Code
+Add **HARDEN** stage between VERIFY and SHIP for dedicated security audit.
+
+**Core principle:** More risk = more gates. Less risk = fewer gates.
+
+---
+
+## 📚 Document Structure
+
+**Essential sections for everyone:**
+- ✅ The 6-Stage Workflow - Core process
+- ✅ Workflow Variants - When to skip stages
+- ✅ Tool Selection Guide - Which AI for what
+- ✅ Prompt Templates - Copy-paste ready
+- ✅ Known AI Gotchas - Universal patterns
+- ✅ Error Recovery - When AI fails
+
+**Optional specialized sections:**
+- 📖 Multi-Agent Orchestration - Advanced patterns
+- 📖 Context Management - Long sessions
+- 📖 Domain-Specific Blind Spots - Audio/compliance only
+- 📖 Security & Compliance Deep Dive - Regulated industries
+
+**Skip what doesn't apply to your work.**
+
+---
+
+## The 6-Stage Workflow
+
+### Stage 1: DEFINE (Human-Led) [System 2 Required]
+
+**Before touching code or asking AI:**
+
+1. **What problem am I solving?** (1-2 sentences max)
+2. **What does success look like?** (concrete, testable criteria)
+3. **What constraints exist?** (file sizes, latency, security, compliance)
+4. **What related code exists?** (paths to reference)
+
+**Example Problem Statement:**
+```
+Problem: Users need to upload audio files up to 800MB for analysis
+Success: POST /upload accepts file, returns job_id in <2s, analysis completes in <30s
+Constraints: Must handle concurrent uploads, nginx defaults block large files
+Related: backend/api/routes/upload.py, docker-compose.yml
+```
+
+**Gate 1 Checklist:**
+- [ ] Problem statement is <2 sentences
+- [ ] Success criteria are testable (not vague)
+- [ ] Constraints are documented
+- [ ] Related code identified
+
+**When to pass:** Can articulate the problem to AI in <30 seconds
 
 **Human Gap:** Exploring full possibility space  
 **AI Fills:** Generating alternative approaches, researching patterns  
 **AI Gap:** Judging relevance to real constraints  
 **Human Fills:** Filtering based on domain knowledge and tacit requirements
 
-**Feedback Loop:** Learning propagates back to reframe the problem itself. If implementation reveals wrong assumptions, return to ORIENT/DEFINE, don't force the solution.
+**Feedback Loop:** Learning propagates back to reframe the problem itself. If implementation reveals wrong assumptions, return to DEFINE, don't force the solution.
 
 ---
 
-### Stage 2: DESIGN 🏗️ [System 1 + System 2]
+### Stage 2: DESIGN (AI-Assisted Planning) [System 1 + System 2]
+
+**Prompt Pattern:**
+```
+I'm building [specific feature].
+
+Context:
+- Tech: [FastAPI/React/Docker/etc.]
+- Constraint: [specific constraint]
+- Existing pattern: [reference to codebase]
+- Related files: [paths]
+
+Help me design the approach. Consider:
+1. Edge cases
+2. Error handling strategy
+3. Testing approach
+4. Security implications
+```
+
+**What to Review in AI Output:**
+- [ ] Does it align with my existing patterns?
+- [ ] Are the dependencies appropriate?
+- [ ] Did it miss any constraints I mentioned?
+- [ ] Are there security implications it didn't address?
+
+**Gate 2 Checklist:**
+- [ ] Approach documented (even as code comments)
+- [ ] Trade-offs explicitly considered
+- [ ] Security implications noted
+- [ ] Breaking changes identified (if any)
+
+**When to pass:** Design written down, not just in my head
 
 **Human Gap:** Generating pattern variations quickly  
 **AI Fills:** Creating multiple design options, architectural patterns  
@@ -90,7 +170,49 @@ This document describes reusable patterns for AI-assisted development and demons
 
 ---
 
-### Stage 3: BUILD 🔨 [System 1 Acceptable]
+### Stage 3: BUILD (Collaborative Implementation) [System 1 Acceptable]
+
+**This is where real collaboration happens.**
+
+**AI Coding Verification Checklist:**
+
+```python
+# ✅ Convert numpy types before JSON serialization
+def convert_numpy_types(obj):
+    """AI often forgets this - always check!"""
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
+
+# ✅ Proper temp file handling (AI often uses None for fd)
+import tempfile
+fd, path = tempfile.mkstemp()
+try:
+    with os.fdopen(fd, 'wb') as f:
+        f.write(data)
+finally:
+    os.unlink(path)  # Always cleanup
+
+# ✅ SSL in Docker (AI forgets ca-certificates)
+# Dockerfile must include:
+# RUN apk add --no-cache ca-certificates
+
+# ✅ nginx large file uploads
+# AI forgets client_max_body_size:
+# client_max_body_size 1000M;
+```
+
+**Gate 3 Checklist:**
+- [ ] Code imports without errors
+- [ ] Type hints on public APIs
+- [ ] Docstrings on public functions
+- [ ] Known AI gotchas checked (see Known AI Gotchas section)
+
+**When to pass:** Code compiles/imports, basic manual test works
 
 **Human Gap:** Speed, syntax recall, boilerplate  
 **AI Fills:** Fast code generation, API usage, common patterns  
@@ -99,7 +221,66 @@ This document describes reusable patterns for AI-assisted development and demons
 
 ---
 
-### Stage 4: VERIFY ✓ [System 2 Required]
+### Stage 4: VERIFY (Multi-Agent Review) [System 2 Required]
+
+**Key insight:** Use a DIFFERENT AI to review what the first one built.
+
+```
+┌──────────────────┐     ┌──────────────────┐
+│   Agent 1        │     │   Agent 2        │
+│   (Generator)    │────►│   (Reviewer)     │
+│   Creates code   │     │   Critiques it   │
+└──────────────────┘     └──────────────────┘
+         │                        │
+         ▼                        ▼
+┌─────────────────────────────────────────────┐
+│              Human Decision                 │
+│   Accept / Modify / Request Alternative     │
+└─────────────────────────────────────────────┘
+```
+
+**Review Prompt Template:**
+```
+Review this code for:
+1. Security issues (especially input validation)
+2. Error handling gaps
+3. Performance concerns for [specific scale, e.g., "files up to 800MB"]
+4. Testing blind spots
+5. Pattern consistency with existing code
+
+Existing patterns to follow: [reference files]
+
+Code:
+[paste code]
+```
+
+**Test Generation Approach:**
+```python
+# Always use real file descriptors in tests
+def test_temp_file_handling(tmp_path):
+    """AI-generated tests often mock file ops incorrectly."""
+    test_file = tmp_path / "test.wav"
+    test_file.write_bytes(b"test data")
+
+    result = process_file(str(test_file))
+
+    assert result is not None
+    assert not test_file.exists()  # Verify cleanup
+
+# Use monkeypatch, not fragile mocks
+def test_with_monkeypatch(monkeypatch):
+    monkeypatch.setenv("API_KEY", "test-key")
+    # Test with controlled environment
+```
+
+**Gate 4 Checklist:**
+- [ ] Unit tests pass
+- [ ] Integration tests pass (if applicable)
+- [ ] Edge cases covered
+- [ ] Different AI reviewed code
+- [ ] Coverage maintained (doesn't decrease)
+
+**When to pass:** Tests green, review feedback addressed
 
 **Human Gap:** Finding unknown unknowns, exhaustive test cases  
 **AI Fills:** Generating test scenarios, exploring edge cases  
@@ -108,34 +289,38 @@ This document describes reusable patterns for AI-assisted development and demons
 
 ---
 
-### Stage 4.5: CALIBRATE 🎚️ [System 2 Required]
+### Stage 5: HARDEN (Security & Quality) [System 2 Required]
 
-**Purpose:** Explicitly assess confidence and risk before hardening.
+**Dedicated security pass before shipping.**
 
-For each AI output, rate:
-- **Epistemic Confidence:** How certain is the AI about correctness? (Low/Medium/High)
-- **Domain Fit:** Does this match known patterns in YOUR codebase? (Poor/Fair/Good)
-- **Failure Severity:** What's the worst-case if this is wrong? (Low/Medium/High/Critical)
+**Security Audit Prompt:**
+```
+Security audit for this code:
 
-**Decision Matrix:**
+Check:
+1. Input validation - All user inputs validated?
+2. Injection risks - SQL, XSS, command injection?
+3. Authentication - Required where needed?
+4. Data leakage - Sensitive data in logs/errors?
+5. Rate limiting - Configured for public endpoints?
+6. Error messages - Leak sensitive info?
+7. Edge cases - What malicious inputs could break this?
 
-| Confidence | Failure Severity | Action |
-|------------|------------------|--------|
-| Low | High/Critical | **Human deep review required** |
-| Low | Medium | Add extra tests, code review |
-| High | Critical | Human verification + ensemble reasoning |
-| High | High | Automated verification + spot checks |
-| High | Low | Automated verification sufficient |
+For each issue found: Severity, Description, Fix, Test
 
-**Why This Matters:**
-- AI outputs trigger System 1 (fast, intuitive acceptance)
-- This gate forces System 2 (slow, deliberate verification)
-- Prevents overconfidence in AI-generated solutions
-- Surfaces areas needing human expertise
+Code:
+[paste code]
+```
 
----
+**Gate 5 Checklist:**
+- [ ] Input validation on all user inputs
+- [ ] Error handling doesn't leak sensitive info
+- [ ] Rate limiting configured (if API endpoint)
+- [ ] No hardcoded secrets
+- [ ] No PII in logs
+- [ ] Dependencies are up to date (no known vulns)
 
-### Stage 5: HARDEN 🛡️ [System 2 Required]
+**When to pass:** Security checklist complete, no high/critical issues
 
 **Human Gap:** Exhaustive enumeration of edge cases  
 **AI Fills:** Security checklist generation, vulnerability scanning  
@@ -144,28 +329,662 @@ For each AI output, rate:
 
 ---
 
+### Stage 6: SHIP (CI/CD Integration)
+
+**Final verification before merge.**
+
+**Gate 6 Checklist:**
+- [ ] Pre-commit hooks pass (linting, formatting)
+- [ ] CI pipeline passes
+- [ ] PR created with proper description
+- [ ] Documentation updated (if needed)
+- [ ] Reviewer approved (human or bot)
+
+**Quick Commands:**
+```bash
+# Check for secrets before commit
+git diff --staged | grep -i "api_key\|password\|secret"
+
+# Format code
+black . && flake8 .
+
+# Run tests
+pytest -q
+
+# Test coverage
+pytest --cov=. --cov-report=term-missing
+```
+
+**When to pass:** PR merged, deployment successful
+
+---
+
+## Workflow Variants
+
+**Not every task needs all 6 stages.** Adjust based on task complexity and risk.
+
+### Quick Fix (< 30 min)
+
+```
+DEFINE (mental) → BUILD (Copilot) → VERIFY (quick test) → SHIP
+```
+
+**Skip:** Formal design, multi-agent review, dedicated security pass  
+**Use when:** Typo fixes, small bug fixes, simple config changes
+
+### Standard Feature (1-4 hours)
+
+```
+DEFINE → DESIGN → BUILD → VERIFY → SHIP
+```
+
+**Skip:** Dedicated security pass (rolled into VERIFY)  
+**Use when:** Most features, non-security-critical endpoints
+
+### Security-Critical (4+ hours)
+
+```
+DEFINE → DESIGN → BUILD → VERIFY → HARDEN → SHIP
+```
+
+**Skip:** Nothing  
+**Use when:** Auth, file uploads, user input handling, payment flows
+
+### Experimental/Spike
+
+```
+DEFINE (loose) → BUILD → VERIFY (manual only) → [Throw away or restart properly]
+```
+
+**Skip:** Formal design, security, CI/CD  
+**Use when:** Exploring feasibility, learning new tool/library
+
+---
+
 ## The Feedback Loop Process
 
 ```
-ORIENT → DEFINE → DESIGN → BUILD → VERIFY → CALIBRATE → HARDEN
-   ▲        ▲        ▲        │        │         │         │
-   │        │        │        ▼        ▼         ▼         ▼
-   │        │        │    [AI Agent] [AI Review] [Human]  [Tools]
-   │        │        │        │        │         │         │
-   │        └────────┴────────┴────────┴─────────┴─────────┘
-   │                                   ↓
-   │                            Retrospective
-   │                                   ↓
-   │                         Update AI_PATTERNS.md
-   │                                   ↓
-   └──────────────────────   Better prompts next time
+DEFINE → DESIGN → BUILD → VERIFY → HARDEN → SHIP
+   ▲        ▲        ▲        │        │        │
+   │        │        │        ▼        ▼        ▼
+   │        │        │    [AI Agent][Review][Deploy]
+   │        │        │        │        │        │
+   │        └────────┴────────┴────────┴────────┘
+   │                         ↓
+   │                  Retrospective
+   │                         ↓
+   │              Update AI_PATTERNS.md
+   │                         ↓
+   └──────────────  Better prompts next time
 ```
 
-**Key Insight:** Feedback loops exist at ALL stages, not just BUILD→VERIFY. Learning from VERIFY can reframe DEFINE, and retrospectives improve ORIENT.
+**Key Insight:** Feedback loops exist at ALL stages. Learning from VERIFY can reframe DEFINE, and retrospectives improve future problem framing.
 
-## 🎭 Domain-Specific AI Blind Spots
+---
 
-AI assistants lack tacit domain knowledge and consistently make specific mistakes in specialized fields. For audio forensics, physics-based analysis, and financial compliance work:
+## Multi-Agent Orchestration Patterns
+
+Different situations call for different agent configurations.
+
+### Pattern 1: Generator-Reviewer (Default)
+
+**Best for:** Most everyday development tasks
+
+```
+Agent A (Generator) ──► Agent B (Reviewer) ──► Human Decision
+     Copilot              Claude/GPT-4           You
+```
+
+**When to use:** Standard feature development, bug fixes  
+**Setup:** Write with Copilot, review with Claude or GPT-4
+
+### Pattern 2: Specialist Chain
+
+**Best for:** Complex features touching multiple domains
+
+```
+Agent A (Architect) ──► Agent B (Implementer) ──► Agent C (Security) ──► Human
+    Claude/GPT-4           Copilot                  GPT-4/Claude         You
+```
+
+**When to use:** New features with security implications, API design  
+**Setup:** Design with Claude, implement with Copilot, security review with GPT-4
+
+### Pattern 3: Parallel Perspectives
+
+**Best for:** Important architectural decisions
+
+```
+                    ┌─► Agent A (Performance focus)
+Problem Statement ──┼─► Agent B (Security focus)     ──► Human synthesizes
+                    └─► Agent C (Maintainability)
+```
+
+**When to use:** Trade-off decisions, architecture choices  
+**Setup:** Same prompt to 3 different agents, compare responses
+
+### Pattern 4: Adversarial Testing
+
+**Best for:** Security-critical code, edge case discovery
+
+```
+Agent A (Builder) ──► Agent B (Breaker) ──► Agent A (Fix) ──► Human
+    Copilot            Claude/GPT-4          Copilot         You
+```
+
+**When to use:** Authentication, file uploads, user input handling  
+**Setup:** Build with Copilot, ask Claude to break it, fix issues
+
+---
+
+## Tool Selection Guide
+
+### Quick Decision Tree
+
+```
+Is it a quick fix (<10 lines)?
+├─ Yes → Copilot inline
+└─ No → Does it require architecture thinking?
+         ├─ Yes → Claude / GPT-4
+         └─ No → Does it span multiple files?
+                  ├─ Yes → Claude Code / Cursor
+                  └─ No → Copilot
+```
+
+### Stage-to-Tool Mapping
+
+| Stage    | Primary Tool      | Alternative       | When to Switch        |
+|----------|-------------------|-------------------|----------------------|
+| Define   | Your brain        | Claude (explore)  | Complex domain       |
+| Design   | Claude / GPT-4    | Copilot Chat      | Architecture choices |
+| Build    | Copilot           | Claude Code       | Multi-file changes   |
+| Verify   | Different AI      | Coderabbit        | PR review            |
+| Harden   | GPT-4 / Claude    | CodeQL            | Security focus       |
+| Ship     | CI/CD             | Human             | Final approval       |
+
+### Tool Strengths
+
+```
+Speed:     Copilot > Cursor > Claude > GPT-4
+Security:  GPT-4 ≈ Claude > CodeQL > Copilot
+Context:   Claude > GPT-4 > Cursor > Copilot
+IDE:       Copilot (native) > Cursor > Others (external)
+```
+
+### When to Switch Tools Mid-Task
+
+- **Copilot → Claude**: When Copilot repeats the same wrong pattern 3+ times
+- **Claude → Copilot**: When Claude's code doesn't match project conventions
+- **Any → Fresh start**: When context is polluted after many iterations
+
+---
+
+## Context Management Strategies
+
+AI conversations have limited memory. Here's how to preserve context.
+
+### Session Handoff Template
+
+When ending a session or switching tools:
+
+```markdown
+## Context Handoff
+
+### What We Built
+[1-2 sentence summary of changes]
+
+### Current State
+- Files modified: [list paths]
+- Tests status: passing/failing
+- Known issues: [any blockers]
+
+### Next Steps
+1. [Immediate next action]
+2. [Following action]
+
+### Key Decisions Made
+- [Decision]: [Rationale]
+
+### Open Questions
+- [Any unresolved questions]
+```
+
+### Context Compression Techniques
+
+1. **Summarize, don't repeat**
+   - Bad: Paste entire file contents
+   - Good: "See `backend/api/upload.py:45-60` for current implementation"
+
+2. **Decision log over code dump**
+   - Track WHY decisions were made, not just WHAT code exists
+   - Future you (or AI) needs rationale, not just code
+
+3. **Tests as documentation**
+   - Tests encode expected behavior
+   - "See test_upload.py for expected behavior" is often enough context
+
+4. **Git as memory**
+   - Commit messages preserve context
+   - `git log --oneline -10` gives recent history
+   - Branch names describe feature intent
+
+### Starting a New Session
+
+```
+Continuing work on [feature name].
+
+Previous session summary:
+- Built: [what was done]
+- Current state: [working/broken/partial]
+- Next step: [specific next action]
+
+Files to reference:
+- [path1]: [what it does]
+- [path2]: [what it does]
+
+Let's continue with [specific next task].
+```
+
+---
+
+## Prompt Templates Library
+
+Copy-paste ready prompts for common situations.
+
+### Problem Definition Prompt
+
+```
+I need to solve: [1-2 sentence problem]
+
+Context:
+- Tech stack: [e.g., FastAPI, Docker, nginx]
+- Constraint: [e.g., must handle files up to 800MB]
+- Related code: [file paths]
+
+Success looks like:
+- [Concrete test case 1]
+- [Concrete test case 2]
+
+What approach would you recommend?
+```
+
+### Design Exploration Prompt
+
+```
+I'm designing [feature/component].
+
+Requirements:
+- [Requirement 1]
+- [Requirement 2]
+
+Constraints:
+- [Constraint 1]
+- [Constraint 2]
+
+Existing patterns in codebase:
+- [Pattern reference]
+
+Questions:
+1. What are the main approaches?
+2. Trade-offs of each?
+3. Which fits best given my constraints?
+```
+
+### Code Review Prompt
+
+```
+Review this code for:
+1. Security issues (especially input validation)
+2. Error handling gaps
+3. Performance concerns for [specific scale]
+4. Testing blind spots
+5. Pattern consistency with existing code
+
+Existing patterns to follow: [reference files]
+
+Code:
+[paste code]
+```
+
+### Multi-Agent Handoff Prompt
+
+```
+Previous agent context:
+- Task: [what we were building]
+- Completed: [what's done]
+- Decisions: [key choices made]
+- Issues: [known problems]
+
+Your task: [specific task for this agent]
+
+Focus on: [what this agent should prioritize]
+```
+
+### Error Recovery Prompt
+
+```
+The previous approach failed.
+
+Error/Issue:
+[Description of what went wrong]
+
+What I've tried:
+1. [Attempt 1 - why it failed]
+2. [Attempt 2 - why it failed]
+
+Constraints that still apply:
+- [Constraint 1]
+- [Constraint 2]
+
+What alternative approach would work?
+```
+
+### Security Audit Prompt
+
+```
+Security audit for [component/endpoint]:
+
+Check:
+1. Input validation - All user inputs validated?
+2. Injection risks - SQL, XSS, command injection?
+3. Authentication - Required where needed?
+4. Data leakage - Sensitive data in logs/errors?
+5. Rate limiting - Configured?
+6. Error messages - Leak sensitive info?
+7. Edge cases - What malicious inputs break this?
+
+For each issue: Severity, Description, Fix, Test
+
+Code:
+[paste code]
+```
+
+### Bug Investigation Prompt
+
+```
+I'm debugging this issue:
+
+Symptom: [What's happening]
+Expected: [What should happen]
+Frequency: [Always/sometimes/specific conditions]
+
+Relevant code:
+[paste relevant code]
+
+Recent changes:
+[what changed recently]
+
+What I've checked:
+- [Check 1]
+- [Check 2]
+
+Where should I look next?
+```
+
+---
+
+## Error Recovery Patterns
+
+When AI gets it wrong (and it will), here's how to recover.
+
+### Pattern 1: Clarify and Constrain
+
+When AI misunderstands the problem:
+
+```
+That doesn't work because [specific reason].
+
+Additional context you need:
+- [What was missing from my explanation]
+
+Constraint I didn't mention:
+- [New constraint]
+
+Please revise, focusing specifically on [aspect].
+```
+
+### Pattern 2: Show Don't Tell
+
+When AI generates wrong patterns:
+
+```
+Here's an example that works in this codebase:
+
+[working code snippet from your project]
+
+Apply this same pattern to solve [problem].
+Key things to preserve:
+- [Pattern element 1]
+- [Pattern element 2]
+```
+
+### Pattern 3: Decompose
+
+When task is too complex:
+
+```
+Let's break this into smaller steps.
+
+Step 1 (just this for now): [smallest piece]
+Step 2 (after step 1 works): [next piece]
+Step 3 (after step 2): [next piece]
+
+Start with step 1 only. Don't anticipate later steps.
+```
+
+### Pattern 4: Fresh Start
+
+When context is polluted:
+
+```
+[Start completely new conversation]
+
+Fresh context (ignore any previous conversations):
+- Project: [minimal description]
+- Task: [specific task]
+- Constraint: [key constraint]
+
+[Clean, minimal prompt]
+```
+
+### Pattern 5: Rubber Duck Debug
+
+When you're stuck on AI's output:
+
+```
+Walk me through this code step by step:
+
+[paste the problematic code]
+
+For each line, explain:
+1. What it does
+2. What inputs it expects
+3. What could go wrong
+
+I'll interrupt when something doesn't match my expectations.
+```
+
+---
+
+## Known AI Gotchas
+
+Things AI consistently gets wrong across all domains. Always verify these patterns.
+
+### Serialization Issues
+
+```python
+# ❌ AI forgets numpy → JSON conversion
+return {"value": np.float64(0.5)}  # Breaks!
+
+# ✅ Always convert
+return {"value": float(np.float64(0.5))}
+
+# ❌ AI forgets NaN/Inf handling
+result = {"mean": np.mean(data)}  # Could be NaN or Inf
+
+# ✅ Handle edge cases
+mean_val = np.mean(data)
+result = {"mean": None if np.isnan(mean_val) or np.isinf(mean_val) else float(mean_val)}
+```
+
+### Infrastructure Blind Spots
+
+```dockerfile
+# ❌ AI forgets SSL certificates in Alpine
+FROM python:3.11-alpine
+# HTTPS calls will fail!
+
+# ✅ Always add ca-certificates
+FROM python:3.11-alpine
+RUN apk add --no-cache ca-certificates
+```
+
+```nginx
+# ❌ AI forgets nginx upload limits
+# Default is 1MB!
+
+# ✅ Always set client_max_body_size
+client_max_body_size 1000M;
+```
+
+### File Handling
+
+```python
+# ❌ AI often uses None for file descriptor
+fd, path = tempfile.mkstemp()
+# Then ignores fd and just uses path
+
+# ✅ Proper pattern
+fd, path = tempfile.mkstemp()
+try:
+    with os.fdopen(fd, 'wb') as f:
+        f.write(data)
+    # Process file at path
+finally:
+    os.unlink(path)
+```
+
+### Testing Anti-Patterns
+
+```python
+# ❌ AI loves fragile mocks
+with patch('module.function') as mock:
+    mock.return_value = {"key": "value"}
+    # Breaks when function signature changes
+
+# ✅ Use monkeypatch for environment
+def test_something(monkeypatch):
+    monkeypatch.setenv("API_KEY", "test")
+    # More resilient to refactoring
+```
+
+### Error Handling
+
+```python
+# ❌ AI often swallows exceptions
+try:
+    risky_operation()
+except Exception:
+    pass  # Silent failure!
+
+# ✅ At minimum, log it
+try:
+    risky_operation()
+except Exception as e:
+    logger.error(f"Operation failed: {e}")
+    raise  # Or handle appropriately
+```
+
+### Async Pitfalls
+
+```python
+# ❌ AI forgets asyncio.run() limitations
+def sync_function():
+    asyncio.run(async_operation())  # Fails if already in async context!
+
+# ✅ Check context first
+def sync_function():
+    try:
+        loop = asyncio.get_running_loop()
+        # Already in async context, use different approach
+    except RuntimeError:
+        asyncio.run(async_operation())
+```
+
+### FastAPI Large File Uploads
+
+```python
+# ❌ AI loads entire file into memory
+async def upload(file: UploadFile):
+    content = await file.read()  # OOM for large files!
+    
+# ✅ Stream to disk in chunks
+async def upload(file: UploadFile):
+    fd, path = tempfile.mkstemp()
+    try:
+        with os.fdopen(fd, 'wb') as f:
+            while chunk := await file.read(1024 * 1024):  # 1MB chunks
+                f.write(chunk)
+        # Process file at path
+    finally:
+        os.unlink(path)
+```
+
+---
+
+## Metrics & Tracking
+
+### Per-Session Metrics
+
+| Metric                        | What It Tells Me                    |
+|-------------------------------|-------------------------------------|
+| AI suggestions accepted as-is | Am I prompting effectively?         |
+| Iterations to working code    | Is task complexity appropriate?     |
+| Gates passed first try        | Is my process mature?               |
+| Time in each stage            | Where are my bottlenecks?           |
+| Gotchas that bit me           | What to add to verification list?   |
+
+### Weekly Review Questions
+
+1. Which AI gotchas bit me this week?
+2. Which prompts worked exceptionally well?
+3. What patterns should I document?
+4. Where did the workflow break down?
+5. Did I skip any gates? What happened?
+
+### Lessons Learned Template
+
+```markdown
+## Lesson: [Short Title]
+
+**Date**: [Date]
+**Context**: [What I was building]
+
+**What Happened**:
+[The issue or insight]
+
+**Root Cause**:
+[Why it happened]
+
+**Solution**:
+[How I fixed it]
+
+**Prevention**:
+[How to avoid in future]
+
+**Prompt That Worked** (if applicable):
+[The prompt that solved it]
+```
+
+---
+
+## Domain-Specific Blind Spots (Optional Reference)
+
+**This section contains specialized patterns for specific domains.** Most users can skip this—refer only if working in these areas: audio processing, scientific computing, or financial compliance.
+
+### Audio Processing & Scientific Computing
+
+AI assistants lack tacit domain knowledge in specialized fields. If working with audio forensics, physics-based analysis, or numerical computing:
 
 ### Audio Processing Edge Cases
 
