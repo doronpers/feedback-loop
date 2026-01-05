@@ -29,14 +29,14 @@ class MetricsIntegration:
         self,
         metrics_file: str = "metrics_data.json",
         patterns_file: str = "patterns.json",
-        ai_patterns_md: str = "AI_PATTERNS.md"
+        ai_patterns_md: str = "docs/AI_PATTERNS_GUIDE.md"
     ):
         """Initialize the integration system.
         
         Args:
             metrics_file: Path to store collected metrics
             patterns_file: Path to pattern library JSON
-            ai_patterns_md: Path to AI_PATTERNS.md file
+            ai_patterns_md: Path to AI_PATTERNS_GUIDE.md file
         """
         self.metrics_file = metrics_file
         self.patterns_file = patterns_file
@@ -184,7 +184,7 @@ class MetricsIntegration:
         
         # Load patterns
         if not self.pattern_manager.patterns:
-            # Try to load from AI_PATTERNS.md
+            # Try to load from AI_PATTERNS_GUIDE.md
             if Path(self.ai_patterns_md).exists():
                 self.pattern_manager.load_from_ai_patterns_md(self.ai_patterns_md)
                 self.pattern_manager.save_patterns()
@@ -394,7 +394,7 @@ class MetricsIntegration:
         return violations
 
     def sync_patterns_to_markdown(self) -> None:
-        """Sync patterns from patterns.json to AI_PATTERNS.md."""
+        """Sync patterns from patterns.json to AI_PATTERNS_GUIDE.md."""
         logger.debug("Syncing patterns to markdown")
 
         try:
@@ -563,7 +563,7 @@ def main() -> int:
     # Sync patterns command
     sync_parser = subparsers.add_parser(
         "sync-to-markdown",
-        help="Sync patterns from patterns.json to AI_PATTERNS.md"
+        help="Sync patterns from patterns.json to docs/AI_PATTERNS_GUIDE.md"
     )
     sync_parser.add_argument(
         "--patterns-file",
@@ -572,8 +572,8 @@ def main() -> int:
     )
     sync_parser.add_argument(
         "--markdown-file",
-        default="AI_PATTERNS.md",
-        help="Path to markdown file (default: AI_PATTERNS.md)"
+        default="docs/AI_PATTERNS_GUIDE.md",
+        help="Path to markdown file (default: docs/AI_PATTERNS_GUIDE.md)"
     )
 
     args = parser.parse_args()

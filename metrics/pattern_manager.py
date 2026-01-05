@@ -76,11 +76,11 @@ class PatternManager:
             logger.debug(f"Failed to save patterns: {e}")
             raise
     
-    def load_from_ai_patterns_md(self, md_path: str = "AI_PATTERNS.md") -> None:
-        """Load patterns from AI_PATTERNS.md file.
+    def load_from_ai_patterns_md(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md") -> None:
+        """Load patterns from AI_PATTERNS_GUIDE.md file.
         
         Args:
-            md_path: Path to the AI_PATTERNS.md file
+            md_path: Path to the AI_PATTERNS_GUIDE.md file
         
         Raises:
             ValueError: If path contains traversal attempts (..)
@@ -461,14 +461,14 @@ class PatternManager:
         """
         return self.changelog.copy()
 
-    def sync_to_markdown(self, md_path: str = "AI_PATTERNS.md") -> None:
-        """Sync patterns back to AI_PATTERNS.md file.
+    def sync_to_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md") -> None:
+        """Sync patterns back to AI_PATTERNS_GUIDE.md file.
 
         This creates a bidirectional sync, updating the markdown file with
         current pattern data from patterns.json.
 
         Args:
-            md_path: Path to the AI_PATTERNS.md file
+            md_path: Path to the AI_PATTERNS_GUIDE.md file
 
         Raises:
             ValueError: If path contains traversal attempts (..)

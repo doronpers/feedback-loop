@@ -202,13 +202,13 @@ def demo_pattern_management(high_freq, new_patterns):
     # Create pattern manager
     manager = PatternManager("demo_patterns.json")
     
-    # Load from AI_PATTERNS.md
-    print("\n📚 Loading patterns from AI_PATTERNS.md...")
-    if os.path.exists("AI_PATTERNS.md"):
-        manager.load_from_ai_patterns_md("AI_PATTERNS.md")
+    # Load from AI_PATTERNS_GUIDE.md
+    print("\n📚 Loading patterns from docs/AI_PATTERNS_GUIDE.md...")
+    if os.path.exists("docs/AI_PATTERNS_GUIDE.md"):
+        manager.load_from_ai_patterns_md("docs/AI_PATTERNS_GUIDE.md")
         print(f"   Loaded {len(manager.patterns)} patterns")
     else:
-        print("   AI_PATTERNS.md not found, using empty library")
+        print("   AI_PATTERNS_GUIDE.md not found, using empty library")
     
     # Update frequencies
     print("\n🔄 Updating pattern frequencies...")
