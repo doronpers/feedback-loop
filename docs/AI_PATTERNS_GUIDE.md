@@ -2,6 +2,9 @@
 
 **A practical, evolving guide for AI-assisted development across any coding task.**
 
+> 📖 **Note**: This is a comprehensive guide (~2700 lines). For quick lookups, use the [Quick Reference](QUICK_REFERENCE.md).
+> New to the project? Start with [Getting Started](GETTING_STARTED.md) instead.
+
 This isn't prescriptive—it documents patterns that work in real-world projects, from quick fixes to security-critical features. Adapt to your context.
 
 ---

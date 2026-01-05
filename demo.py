@@ -222,7 +222,7 @@ def main():
     print("Demo Complete!")
     print("="*60)
     print("\nAll patterns demonstrated successfully! ✅")
-    print("See AI_PATTERNS.md for detailed documentation.")
+    print("See docs/AI_PATTERNS_GUIDE.md for detailed documentation.")
 
 
 if __name__ == "__main__":
