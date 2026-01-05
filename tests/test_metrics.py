@@ -195,6 +195,31 @@ class TestMetricsCollector:
         collector.load_from_json(json_str)
         assert len(collector.data["bugs"]) == 1
         assert collector.data["bugs"][0]["count"] == 5
+    
+    def test_log_test_failure_duplicate_increments_count(self):
+        """Test that duplicate test failures increment count."""
+        collector = MetricsCollector()
+        collector.log_test_failure(
+            test_name="test_something",
+            failure_reason="Expected X but got Y",
+            pattern_violated="some_pattern"
+        )
+        collector.log_test_failure(
+            test_name="test_something",
+            failure_reason="Expected X but got Y",
+            pattern_violated="some_pattern"
+        )
+        
+        assert len(collector.data["test_failures"]) == 1
+        assert collector.data["test_failures"][0]["count"] == 2
+    
+    def test_load_from_invalid_json(self):
+        """Test loading from invalid JSON raises error."""
+        collector = MetricsCollector()
+        invalid_json = "not valid json {"
+        
+        with pytest.raises(json.JSONDecodeError):
+            collector.load_from_json(invalid_json)
 
 
 class TestMetricsAnalyzer:
