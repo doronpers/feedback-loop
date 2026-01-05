@@ -24,15 +24,21 @@ class PatternManager:
         Args:
             pattern_library_path: Path to the pattern library JSON file
         """
-        self.pattern_library_path = pattern_library_path
+        # Validate path to prevent path traversal
+        self.pattern_library_path = os.path.normpath(pattern_library_path)
+        if os.path.isabs(self.pattern_library_path):
+            # For absolute paths, check they don't escape intended directory
+            if '..' in self.pattern_library_path:
+                raise ValueError("Path traversal detected in pattern_library_path")
+        
         self.patterns: List[Dict[str, Any]] = []
         self.changelog: List[Dict[str, Any]] = []
         
         # Try to load existing patterns
-        if os.path.exists(pattern_library_path):
+        if os.path.exists(self.pattern_library_path):
             self.load_patterns()
         else:
-            logger.debug(f"Pattern library not found at {pattern_library_path}, will create new")
+            logger.debug(f"Pattern library not found at {self.pattern_library_path}, will create new")
     
     def load_patterns(self) -> None:
         """Load patterns from JSON file."""
@@ -68,6 +74,12 @@ class PatternManager:
         Args:
             md_path: Path to the AI_PATTERNS.md file
         """
+        # Validate path to prevent path traversal
+        md_path = os.path.normpath(md_path)
+        if os.path.isabs(md_path):
+            if '..' in md_path:
+                raise ValueError("Path traversal detected in md_path")
+        
         if not os.path.exists(md_path):
             logger.debug(f"AI_PATTERNS.md not found at {md_path}")
             return
@@ -241,7 +253,7 @@ class PatternManager:
             pattern = self._find_pattern_by_name(pattern_name)
             if pattern:
                 old_freq = pattern.get("occurrence_frequency", 0)
-                pattern["occurrence_frequency"] = old_freq + int(count)
+                pattern["occurrence_frequency"] = old_freq + count
                 pattern["last_occurrence"] = datetime.now().isoformat()
                 
                 self._add_changelog_entry("updated_frequency", pattern_name, {
@@ -277,7 +289,7 @@ class PatternManager:
                 "bad_example": self._extract_bad_example_from_details(details),
                 "good_example": "",
                 "test_coverage": "",
-                "occurrence_frequency": int(count),
+                "occurrence_frequency": count,
                 "last_occurrence": datetime.now().isoformat(),
                 "severity": self._infer_severity_from_details(details),
                 "effectiveness_score": 0.5

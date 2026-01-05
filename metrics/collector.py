@@ -50,7 +50,7 @@ class MetricsCollector:
             "error": error,
             "code": code,
             "file_path": file_path,
-            "line": int(line),
+            "line": line,
             "stack_trace": stack_trace,
             "timestamp": datetime.now().isoformat(),
             "count": 1
@@ -159,7 +159,7 @@ class MetricsCollector:
             "pattern": pattern,
             "severity": severity,
             "file_path": file_path,
-            "line": int(line) if line else None,
+            "line": line,
             "suggestion": suggestion,
             "timestamp": datetime.now().isoformat()
         }
@@ -209,7 +209,7 @@ class MetricsCollector:
             "pattern": pattern,
             "environment": environment,
             "root_cause": root_cause,
-            "resolution_time_minutes": int(resolution_time_minutes) if resolution_time_minutes else None,
+            "resolution_time_minutes": resolution_time_minutes,
             "timestamp": datetime.now().isoformat()
         }
         

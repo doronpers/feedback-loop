@@ -53,6 +53,19 @@ class MetricsIntegration:
             try:
                 with open(self.metrics_file, 'r') as f:
                     existing_data = json.load(f)
+                    # Validate loaded data structure
+                    if not isinstance(existing_data, dict):
+                        logger.debug("Invalid metrics data format, starting fresh")
+                        existing_data = {}
+                    # Validate expected keys
+                    expected_keys = ["bugs", "test_failures", "code_reviews", 
+                                   "performance_metrics", "deployment_issues"]
+                    for key in expected_keys:
+                        if key not in existing_data:
+                            existing_data[key] = []
+                        elif not isinstance(existing_data[key], list):
+                            logger.debug(f"Invalid data type for {key}, resetting to empty list")
+                            existing_data[key] = []
                     self.collector.data = existing_data
                 logger.debug(f"Loaded existing metrics from {self.metrics_file}")
             except (json.JSONDecodeError, IOError) as e:
@@ -85,8 +98,17 @@ class MetricsIntegration:
             print("  Run 'collect' command first")
             return
         
-        with open(self.metrics_file, 'r') as f:
-            metrics_data = json.load(f)
+        try:
+            with open(self.metrics_file, 'r') as f:
+                metrics_data = json.load(f)
+            
+            # Validate metrics data structure
+            if not isinstance(metrics_data, dict):
+                print(f"✗ Invalid metrics data format in {self.metrics_file}")
+                return
+        except json.JSONDecodeError as e:
+            print(f"✗ Failed to parse metrics file: {e}")
+            return
         
         # Analyze
         analyzer = MetricsAnalyzer(metrics_data)
