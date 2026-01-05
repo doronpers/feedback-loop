@@ -1807,7 +1807,8 @@ class JurisdictionCompliance:
         Some jurisdictions require data to stay within borders.
         """
         # EU GDPR: Data must stay in EU unless adequacy decision
-        eu_countries = {"DE", "FR", "IT", "ES", "NL", "BE", "AT", "IE", "etc"}
+        # Note: Abbreviated list for documentation - full list would include all EU member states
+        eu_countries = {"DE", "FR", "IT", "ES", "NL", "BE", "AT", "IE", "PT", "GR", "PL"}
         
         if customer_location in eu_countries:
             if data_location not in eu_countries and data_location not in {"US"}:
