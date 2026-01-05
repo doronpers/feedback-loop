@@ -125,7 +125,7 @@ jobs:
 
       - name: Upload metrics artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: metrics-data
           path: |
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload patterns to artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pattern-library
           path: patterns.json
