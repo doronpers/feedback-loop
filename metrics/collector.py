@@ -17,8 +17,8 @@ class MetricsCollector:
     """Collects and stores various types of usage metrics."""
     
     # Expected metric categories
-    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews", 
-                        "performance_metrics", "deployment_issues"]
+    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
+                        "performance_metrics", "deployment_issues", "code_generation"]
     
     def __init__(self):
         """Initialize the metrics collector."""
@@ -224,7 +224,42 @@ class MetricsCollector:
         
         self.data["deployment_issues"].append(deployment_entry)
         logger.debug(f"Logged deployment issue: {issue_type}")
-    
+
+    def log_code_generation(
+        self,
+        prompt: str,
+        patterns_applied: List[str],
+        confidence: float,
+        success: bool,
+        code_length: Optional[int] = None,
+        compilation_error: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """Log a code generation event.
+
+        Args:
+            prompt: The prompt used for generation
+            patterns_applied: List of pattern names that were applied
+            confidence: Confidence score of the generation
+            success: Whether the generated code was successful
+            code_length: Optional length of generated code
+            compilation_error: Optional compilation error if code failed
+            metadata: Optional additional metadata
+        """
+        generation_entry = {
+            "prompt": prompt[:200],  # Limit prompt length
+            "patterns_applied": patterns_applied,
+            "confidence": confidence,
+            "success": success,
+            "code_length": code_length,
+            "compilation_error": compilation_error,
+            "metadata": metadata or {},
+            "timestamp": datetime.now().isoformat()
+        }
+
+        self.data["code_generation"].append(generation_entry)
+        logger.debug(f"Logged code generation: {len(patterns_applied)} patterns applied")
+
     def export_json(self) -> str:
         """Export all collected metrics as JSON.
         
@@ -243,7 +278,7 @@ class MetricsCollector:
     
     def get_summary(self) -> Dict[str, int]:
         """Get a summary count of all metrics.
-        
+
         Returns:
             Dictionary with counts of each metric type
         """
@@ -253,6 +288,7 @@ class MetricsCollector:
             "code_reviews": len(self.data["code_reviews"]),
             "performance_metrics": len(self.data["performance_metrics"]),
             "deployment_issues": len(self.data["deployment_issues"]),
+            "code_generation": len(self.data["code_generation"]),
             "total": sum(len(v) for v in self.data.values())
         }
     

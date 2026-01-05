@@ -1,0 +1,253 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Dashboard - Interactive metrics viewer
+
+Displays metrics, patterns, and recommendations in a beautiful terminal UI.
+"""
+
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Any
+
+
+def load_metrics(metrics_file: str = "metrics_data.json") -> Dict[str, List[Any]]:
+    """Load metrics from JSON file."""
+    if not Path(metrics_file).exists():
+        return {}
+
+    with open(metrics_file, 'r') as f:
+        return json.load(f)
+
+
+def load_patterns(patterns_file: str = "patterns.json") -> List[Dict[str, Any]]:
+    """Load patterns from JSON file."""
+    if not Path(patterns_file).exists():
+        return []
+
+    with open(patterns_file, 'r') as f:
+        data = json.load(f)
+        return data.get("patterns", [])
+
+
+def print_header():
+    """Print dashboard header."""
+    print("\n" + "="*70)
+    print("🔄 FEEDBACK LOOP DASHBOARD")
+    print("="*70)
+    print(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("="*70 + "\n")
+
+
+def print_metrics_summary(metrics: Dict[str, List[Any]]):
+    """Print metrics summary."""
+    print("📊 METRICS SUMMARY")
+    print("-" * 70)
+
+    total = sum(len(v) for v in metrics.values())
+
+    if total == 0:
+        print("  No metrics collected yet. Run tests with --enable-metrics")
+        print()
+        return
+
+    categories = {
+        "bugs": "🐛 Bugs",
+        "test_failures": "❌ Test Failures",
+        "code_reviews": "👀 Code Reviews",
+        "performance_metrics": "⚡ Performance",
+        "deployment_issues": "🚀 Deployments",
+        "code_generation": "🤖 Code Generation",
+    }
+
+    print(f"  Total Events: {total}")
+    print()
+
+    for key, label in categories.items():
+        count = len(metrics.get(key, []))
+        if count > 0:
+            bar_length = int((count / total) * 30)
+            bar = "█" * bar_length + "░" * (30 - bar_length)
+            print(f"  {label:<20} {bar} {count:>4}")
+
+    print()
+
+
+def print_patterns_overview(patterns: List[Dict[str, Any]]):
+    """Print patterns overview."""
+    print("🎯 PATTERNS OVERVIEW")
+    print("-" * 70)
+
+    if not patterns:
+        print("  No patterns detected yet. Run: feedback-loop analyze")
+        print()
+        return
+
+    # Sort by frequency
+    sorted_patterns = sorted(
+        patterns,
+        key=lambda p: p.get("occurrence_frequency", 0),
+        reverse=True
+    )
+
+    print(f"  Total Patterns: {len(patterns)}")
+    print()
+
+    # Top 10 patterns
+    print("  Top Patterns by Frequency:")
+    print()
+
+    for i, pattern in enumerate(sorted_patterns[:10], 1):
+        name = pattern.get("name", "unknown")
+        freq = pattern.get("occurrence_frequency", 0)
+        effectiveness = pattern.get("effectiveness_score", 0.5)
+
+        # Color code by effectiveness
+        if effectiveness >= 0.8:
+            color = "🟢"
+        elif effectiveness >= 0.6:
+            color = "🟡"
+        else:
+            color = "🔴"
+
+        print(f"  {i:2}. {color} {name:<30} Freq: {freq:>3} | Effectiveness: {effectiveness:.0%}")
+
+    print()
+
+
+def print_recommendations(metrics: Dict[str, List[Any]], patterns: List[Dict[str, Any]]):
+    """Print actionable recommendations."""
+    print("💡 RECOMMENDATIONS")
+    print("-" * 70)
+
+    recommendations = []
+
+    # Check test failures
+    test_failures = len(metrics.get("test_failures", []))
+    if test_failures > 5:
+        recommendations.append(
+            f"⚠️  High test failure rate ({test_failures} failures). "
+            "Review patterns and update tests."
+        )
+
+    # Check code generation success
+    code_gen = metrics.get("code_generation", [])
+    if code_gen:
+        failures = sum(1 for g in code_gen if not g.get("success", True))
+        if failures > len(code_gen) * 0.3:
+            recommendations.append(
+                f"⚠️  {failures}/{len(code_gen)} code generations failed. "
+                "Review pattern library and examples."
+            )
+
+    # Check pattern effectiveness
+    low_effectiveness = [
+        p for p in patterns
+        if p.get("effectiveness_score", 1.0) < 0.5
+    ]
+    if low_effectiveness:
+        recommendations.append(
+            f"⚠️  {len(low_effectiveness)} patterns have low effectiveness. "
+            "Consider refining or removing them."
+        )
+
+    # Check if patterns need sync
+    if patterns and not Path("AI_PATTERNS.md").exists():
+        recommendations.append(
+            "💡 Sync patterns to documentation: feedback-loop sync-to-markdown"
+        )
+
+    if not recommendations:
+        recommendations.append("✅ Everything looks good! Keep up the great work.")
+
+    for rec in recommendations:
+        print(f"  {rec}")
+        print()
+
+
+def print_recent_activity(metrics: Dict[str, List[Any]]):
+    """Print recent activity."""
+    print("📅 RECENT ACTIVITY")
+    print("-" * 70)
+
+    # Collect all events with timestamps
+    events = []
+
+    for category, items in metrics.items():
+        for item in items:
+            if "timestamp" in item:
+                events.append({
+                    "category": category,
+                    "timestamp": item["timestamp"],
+                    "data": item
+                })
+
+    if not events:
+        print("  No recent activity")
+        print()
+        return
+
+    # Sort by timestamp
+    events.sort(key=lambda x: x["timestamp"], reverse=True)
+
+    # Show last 10
+    for event in events[:10]:
+        ts = event["timestamp"]
+        cat = event["category"]
+
+        if cat == "test_failures":
+            test_name = event["data"].get("test_name", "unknown")
+            print(f"  {ts} | ❌ Test failed: {test_name}")
+        elif cat == "bugs":
+            pattern = event["data"].get("pattern", "unknown")
+            print(f"  {ts} | 🐛 Bug: {pattern}")
+        elif cat == "code_generation":
+            success = "✓" if event["data"].get("success") else "✗"
+            prompt = event["data"].get("prompt", "")[:40]
+            print(f"  {ts} | {success} Generated: {prompt}...")
+        else:
+            print(f"  {ts} | {cat}")
+
+    print()
+
+
+def print_quick_actions():
+    """Print quick action commands."""
+    print("⚡ QUICK ACTIONS")
+    print("-" * 70)
+    print("  feedback-loop analyze          Analyze metrics and update patterns")
+    print("  feedback-loop generate 'msg'   Generate code with AI")
+    print("  feedback-loop sync-to-markdown Sync patterns to docs")
+    print("  feedback-loop report           Generate detailed report")
+    print()
+
+
+def main():
+    """Main dashboard function."""
+    print_header()
+
+    # Load data
+    metrics = load_metrics()
+    patterns = load_patterns()
+
+    # Print sections
+    print_metrics_summary(metrics)
+    print_patterns_overview(patterns)
+    print_recommendations(metrics, patterns)
+    print_recent_activity(metrics)
+    print_quick_actions()
+
+    print("="*70)
+    print()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\nDashboard closed.")
+        sys.exit(0)
+    except Exception as e:
+        print(f"\nError: {e}", file=sys.stderr)
+        sys.exit(1)

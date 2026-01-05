@@ -8,10 +8,11 @@ Provides CLI interface for all system operations.
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 from metrics.collector import MetricsCollector
 from metrics.analyzer import MetricsAnalyzer
@@ -81,6 +82,7 @@ class MetricsIntegration:
         print(f"  - Code reviews: {summary['code_reviews']}")
         print(f"  - Performance metrics: {summary['performance_metrics']}")
         print(f"  - Deployment issues: {summary['deployment_issues']}")
+        print(f"  - Code generation: {summary['code_generation']}")
     
     def analyze_metrics(self, update_patterns: bool = True) -> None:
         """Analyze metrics and optionally update pattern library.
@@ -260,6 +262,149 @@ class MetricsIntegration:
                 f.write(report_text)
             print(f"\n✓ Report saved to {output_file}")
     
+    def analyze_commit(
+        self,
+        base_sha: str,
+        head_sha: str,
+        output_file: Optional[str] = None
+    ) -> None:
+        """Analyze commit diff for pattern violations.
+
+        Args:
+            base_sha: Base commit SHA
+            head_sha: Head commit SHA
+            output_file: Optional file to save analysis results
+        """
+        import subprocess
+        import re
+
+        logger.debug(f"Analyzing commit diff: {base_sha}..{head_sha}")
+
+        try:
+            # Get git diff
+            result = subprocess.run(
+                ["git", "diff", f"{base_sha}..{head_sha}"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            diff = result.stdout
+
+            # Get changed files
+            result = subprocess.run(
+                ["git", "diff", "--name-only", f"{base_sha}..{head_sha}"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            files = result.stdout.strip().split("\n")
+
+            # Analyze for pattern violations
+            violations = self._detect_violations(files, diff)
+
+            # Generate report
+            analysis = {
+                "base_sha": base_sha,
+                "head_sha": head_sha,
+                "files_changed": len(files),
+                "violations": violations,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # Print summary
+            print(f"\n✓ Commit Analysis: {base_sha[:8]}..{head_sha[:8]}")
+            print(f"  Files changed: {len(files)}")
+            print(f"  Pattern violations: {len(violations)}")
+
+            if violations:
+                print("\n  Top violations:")
+                for v in violations[:5]:
+                    print(f"    - {v['file']}:{v.get('line', '?')} - {v['pattern']}")
+
+            # Save to file if requested
+            if output_file:
+                with open(output_file, 'w') as f:
+                    json.dump(analysis, f, indent=2)
+                print(f"\n✓ Analysis saved to {output_file}")
+
+        except subprocess.CalledProcessError as e:
+            print(f"✗ Failed to analyze commit: {e}")
+            logger.exception("Commit analysis failed")
+
+    def _detect_violations(self, files: List[str], diff: str) -> List[Dict[str, Any]]:
+        """Detect pattern violations in code.
+
+        Args:
+            files: List of changed files
+            diff: Git diff content
+
+        Returns:
+            List of violations
+        """
+        violations = []
+
+        # Pattern detection rules
+        patterns = {
+            "numpy_json_serialization": {
+                "regex": r"json\.dumps\([^)]*np\.|json\.dumps\([^)]*numpy",
+                "description": "NumPy types may not be JSON serializable",
+                "suggestion": "Convert NumPy types: float(np_value)"
+            },
+            "bounds_checking": {
+                "regex": r"\w+\[0\](?!\s+if\s+\w+)",
+                "description": "List access without bounds checking",
+                "suggestion": "Check length: if items: first = items[0]"
+            },
+            "bare_except": {
+                "regex": r"except\s*:",
+                "description": "Bare except clause",
+                "suggestion": "Use specific exceptions"
+            },
+            "print_statement": {
+                "regex": r"\bprint\s*\(",
+                "description": "Print instead of logger",
+                "suggestion": "Use logger.debug()"
+            },
+        }
+
+        # Analyze each Python file
+        for file in files:
+            if not file.endswith(".py") or not os.path.exists(file):
+                continue
+
+            try:
+                with open(file, 'r') as f:
+                    content = f.read()
+
+                for pattern_name, pattern_info in patterns.items():
+                    matches = re.finditer(pattern_info["regex"], content)
+                    for match in matches:
+                        line_num = content[:match.start()].count("\n") + 1
+
+                        violations.append({
+                            "file": file,
+                            "line": line_num,
+                            "pattern": pattern_name,
+                            "description": pattern_info["description"],
+                            "suggestion": pattern_info["suggestion"]
+                        })
+            except Exception as e:
+                logger.debug(f"Could not analyze {file}: {e}")
+
+        return violations
+
+    def sync_patterns_to_markdown(self) -> None:
+        """Sync patterns from patterns.json to AI_PATTERNS.md."""
+        logger.debug("Syncing patterns to markdown")
+
+        try:
+            self.pattern_manager.load_patterns()
+            self.pattern_manager.sync_to_markdown(self.ai_patterns_md)
+            print(f"✓ Patterns synced to {self.ai_patterns_md}")
+        except Exception as e:
+            print(f"✗ Failed to sync patterns: {e}")
+            logger.exception("Pattern sync failed")
+
     def _format_report(self, report: dict, period: str) -> str:
         """Format report for display.
         
@@ -388,7 +533,49 @@ def main() -> int:
         default="metrics_data.json",
         help="Path to metrics file (default: metrics_data.json)"
     )
-    
+    report_parser.add_argument(
+        "--format",
+        choices=["text", "markdown"],
+        default="text",
+        help="Report format (default: text)"
+    )
+
+    # Analyze commit command
+    analyze_commit_parser = subparsers.add_parser(
+        "analyze-commit",
+        help="Analyze commit diff for pattern violations"
+    )
+    analyze_commit_parser.add_argument(
+        "--base",
+        required=True,
+        help="Base commit SHA"
+    )
+    analyze_commit_parser.add_argument(
+        "--head",
+        required=True,
+        help="Head commit SHA"
+    )
+    analyze_commit_parser.add_argument(
+        "--output",
+        help="Output file for analysis results"
+    )
+
+    # Sync patterns command
+    sync_parser = subparsers.add_parser(
+        "sync-to-markdown",
+        help="Sync patterns from patterns.json to AI_PATTERNS.md"
+    )
+    sync_parser.add_argument(
+        "--patterns-file",
+        default="patterns.json",
+        help="Path to patterns file (default: patterns.json)"
+    )
+    sync_parser.add_argument(
+        "--markdown-file",
+        default="AI_PATTERNS.md",
+        help="Path to markdown file (default: AI_PATTERNS.md)"
+    )
+
     args = parser.parse_args()
     
     # Configure logging
@@ -433,7 +620,22 @@ def main() -> int:
                 period=args.period,
                 output_file=args.output
             )
-        
+
+        elif args.command == "analyze-commit":
+            integration = MetricsIntegration()
+            integration.analyze_commit(
+                base_sha=args.base,
+                head_sha=args.head,
+                output_file=args.output
+            )
+
+        elif args.command == "sync-to-markdown":
+            integration = MetricsIntegration(
+                patterns_file=args.patterns_file,
+                ai_patterns_md=args.markdown_file
+            )
+            integration.sync_patterns_to_markdown()
+
         return 0
     
     except Exception as e:

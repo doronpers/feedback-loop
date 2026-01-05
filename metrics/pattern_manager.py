@@ -455,8 +455,148 @@ class PatternManager:
     
     def get_changelog(self) -> List[Dict[str, Any]]:
         """Get changelog entries.
-        
+
         Returns:
             List of changelog entries
         """
         return self.changelog.copy()
+
+    def sync_to_markdown(self, md_path: str = "AI_PATTERNS.md") -> None:
+        """Sync patterns back to AI_PATTERNS.md file.
+
+        This creates a bidirectional sync, updating the markdown file with
+        current pattern data from patterns.json.
+
+        Args:
+            md_path: Path to the AI_PATTERNS.md file
+
+        Raises:
+            ValueError: If path contains traversal attempts (..)
+        """
+        # Validate path to prevent path traversal
+        if ".." in Path(md_path).parts:
+            raise ValueError(f"Path traversal detected in: {md_path}")
+
+        # Resolve to absolute path
+        resolved_path = Path(md_path).resolve()
+        md_path = str(resolved_path)
+
+        try:
+            # Read existing content
+            existing_content = ""
+            if os.path.exists(md_path):
+                with open(md_path, 'r') as f:
+                    existing_content = f.read()
+
+            # Generate pattern sections
+            pattern_sections = self._generate_pattern_sections()
+
+            # If file exists, try to preserve non-pattern content
+            if existing_content:
+                # Find the patterns section
+                patterns_start = existing_content.find("## Core Patterns")
+                if patterns_start != -1:
+                    # Find the next major section (## heading)
+                    patterns_end = existing_content.find("\n## ", patterns_start + 20)
+                    if patterns_end == -1:
+                        patterns_end = len(existing_content)
+
+                    # Replace patterns section
+                    new_content = (
+                        existing_content[:patterns_start] +
+                        "## Core Patterns\n\n" +
+                        pattern_sections +
+                        "\n" +
+                        existing_content[patterns_end:]
+                    )
+                else:
+                    # No patterns section found, append
+                    new_content = existing_content + "\n\n## Core Patterns\n\n" + pattern_sections
+            else:
+                # Create new file
+                new_content = self._generate_full_markdown(pattern_sections)
+
+            # Write back to file
+            with open(md_path, 'w') as f:
+                f.write(new_content)
+
+            logger.debug(f"Synced {len(self.patterns)} patterns to {md_path}")
+
+            # Add changelog entry
+            self._add_changelog_entry("synced_to_markdown", "all_patterns", {
+                "file": md_path,
+                "pattern_count": len(self.patterns)
+            })
+
+        except IOError as e:
+            logger.debug(f"Failed to sync patterns to markdown: {e}")
+            raise
+
+    def _generate_pattern_sections(self) -> str:
+        """Generate markdown sections for all patterns.
+
+        Returns:
+            Markdown string with all pattern sections
+        """
+        sections = []
+
+        # Sort patterns by occurrence frequency (descending)
+        sorted_patterns = sorted(
+            self.patterns,
+            key=lambda p: p.get("occurrence_frequency", 0),
+            reverse=True
+        )
+
+        for idx, pattern in enumerate(sorted_patterns, 1):
+            name = pattern.get("name", "unknown")
+            description = pattern.get("description", "No description available")
+            bad_example = pattern.get("bad_example", "")
+            good_example = pattern.get("good_example", "")
+            frequency = pattern.get("occurrence_frequency", 0)
+            effectiveness = pattern.get("effectiveness_score", 0.5)
+
+            # Format pattern name for display
+            display_name = name.replace("_", " ").title()
+
+            section = f"### {idx}. {display_name}\n\n"
+            section += f"**Pattern:** `{name}`\n\n"
+            section += f"**Metrics:** Frequency: {frequency} | Effectiveness: {effectiveness:.1%}\n\n"
+            section += f"**Problems:**\n{description}\n\n"
+
+            if bad_example:
+                section += f"❌ Bad Pattern:\n```python\n{bad_example}\n```\n\n"
+
+            if good_example:
+                section += f"✅ Good Pattern:\n```python\n{good_example}\n```\n\n"
+
+            sections.append(section)
+
+        return "\n".join(sections)
+
+    def _generate_full_markdown(self, pattern_sections: str) -> str:
+        """Generate a complete markdown file.
+
+        Args:
+            pattern_sections: Generated pattern sections
+
+        Returns:
+            Complete markdown content
+        """
+        return f"""# AI Patterns
+
+Auto-generated pattern library.
+Last updated: {datetime.now().isoformat()}
+
+## Core Patterns
+
+{pattern_sections}
+
+## Usage
+
+This file is automatically synced from patterns.json.
+To update patterns, use the metrics system:
+
+```bash
+python -m metrics.integrate analyze
+```
+"""
