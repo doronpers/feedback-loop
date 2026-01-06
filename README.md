@@ -42,6 +42,8 @@ feedback-loop is a **living pattern library** that learns from your development 
 
 ## Quick Start
 
+> 💡 **Learn differently?** Skip the traditional path. Try the **[Dark Horse Quick Start](DARK_HORSE_QUICK_START.md)** for multiple entry points based on YOUR learning style.
+
 ### Installation (2 minutes)
 
 ```bash
