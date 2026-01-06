@@ -92,7 +92,7 @@ collector = MetricsCollector()
 ```bash
 python -m metrics.integrate collect
 python -m metrics.integrate analyze
-python -m metrics.integrate report
+python -m metrics.integrate report --format text  # or --format markdown
 ```
 
 ## 4. Collecting Metrics

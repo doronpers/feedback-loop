@@ -14,6 +14,7 @@ from metrics.collector import MetricsCollector
 from metrics.analyzer import MetricsAnalyzer
 from metrics.pattern_manager import PatternManager
 from metrics.code_generator import PatternAwareGenerator
+from metrics.integrate import MetricsIntegration
 
 
 class TestMetricsCollector:
@@ -340,6 +341,47 @@ class TestMetricsAnalyzer:
         assert "high_frequency_patterns" in report
         assert "ranked_patterns" in report
         assert report["summary"]["total_bugs"] == 1
+
+    def test_generate_report_text_format(self, tmp_path, capsys):
+        """Ensure report command outputs text format by default."""
+        metrics_path = tmp_path / "metrics.json"
+        data = {
+            "bugs": [{"pattern": "pattern1", "count": 2}],
+            "test_failures": [{"pattern_violated": "pattern2", "count": 1}],
+            "code_reviews": [],
+            "performance_metrics": [],
+            "deployment_issues": []
+        }
+        metrics_path.write_text(json.dumps(data))
+
+        integration = MetricsIntegration(metrics_file=str(metrics_path))
+        integration.generate_report(period="week", format="text")
+
+        output = capsys.readouterr().out
+        assert "METRICS ANALYSIS REPORT - WEEK" in output
+        assert "Total Bugs: 1" in output
+        assert "HIGH FREQUENCY PATTERNS" in output
+
+    def test_generate_report_markdown_format(self, tmp_path, capsys):
+        """Ensure report command can output markdown format."""
+        metrics_path = tmp_path / "metrics.json"
+        data = {
+            "bugs": [{"pattern": "pattern1", "count": 3}],
+            "test_failures": [{"pattern_violated": "pattern2", "count": 2}],
+            "code_reviews": [{"pattern": "pattern3", "severity": "high"}],
+            "performance_metrics": [],
+            "deployment_issues": []
+        }
+        metrics_path.write_text(json.dumps(data))
+
+        integration = MetricsIntegration(metrics_file=str(metrics_path))
+        integration.generate_report(period="month", format="markdown")
+
+        output = capsys.readouterr().out
+        assert "# Metrics Analysis Report — Month" in output
+        assert "## Summary" in output
+        assert "- `pattern1`" in output
+        assert "## Patterns Ranked by Severity" in output
     
     def test_get_context(self):
         """Test getting context for code generation."""

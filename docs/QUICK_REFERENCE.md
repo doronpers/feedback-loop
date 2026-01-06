@@ -132,8 +132,9 @@ python -m metrics.integrate analyze
 # Generate code
 python -m metrics.integrate generate "your prompt here"
 
-# View report
-python -m metrics.integrate report
+# View report (text or markdown)
+python -m metrics.integrate report --format text
+python -m metrics.integrate report --format markdown > report.md
 ```
 
 ### FastAPI Server

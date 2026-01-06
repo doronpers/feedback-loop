@@ -401,6 +401,8 @@ pytest --enable-metrics  # Automatic metrics collection
 # GitHub Actions, GitLab CI, etc.
 - run: pytest --enable-metrics
 - run: feedback-loop analyze  # Generate pattern report
+# - Generate human-readable report (text or markdown)
+- run: python -m metrics.integrate report --format markdown > metrics_report.md
 ```
 
 **Programmatic usage**:
