@@ -229,12 +229,18 @@ class MetricsIntegration:
             }, f, indent=2)
         print(f"✓ Metadata saved to {metadata_file}")
     
-    def generate_report(self, period: str = "all", output_file: Optional[str] = None) -> None:
+    def generate_report(
+        self,
+        period: str = "all",
+        output_file: Optional[str] = None,
+        format: str = "text"
+    ) -> None:
         """Generate analysis report.
         
         Args:
             period: Time period for report (all/month/week)
             output_file: Optional file to save report
+            format: Output format (text or markdown)
         """
         logger.debug(f"Generating {period} report")
         
@@ -251,7 +257,7 @@ class MetricsIntegration:
         report = analyzer.generate_report()
         
         # Format report
-        report_text = self._format_report(report, period)
+        report_text = self._format_report(report, period, format)
         
         # Print report
         print("\n" + report_text)
@@ -405,16 +411,49 @@ class MetricsIntegration:
             print(f"✗ Failed to sync patterns: {e}")
             logger.exception("Pattern sync failed")
 
-    def _format_report(self, report: dict, period: str) -> str:
+    def _format_report(self, report: dict, period: str, format: str = "text") -> str:
         """Format report for display.
         
         Args:
             report: Report dictionary
             period: Time period
+            format: Output format
             
         Returns:
             Formatted report string
         """
+        if format not in {"text", "markdown"}:
+            logger.debug(f"Unknown report format '{format}', defaulting to text")
+            format = "text"
+
+        if format == "markdown":
+            lines = [
+                f"# Metrics Analysis Report — {period.title()}",
+                f"_Generated: {report['generated_at']}_",
+                "",
+                "## Summary",
+                f"- **Total Bugs:** {report['summary']['total_bugs']}",
+                f"- **Total Test Failures:** {report['summary']['total_test_failures']}",
+                f"- **Total Code Reviews:** {report['summary']['total_code_reviews']}",
+                f"- **Total Performance Metrics:** {report['summary']['total_performance_metrics']}",
+                f"- **Total Deployment Issues:** {report['summary']['total_deployment_issues']}",
+                "",
+                f"## High Frequency Patterns ({len(report['high_frequency_patterns'])})",
+            ]
+
+            for pattern in report['high_frequency_patterns'][:10]:
+                lines.append(f"- `{pattern['pattern']}` ({pattern['count']} occurrences)")
+
+            lines.append("")
+            lines.append(f"## Patterns Ranked by Severity ({len(report['ranked_patterns'])})")
+
+            for pattern in report['ranked_patterns'][:10]:
+                lines.append(
+                    f"- `{pattern['pattern']}` — {pattern['severity']} (count: {pattern['count']})"
+                )
+
+            return "\n".join(lines)
+
         lines = [
             "="*60,
             f"METRICS ANALYSIS REPORT - {period.upper()}",
@@ -618,7 +657,8 @@ def main() -> int:
             integration = MetricsIntegration(metrics_file=args.metrics_file)
             integration.generate_report(
                 period=args.period,
-                output_file=args.output
+                output_file=args.output,
+                format=args.format
             )
 
         elif args.command == "analyze-commit":
