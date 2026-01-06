@@ -254,7 +254,7 @@ class TestMetricsCollector:
         with pytest.raises(ValueError):
             collector.load_from_json(invalid_json)
 
-        assert collector.data == previous_data
+        assert collector.data == previous_data, "Data should be restored after load failure"
 
 
 class TestMetricsAnalyzer:
