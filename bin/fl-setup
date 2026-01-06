@@ -161,6 +161,12 @@ class SetupWizard:
         if not Path("pytest.ini").exists() and not Path("pyproject.toml").exists():
             response = input("Create pytest.ini with metrics enabled? (y/n): ").strip().lower()
             if response == 'y':
+                # Create tests directory if it doesn't exist
+                tests_dir = Path("tests")
+                if not tests_dir.exists():
+                    tests_dir.mkdir()
+                    print("  ✓ Created tests/ directory")
+                
                 with open("pytest.ini", "w") as f:
                     f.write("[pytest]\n")
                     f.write("addopts = --enable-metrics -v\n")

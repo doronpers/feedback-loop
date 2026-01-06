@@ -96,8 +96,8 @@
     "keybindings": [
       {
         "command": "feedback-loop.openChat",
-        "key": "ctrl+shift+f l",
-        "mac": "cmd+shift+f l",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
         "when": "editorTextFocus"
       }
     ]

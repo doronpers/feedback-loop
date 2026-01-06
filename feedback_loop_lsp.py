@@ -134,7 +134,8 @@ class PatternChecker:
         for node in ast.walk(tree):
             if isinstance(node, ast.Subscript):
                 # Check if accessing a list/array without bounds check
-                if isinstance(node.slice, ast.Index) or isinstance(node.slice, ast.Constant):
+                # Compatible with Python 3.9+ (ast.Index deprecated)
+                if isinstance(node.slice, (ast.Constant, ast.Name, ast.Attribute)):
                     # Look for patterns like items[0] without if items check
                     diagnostics.append(Diagnostic(
                         range=Range(
