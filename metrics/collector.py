@@ -344,15 +344,20 @@ class MetricsCollector:
                 continue
 
             value = loaded_data[category]
-            if isinstance(value, list):
-                normalized[category] = value
-            elif isinstance(value, dict):
-                normalized[category] = [value]
+
+            if isinstance(value, dict):
+                value = [value]
             elif isinstance(value, tuple):
-                normalized[category] = list(value)
-            else:
+                value = list(value)
+
+            if not isinstance(value, list):
                 raise ValueError(
                     f"Category '{category}' must be a list of entries (got {type(value).__name__})."
                 )
+
+            if not all(isinstance(item, dict) for item in value):
+                raise ValueError(f"All items in category '{category}' must be dictionaries.")
+
+            normalized[category] = value
 
         return normalized
