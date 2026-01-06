@@ -48,7 +48,15 @@ feedback-loop is a **living pattern library** that learns from your development 
 # Clone and install
 git clone https://github.com/doronpers/feedback-loop.git
 cd feedback-loop
-pip install -r requirements.txt
+
+# Core runtime (LLM providers + FastAPI + NumPy utilities)
+pip install -e .
+
+# Or install with testing extras
+pip install -e .[test]
+
+# Requirements file stays synced with setup.py for pinning
+pip install -r requirements.txt  # Equivalent to core + dev/test extras
 ```
 
 ### 🚀 Interactive Setup (Recommended)

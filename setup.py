@@ -8,6 +8,12 @@ using real LLM integration and automated feedback loops.
 from setuptools import setup, find_packages
 from pathlib import Path
 
+test_requires = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
 # Read README for long description
 readme_file = Path(__file__).parent / "README.md"
 long_description = readme_file.read_text() if readme_file.exists() else __doc__
@@ -24,20 +30,19 @@ setup(
     include_package_data=True,
     install_requires=[
         "anthropic>=0.7.0",
-        "pytest>=7.0.0",
-        "pytest-cov>=4.0.0",
+        "openai>=1.0.0",
+        "google-genai>=0.1.0",
+        "google-generativeai>=0.3.0",  # Deprecated, kept for compatibility
+        "numpy>=1.20.0",
+        "fastapi>=0.100.0",
+        "python-multipart>=0.0.6",
+        "httpx>=0.24.0",
+        "uvicorn>=0.23.0",
+        "pygls>=1.0.0",
     ],
     extras_require={
-        "dev": [
-            "pytest-asyncio>=0.21.0",
-            "httpx>=0.24.0",
-        ],
-        "full": [
-            "numpy>=1.20.0",
-            "fastapi>=0.100.0",
-            "python-multipart>=0.0.6",
-            "uvicorn>=0.23.0",
-        ],
+        "test": test_requires,
+        "dev": test_requires,
     },
     entry_points={
         "console_scripts": [
