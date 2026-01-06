@@ -338,7 +338,7 @@ class MetricsCollector:
             raise
 
         self.data = normalized_data
-        logger.debug("Loaded metrics from JSON")
+        logger.info("Loaded metrics from JSON")
 
     def _normalize_loaded_data(self, loaded_data: Any) -> Dict[str, List[Dict[str, Any]]]:
         """Normalize loaded JSON data to ensure expected structure.
