@@ -579,6 +579,12 @@ A: Fork the repo and add private patterns. The framework supports custom pattern
 
 ### Integration
 
+**Q: Can this work as an IDE companion app?**
+A: **Yes!** We've assessed the viability and it's highly feasible. See:
+- **[IDE Companion Summary](docs/IDE_COMPANION_SUMMARY.md)** - Quick overview
+- **[Full Feasibility Assessment](docs/IDE_COMPANION_FEASIBILITY.md)** - Detailed analysis
+- **[POC Language Server](feedback_loop_lsp.py)** - Working prototype
+
 **Q: Can I integrate with Copilot/Cursor/other AI tools?**
 A: Yes! Export patterns as context files for your AI tool. See [docs/METRICS_GUIDE.md](docs/METRICS_GUIDE.md) for examples.
 
