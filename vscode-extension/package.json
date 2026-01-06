@@ -1,0 +1,125 @@
+{
+  "name": "feedback-loop",
+  "displayName": "Feedback Loop",
+  "description": "AI-assisted development with pattern learning and continuous improvement",
+  "version": "0.1.0",
+  "publisher": "feedback-loop",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doronpers/feedback-loop"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "python",
+    "ai",
+    "code-quality",
+    "patterns",
+    "llm"
+  ],
+  "activationEvents": [
+    "onLanguage:python"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Feedback Loop",
+      "properties": {
+        "feedback-loop.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable Feedback Loop extension"
+        },
+        "feedback-loop.serverPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Path to Python interpreter"
+        },
+        "feedback-loop.serverArgs": {
+          "type": "array",
+          "default": ["-m", "feedback_loop_lsp"],
+          "description": "Arguments to pass to the language server"
+        },
+        "feedback-loop.llmProvider": {
+          "type": "string",
+          "enum": ["claude", "openai", "gemini"],
+          "default": "claude",
+          "description": "Preferred LLM provider"
+        },
+        "feedback-loop.enableLLM": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable LLM-powered features"
+        },
+        "feedback-loop.analysisDelay": {
+          "type": "number",
+          "default": 500,
+          "description": "Delay before analyzing (milliseconds)"
+        },
+        "feedback-loop.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "feedback-loop.restartServer",
+        "title": "Restart Language Server",
+        "category": "Feedback Loop"
+      },
+      {
+        "command": "feedback-loop.showPatterns",
+        "title": "Show Pattern Library",
+        "category": "Feedback Loop"
+      },
+      {
+        "command": "feedback-loop.openChat",
+        "title": "Open Chat Assistant",
+        "category": "Feedback Loop"
+      },
+      {
+        "command": "feedback-loop.reviewCode",
+        "title": "Review Current File",
+        "category": "Feedback Loop"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "feedback-loop.openChat",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^4.9.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  }
+}

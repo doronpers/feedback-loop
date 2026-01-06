@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from metrics.llm_providers import get_llm_manager, LLMManager
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +48,8 @@ class PatternAwareGenerator:
         pattern_library: List[Dict[str, Any]],
         pattern_library_version: str = "1.0.0",
         use_llm: bool = True,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        llm_provider: Optional[str] = None
     ):
         """Initialize the pattern-aware code generator.
 
@@ -54,26 +57,29 @@ class PatternAwareGenerator:
             pattern_library: List of patterns from PatternManager
             pattern_library_version: Version of the pattern library
             use_llm: Whether to use LLM for generation (default: True)
-            api_key: Anthropic API key (if not provided, uses ANTHROPIC_API_KEY env var)
+            api_key: API key (deprecated - use environment variables)
+            llm_provider: Preferred LLM provider ("claude", "openai", "gemini")
         """
         self.pattern_library = pattern_library
         self.pattern_library_version = pattern_library_version
         self.use_llm = use_llm
-        self.client = None
+        self.llm_manager = None
 
-        # Initialize Anthropic client if using LLM
+        # Initialize LLM manager if using LLM
         if self.use_llm:
             try:
-                import anthropic
-                api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
-                if api_key:
-                    self.client = anthropic.Anthropic(api_key=api_key)
-                    logger.info("Anthropic client initialized")
+                self.llm_manager = get_llm_manager()
+                if llm_provider:
+                    self.llm_manager.preferred_provider = llm_provider
+                
+                if self.llm_manager.is_any_available():
+                    providers = self.llm_manager.list_available_providers()
+                    logger.info(f"LLM manager initialized with providers: {providers}")
                 else:
-                    logger.warning("ANTHROPIC_API_KEY not found, falling back to template mode")
+                    logger.warning("No LLM providers available, falling back to template mode")
                     self.use_llm = False
-            except ImportError:
-                logger.warning("anthropic package not installed, falling back to template mode")
+            except Exception as e:
+                logger.warning(f"Could not initialize LLM manager: {e}, falling back to template mode")
                 self.use_llm = False
     
     def generate(
@@ -110,7 +116,7 @@ class PatternAwareGenerator:
         )
 
         # Generate code with pattern annotations
-        if self.use_llm and self.client:
+        if self.use_llm and self.llm_manager:
             code = self._generate_code_with_llm(
                 prompt,
                 patterns_to_apply,
@@ -323,20 +329,15 @@ class PatternAwareGenerator:
         )
 
         try:
-            # Call Anthropic API
-            response = self.client.messages.create(
-                model="claude-sonnet-4-5-20250929",
+            # Use LLM manager for generation
+            response = self.llm_manager.generate(
+                enriched_prompt,
                 max_tokens=4096,
-                messages=[
-                    {"role": "user", "content": enriched_prompt}
-                ]
+                fallback=True
             )
 
             # Extract code from response
-            code = response.content[0].text
-
-            # Clean up code (remove markdown code blocks if present)
-            code = self._extract_code_from_response(code)
+            code = self._extract_code_from_response(response.text)
 
             return code
 
@@ -704,7 +705,7 @@ class PatternAwareGenerator:
             "=== Pattern-Aware Code Generation Report ===",
             "",
             f"Confidence Score: {confidence:.2%}",
-            f"Generation Mode: {'LLM' if self.use_llm and self.client else 'Template'}",
+            f"Generation Mode: {'LLM' if self.use_llm and self.llm_manager else 'Template'}",
             "",
             "Context Detected:",
         ]

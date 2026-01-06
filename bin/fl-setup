@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+"""
+Interactive Setup Wizard
+
+Guides users through setting up feedback-loop with LLM assistance
+and personalized recommendations.
+"""
+
+import os
+import sys
+from pathlib import Path
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+import subprocess
+from typing import Optional
+
+
+class SetupWizard:
+    """Interactive setup wizard for feedback-loop."""
+
+    def __init__(self):
+        """Initialize setup wizard."""
+        self.config = {}
+
+    def print_banner(self):
+        """Print welcome banner."""
+        print("\n" + "="*70)
+        print("🚀 Welcome to Feedback Loop!")
+        print("="*70)
+        print()
+        print("This wizard will help you set up feedback-loop for smarter,")
+        print("AI-assisted development with continuous learning.")
+        print()
+        print("="*70 + "\n")
+
+    def check_environment(self):
+        """Check current environment setup."""
+        print("📋 Checking your environment...\n")
+        
+        checks = {
+            "Python version": self._check_python(),
+            "Git repository": self._check_git(),
+            "pytest": self._check_pytest(),
+            "Claude API key": os.environ.get("ANTHROPIC_API_KEY") is not None,
+            "OpenAI API key": os.environ.get("OPENAI_API_KEY") is not None,
+            "Gemini API key": os.environ.get("GOOGLE_API_KEY") is not None,
+        }
+        
+        for name, status in checks.items():
+            icon = "✓" if status else "✗"
+            print(f"  {icon} {name}")
+        
+        print()
+        
+        # Check if at least one API key is set
+        has_api_key = checks["Claude API key"] or checks["OpenAI API key"] or checks["Gemini API key"]
+        
+        return checks, has_api_key
+
+    def _check_python(self) -> bool:
+        """Check Python version."""
+        return sys.version_info >= (3, 8)
+
+    def _check_git(self) -> bool:
+        """Check if in a git repository."""
+        return Path(".git").is_dir()
+
+    def _check_pytest(self) -> bool:
+        """Check if pytest is installed."""
+        try:
+            import pytest
+            return True
+        except ImportError:
+            return False
+
+    def setup_llm(self, has_api_key: bool):
+        """Guide user through LLM setup."""
+        if has_api_key:
+            print("✓ At least one LLM provider is configured!\n")
+            return True
+        
+        print("⚠️  No LLM API keys detected")
+        print()
+        print("To get the most out of feedback-loop, set up an LLM provider:")
+        print()
+        print("Option 1: Anthropic Claude (Recommended)")
+        print("  1. Get API key: https://console.anthropic.com/")
+        print("  2. Set environment variable:")
+        print("     export ANTHROPIC_API_KEY='your-key-here'")
+        print()
+        print("Option 2: OpenAI GPT-4")
+        print("  1. Get API key: https://platform.openai.com/api-keys")
+        print("  2. Set environment variable:")
+        print("     export OPENAI_API_KEY='your-key-here'")
+        print()
+        print("Option 3: Google Gemini")
+        print("  1. Get API key: https://makersuite.google.com/app/apikey")
+        print("  2. Set environment variable:")
+        print("     export GOOGLE_API_KEY='your-key-here'")
+        print()
+        
+        response = input("Have you set up an API key? (y/n): ").strip().lower()
+        if response == 'y':
+            print("\n✓ Great! Continuing with setup...\n")
+            return True
+        else:
+            print("\n⚠️  You can still use feedback-loop without an API key,")
+            print("   but AI features will be limited.\n")
+            response = input("Continue anyway? (y/n): ").strip().lower()
+            return response == 'y'
+
+    def install_dependencies(self):
+        """Guide through dependency installation."""
+        print("📦 Installing dependencies...\n")
+        
+        response = input("Install feedback-loop package? (y/n): ").strip().lower()
+        if response == 'y':
+            try:
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "-e", "."],
+                    check=True
+                )
+                print("\n✓ Package installed successfully!\n")
+            except subprocess.CalledProcessError as e:
+                print(f"\n✗ Installation failed: {e}\n")
+                return False
+        
+        return True
+
+    def setup_project(self):
+        """Setup feedback-loop in the project."""
+        print("⚙️  Setting up feedback-loop in your project...\n")
+        
+        if not self._check_git():
+            print("⚠️  Not in a git repository")
+            response = input("Continue anyway? (y/n): ").strip().lower()
+            if response != 'y':
+                return False
+        
+        # Copy conftest.py if needed
+        if not Path("conftest.py").exists():
+            response = input("Install pytest plugin (conftest.py)? (y/n): ").strip().lower()
+            if response == 'y':
+                try:
+                    # Copy from feedback-loop
+                    import shutil
+                    src = Path(__file__).parent.parent / "conftest.py"
+                    if src.exists():
+                        shutil.copy(src, "conftest.py")
+                        print("  ✓ pytest plugin installed\n")
+                    else:
+                        print("  ✗ Source file not found\n")
+                except Exception as e:
+                    print(f"  ✗ Failed: {e}\n")
+        else:
+            print("  • conftest.py already exists\n")
+        
+        # Setup pytest.ini
+        if not Path("pytest.ini").exists() and not Path("pyproject.toml").exists():
+            response = input("Create pytest.ini with metrics enabled? (y/n): ").strip().lower()
+            if response == 'y':
+                # Create tests directory if it doesn't exist
+                tests_dir = Path("tests")
+                if not tests_dir.exists():
+                    tests_dir.mkdir()
+                    print("  ✓ Created tests/ directory")
+                
+                with open("pytest.ini", "w") as f:
+                    f.write("[pytest]\n")
+                    f.write("addopts = --enable-metrics -v\n")
+                    f.write("testpaths = tests\n")
+                print("  ✓ pytest.ini created\n")
+        
+        return True
+
+    def show_next_steps(self):
+        """Show next steps to the user."""
+        print("\n" + "="*70)
+        print("🎉 Setup Complete!")
+        print("="*70)
+        print()
+        print("Next steps:")
+        print()
+        print("1. 📚 Learn the patterns:")
+        print("   python demo.py")
+        print()
+        print("2. 🧪 Run your tests with metrics:")
+        print("   pytest --enable-metrics")
+        print()
+        print("3. 💬 Try the interactive chat assistant:")
+        print("   ./bin/fl-chat")
+        print("   or: python -m metrics.chat")
+        print()
+        print("4. 🤖 Generate pattern-aware code:")
+        print("   feedback-loop generate 'create a function to process JSON with NumPy'")
+        print()
+        print("5. 📊 View your dashboard:")
+        print("   ./bin/fl-dashboard")
+        print()
+        print("For more help, visit: https://github.com/doronpers/feedback-loop")
+        print()
+        print("="*70 + "\n")
+
+    def run(self):
+        """Run the setup wizard."""
+        self.print_banner()
+        
+        # Check environment
+        checks, has_api_key = self.check_environment()
+        
+        # Setup LLM
+        if not self.setup_llm(has_api_key):
+            print("\n❌ Setup cancelled.\n")
+            return
+        
+        # Install dependencies
+        if not self.install_dependencies():
+            print("\n❌ Setup failed.\n")
+            return
+        
+        # Setup project
+        if not self.setup_project():
+            print("\n❌ Setup cancelled.\n")
+            return
+        
+        # Show next steps
+        self.show_next_steps()
+
+
+def main():
+    """Main entry point."""
+    wizard = SetupWizard()
+    
+    try:
+        wizard.run()
+    except KeyboardInterrupt:
+        print("\n\n❌ Setup cancelled.\n")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n\n❌ Error: {e}\n")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
