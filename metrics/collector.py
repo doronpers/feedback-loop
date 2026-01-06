@@ -309,6 +309,7 @@ class MetricsCollector:
             loaded_data = json.loads(json_str)
         except json.JSONDecodeError as e:
             logger.error(f"Failed to decode metrics JSON: {e}")
+            self.data = previous_data
             raise
 
         try:
