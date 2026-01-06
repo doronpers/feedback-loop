@@ -299,10 +299,28 @@ class MetricsCollector:
         logger.debug("Cleared all metrics")
 
     def load_from_json(self, json_str: str) -> None:
-        """Load metrics from JSON string.
+        """Load metrics from a JSON string and normalize their structure.
         
+        This method parses the given JSON, normalizes the payload to ensure
+        that all expected metric categories are present, and updates the
+        internal metrics state.
+
+        Normalization behavior:
+        - Any missing or ``null`` categories are defaulted to empty lists.
+        - Category values that are dictionaries are coerced to single-element
+          lists containing that dictionary.
+        - Category values that are tuples are coerced to lists.
+
+        On failure during normalization, the collector's previous ``data``
+        state is restored.
+
         Args:
-            json_str: JSON string containing metrics data
+            json_str: JSON string containing metrics data.
+
+        Raises:
+            json.JSONDecodeError: If ``json_str`` is not valid JSON.
+            ValueError: If the parsed payload cannot be normalized into the
+                expected structure.
         """
         previous_data = copy.deepcopy(self.data)
         try:
