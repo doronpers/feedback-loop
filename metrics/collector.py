@@ -5,6 +5,7 @@ Collects usage metrics including bugs, test failures, code review issues,
 performance metrics, and deployment issues.
 """
 
+import copy
 import json
 import logging
 from datetime import datetime
@@ -296,17 +297,86 @@ class MetricsCollector:
         """Clear all collected metrics."""
         self.data = {category: [] for category in self.METRIC_CATEGORIES}
         logger.debug("Cleared all metrics")
-    
+
     def load_from_json(self, json_str: str) -> None:
-        """Load metrics from JSON string.
+        """Load metrics from a JSON string and normalize their structure.
         
+        This method parses the given JSON, normalizes the payload to ensure
+        that all expected metric categories are present, and updates the
+        internal metrics state.
+
+        Normalization behavior:
+        - Any missing or ``null`` categories are defaulted to empty lists.
+        - Category values that are dictionaries are coerced to single-element
+          lists containing that dictionary.
+        - Category values that are tuples are coerced to lists.
+
+        On failure during normalization, the collector's previous ``data``
+        state is restored.
+
         Args:
-            json_str: JSON string containing metrics data
+            json_str: JSON string containing metrics data.
+
+        Raises:
+            json.JSONDecodeError: If ``json_str`` is not valid JSON.
+            ValueError: If the parsed payload cannot be normalized into the
+                expected structure.
         """
+        previous_data = copy.deepcopy(self.data)
         try:
             loaded_data = json.loads(json_str)
-            self.data = loaded_data
-            logger.debug("Loaded metrics from JSON")
         except json.JSONDecodeError as e:
-            logger.debug(f"Failed to load metrics from JSON: {e}")
+            logger.error(f"Failed to decode metrics JSON: {e}")
+            self.data = previous_data
             raise
+
+        try:
+            normalized_data = self._normalize_loaded_data(loaded_data)
+        except ValueError as e:
+            logger.error(f"Failed to normalize metrics payload: {e}")
+            self.data = previous_data
+            raise
+
+        self.data = normalized_data
+        logger.info("Loaded metrics from JSON")
+
+    def _normalize_loaded_data(self, loaded_data: Any) -> Dict[str, List[Dict[str, Any]]]:
+        """Normalize loaded JSON data to ensure expected structure.
+
+        Args:
+            loaded_data: Parsed JSON data
+
+        Returns:
+            Normalized metrics data containing all metric categories.
+
+        Raises:
+            ValueError: If the payload cannot be normalized into the expected structure.
+        """
+        if not isinstance(loaded_data, dict):
+            raise ValueError("Metrics payload must be a JSON object containing metric categories.")
+
+        normalized: Dict[str, List[Dict[str, Any]]] = {}
+        for category in self.METRIC_CATEGORIES:
+            if category not in loaded_data or loaded_data[category] is None:
+                logger.debug(f"Category '{category}' missing or null in payload; defaulting to empty list")
+                normalized[category] = []
+                continue
+
+            value = loaded_data[category]
+
+            if isinstance(value, dict):
+                value = [value]
+            elif isinstance(value, tuple):
+                value = list(value)
+
+            if not isinstance(value, list):
+                raise ValueError(
+                    f"Category '{category}' must be a list of entries (got {type(value).__name__})."
+                )
+
+            if not all(isinstance(item, dict) for item in value):
+                raise ValueError(f"All items in category '{category}' must be dictionaries.")
+
+            normalized[category] = value
+
+        return normalized
