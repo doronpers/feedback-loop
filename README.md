@@ -171,6 +171,9 @@ These aren't arbitrary best practices—they're **distilled from real failures**
 - **[Getting Started](docs/GETTING_STARTED.md)** (5 min) - Installation to first results
 - **[Quick Reference](docs/QUICK_REFERENCE.md)** (1 page) - Pattern cheat sheet for daily use
 
+**Learn differently?**
+- **[Dark Horse Users Guide](docs/DARK_HORSE_USERS_GUIDE.md)** - For non-linear learners who customize everything
+
 **Ready to dive deeper?**
 - **[Complete Documentation Index](docs/INDEX.md)** - Master navigation guide
 - **[AI Patterns Guide](docs/AI_PATTERNS_GUIDE.md)** - Comprehensive workflow and pattern catalog
@@ -180,6 +183,7 @@ These aren't arbitrary best practices—they're **distilled from real failures**
 #### For Developers
 | Guide | Purpose | Time |
 |-------|---------|------|
+| [Dark Horse Users Guide](docs/DARK_HORSE_USERS_GUIDE.md) | Non-linear learning paths | Browse |
 | [Getting Started](docs/GETTING_STARTED.md) | First-time setup and basics | 5 min |
 | [Quick Reference](docs/QUICK_REFERENCE.md) | Daily lookup for patterns | 2 min |
 | [AI Patterns Guide](docs/AI_PATTERNS_GUIDE.md) | Complete pattern catalog | 30 min |
@@ -202,13 +206,21 @@ These aren't arbitrary best practices—they're **distilled from real failures**
 
 ### 💡 Documentation Philosophy
 
-Our docs follow **progressive disclosure**:
+Our docs support **diverse learning styles**:
+
+**Traditional Progressive Disclosure**:
 1. **README** (you are here) - High-level overview and navigation
 2. **Getting Started** - Hands-on introduction with examples
 3. **Quick Reference** - Fast lookups when you know what you need
 4. **Deep Guides** - Comprehensive coverage for mastery
 
-**Goal**: Find what you need in < 30 seconds, learn what you need in < 5 minutes.
+**Dark Horse Individualization**:
+- Multiple entry points based on YOUR motivations
+- Non-linear navigation - jump wherever curiosity leads
+- Personalized workflows - adapt the tool to your process
+- No "right" path - use what works for you
+
+**Goal**: Find what you need in < 30 seconds, learn what you need in < 5 minutes, in a way that works for YOU.
 
 ## Use Cases & Real-World Applications
 
