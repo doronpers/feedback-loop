@@ -251,7 +251,7 @@ class TestMetricsCollector:
             "deployment_issues": []
         })
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"bugs.*str"):
             collector.load_from_json(invalid_json)
 
         assert collector.data == previous_data
