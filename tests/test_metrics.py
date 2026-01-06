@@ -221,6 +221,41 @@ class TestMetricsCollector:
         with pytest.raises(json.JSONDecodeError):
             collector.load_from_json(invalid_json)
 
+    def test_load_from_json_missing_categories_defaults_to_empty(self):
+        """Test missing categories are defaulted to empty lists."""
+        collector = MetricsCollector()
+
+        json_str = json.dumps({
+            "bugs": [{"pattern": "p", "count": 1}],
+            "test_failures": []
+        })
+
+        collector.load_from_json(json_str)
+
+        assert collector.data["bugs"][0]["pattern"] == "p"
+        for category in MetricsCollector.METRIC_CATEGORIES:
+            assert category in collector.data
+        assert collector.data["code_generation"] == []
+
+    def test_load_from_json_invalid_category_type_restores_previous_state(self):
+        """Test invalid category types raise error and revert data."""
+        collector = MetricsCollector()
+        collector.log_bug("test", "error", "code", "/path.py", 1)
+        previous_data = collector.export_dict()
+
+        invalid_json = json.dumps({
+            "bugs": "not-a-list",
+            "test_failures": [],
+            "code_reviews": [],
+            "performance_metrics": [],
+            "deployment_issues": []
+        })
+
+        with pytest.raises(ValueError):
+            collector.load_from_json(invalid_json)
+
+        assert collector.data == previous_data
+
 
 class TestMetricsAnalyzer:
     """Tests for MetricsAnalyzer."""
