@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Chat Assistant
+
+Interactive conversational interface for learning patterns, getting help,
+and generating code with AI assistance.
+"""
+
+import os
+import sys
+from pathlib import Path
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+import logging
+from typing import List, Optional
+
+from metrics.llm_providers import get_llm_manager
+from metrics.pattern_manager import PatternManager
+from metrics.code_generator import PatternAwareGenerator
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class ChatAssistant:
+    """Interactive chat assistant for feedback-loop."""
+
+    def __init__(self):
+        """Initialize chat assistant."""
+        self.llm_manager = get_llm_manager()
+        self.pattern_manager = PatternManager()
+        self.patterns = self.pattern_manager.get_all_patterns()
+        self.conversation_history: List[str] = []
+        
+        # System prompt for the assistant
+        self.system_context = self._build_system_context()
+
+    def _build_system_context(self) -> str:
+        """Build system context with pattern library."""
+        context = """You are a helpful AI assistant for the feedback-loop framework.
+
+feedback-loop helps developers write better code by learning from patterns and mistakes.
+
+Your role is to:
+1. Help users understand and apply coding patterns
+2. Answer questions about the framework
+3. Generate pattern-aware code
+4. Provide guidance on best practices
+5. Explain patterns in simple, practical terms
+
+Be conversational, friendly, and practical. Use examples from the pattern library below.
+
+## Available Patterns:
+
+"""
+        for pattern in self.patterns:
+            name = pattern.get("name", "unknown")
+            desc = pattern.get("description", "")
+            context += f"- **{name}**: {desc}\n"
+
+        context += "\n## Guidelines:\n"
+        context += "- Keep responses concise but informative\n"
+        context += "- Use code examples when helpful\n"
+        context += "- Suggest relevant patterns for user questions\n"
+        context += "- Be encouraging and supportive\n"
+
+        return context
+
+    def chat(self, user_message: str) -> str:
+        """Process user message and return response.
+        
+        Args:
+            user_message: User's message
+            
+        Returns:
+            Assistant's response
+        """
+        # Build full prompt with context
+        full_prompt = f"{self.system_context}\n\n"
+        
+        # Add conversation history (last 3 exchanges)
+        if self.conversation_history:
+            full_prompt += "## Recent Conversation:\n"
+            for msg in self.conversation_history[-6:]:  # Last 3 exchanges (6 messages)
+                full_prompt += f"{msg}\n"
+            full_prompt += "\n"
+        
+        full_prompt += f"User: {user_message}\n\nAssistant:"
+        
+        try:
+            # Generate response
+            response = self.llm_manager.generate(
+                full_prompt,
+                max_tokens=2048
+            )
+            
+            # Store in history
+            self.conversation_history.append(f"User: {user_message}")
+            self.conversation_history.append(f"Assistant: {response.text}")
+            
+            return response.text
+            
+        except Exception as e:
+            logger.error(f"Chat error: {e}")
+            return f"Sorry, I encountered an error: {e}\n\nMake sure you have an API key set (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY)."
+
+    def explain_pattern(self, pattern_name: str) -> str:
+        """Explain a specific pattern in detail.
+        
+        Args:
+            pattern_name: Name of pattern to explain
+            
+        Returns:
+            Detailed explanation
+        """
+        pattern = self.pattern_manager.get_pattern(pattern_name)
+        if not pattern:
+            return f"Pattern '{pattern_name}' not found. Available patterns: {', '.join(p['name'] for p in self.patterns)}"
+
+        # Build explanation prompt
+        prompt = f"""Explain this coding pattern in a clear, practical way:
+
+Pattern: {pattern.get('name')}
+Description: {pattern.get('description')}
+
+Provide:
+1. What problem it solves
+2. When to use it
+3. A simple example
+4. Common mistakes to avoid
+
+Keep it conversational and practical."""
+
+        try:
+            response = self.llm_manager.generate(prompt, max_tokens=1500)
+            return response.text
+        except Exception as e:
+            # Fallback to basic explanation
+            return f"**{pattern.get('name')}**\n\n{pattern.get('description')}\n\nSeverity: {pattern.get('severity', 'medium')}"
+
+    def interactive_mode(self):
+        """Run interactive chat mode."""
+        print("\n" + "="*70)
+        print("🤖 Feedback Loop Chat Assistant")
+        print("="*70)
+        print()
+        print("I'm here to help you learn patterns and write better code!")
+        print()
+        
+        # Check if LLM is available
+        if not self.llm_manager.is_any_available():
+            print("⚠️  No LLM providers available!")
+            print()
+            print("To use the chat assistant, set one of these API keys:")
+            print("  • ANTHROPIC_API_KEY - for Claude")
+            print("  • OPENAI_API_KEY - for GPT-4")
+            print("  • GOOGLE_API_KEY - for Gemini")
+            print()
+            print("Example: export ANTHROPIC_API_KEY='your-key-here'")
+            print()
+            return
+        
+        providers = self.llm_manager.list_available_providers()
+        print(f"✓ Using LLM: {', '.join(providers)}")
+        print()
+        print("Commands:")
+        print("  • Type your question or request")
+        print("  • /pattern <name> - Explain a specific pattern")
+        print("  • /list - List all patterns")
+        print("  • /generate <description> - Generate code")
+        print("  • /help - Show this help")
+        print("  • /quit or Ctrl+C - Exit")
+        print()
+        print("="*70)
+        print()
+
+        while True:
+            try:
+                # Get user input
+                user_input = input("You: ").strip()
+                
+                if not user_input:
+                    continue
+                
+                # Check for commands
+                if user_input.startswith("/"):
+                    if user_input == "/quit" or user_input == "/exit":
+                        print("\nGoodbye! Happy coding! 👋\n")
+                        break
+                    elif user_input == "/help":
+                        print("\nCommands:")
+                        print("  /pattern <name> - Explain a specific pattern")
+                        print("  /list - List all patterns")
+                        print("  /generate <description> - Generate code")
+                        print("  /quit - Exit")
+                        print()
+                        continue
+                    elif user_input == "/list":
+                        print("\nAvailable patterns:")
+                        for i, pattern in enumerate(self.patterns, 1):
+                            name = pattern.get("name", "unknown")
+                            desc = pattern.get("description", "")
+                            print(f"  {i}. {name}")
+                            print(f"     {desc[:70]}...")
+                        print()
+                        continue
+                    elif user_input.startswith("/pattern "):
+                        pattern_name = user_input[9:].strip()
+                        print()
+                        response = self.explain_pattern(pattern_name)
+                        print(response)
+                        print()
+                        continue
+                    elif user_input.startswith("/generate "):
+                        description = user_input[10:].strip()
+                        print("\n🤖 Generating code...\n")
+                        
+                        # Use code generator
+                        generator = PatternAwareGenerator(
+                            self.patterns,
+                            use_llm=True
+                        )
+                        
+                        try:
+                            result = generator.generate(description)
+                            print("```python")
+                            print(result.code)
+                            print("```")
+                            print()
+                            print(f"Confidence: {result.confidence:.0%}")
+                            if result.patterns_applied:
+                                print(f"Patterns applied: {', '.join(p['pattern']['name'] for p in result.patterns_applied)}")
+                            print()
+                        except Exception as e:
+                            print(f"Error generating code: {e}\n")
+                        continue
+                    else:
+                        print(f"\nUnknown command: {user_input}")
+                        print("Type /help for available commands\n")
+                        continue
+                
+                # Regular chat message
+                print()
+                response = self.chat(user_input)
+                print(f"Assistant: {response}")
+                print()
+                
+            except KeyboardInterrupt:
+                print("\n\nGoodbye! Happy coding! 👋\n")
+                break
+            except EOFError:
+                print("\n\nGoodbye! Happy coding! 👋\n")
+                break
+            except Exception as e:
+                logger.error(f"Error in chat loop: {e}")
+                print(f"\nError: {e}\n")
+
+
+def main():
+    """Main entry point."""
+    assistant = ChatAssistant()
+    assistant.interactive_mode()
+
+
+if __name__ == "__main__":
+    main()

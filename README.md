@@ -7,6 +7,18 @@
 
 **A practical framework for AI-assisted development with continuous learning from your code.**
 
+## 🎉 What's New: Enhanced LLM Integration
+
+**Now with multi-LLM support and interactive experiences!**
+
+- 💬 **[Interactive Chat Assistant](#interactive-chat-assistant)** - Ask questions, get help, learn patterns conversationally
+- 🚀 **[Multi-LLM Support](#multi-llm-support)** - Use Claude, GPT-4, or Gemini with automatic fallback
+- 🤖 **[Smarter Code Generation](#code-generation)** - Pattern-aware AI that learns from your codebase
+- 🔍 **[AI-Powered Code Review](#code-review)** - Get instant feedback on your code
+- ⚡ **[Interactive Setup Wizard](#setup-wizard)** - Get started in minutes with guided setup
+
+👉 **See the [LLM Integration Guide](docs/LLM_GUIDE.md) for details**
+
 ## The Problem
 
 Ever notice how you fix the same bugs repeatedly? JSON serialization fails with NumPy arrays. Index errors on empty lists. Memory leaks from unclosed files. These aren't complex problems—they're **pattern recognition failures** in development workflows.
@@ -39,6 +51,32 @@ cd feedback-loop
 pip install -r requirements.txt
 ```
 
+### 🚀 Interactive Setup (Recommended)
+
+```bash
+./bin/fl-setup
+```
+
+The setup wizard will guide you through:
+- Environment checks
+- LLM provider setup (Claude/GPT-4/Gemini)
+- Dependencies installation
+- Project configuration
+
+### 💬 Interactive Chat Assistant
+
+The easiest way to learn and get help:
+
+```bash
+./bin/fl-chat
+```
+
+**Try these:**
+- "How do I handle NumPy arrays in JSON?"
+- "/pattern numpy_json_serialization"
+- "/generate a function to process large files safely"
+- "/list" to see all patterns
+
 ### See It In Action (5 minutes)
 
 ```bash
@@ -57,11 +95,11 @@ python demo_metrics.py
 
 ### Your First 15 Minutes
 
-1. **[Getting Started Guide](docs/GETTING_STARTED.md)** (5 min) - Understand the basics
-2. **Run the demos** (5 min) - See patterns in action
+1. **[Interactive Setup](#interactive-setup-recommended)** (5 min) - Get everything configured
+2. **[Try the Chat Assistant](#interactive-chat-assistant)** (5 min) - Learn patterns interactively
 3. **[Quick Reference](docs/QUICK_REFERENCE.md)** (5 min) - Bookmark for daily use
 
-💡 **New to the project?** Read [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for a focused introduction.
+💡 **New to the project?** Start with the [LLM Integration Guide](docs/LLM_GUIDE.md) for the best experience!
 
 ## Core Patterns
 
