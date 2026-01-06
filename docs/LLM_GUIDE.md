@@ -141,3 +141,54 @@ from metrics.code_reviewer import CodeReviewer
 reviewer = CodeReviewer(llm_provider="openai")
 
 code = 
+## Security Considerations
+
+### API Key Management
+
+**Best Practices:**
+1. **Never commit API keys to version control**
+   - Use environment variables only
+   - Add `.env` files to `.gitignore`
+   - Use secret management tools in production
+
+2. **Rotate keys regularly**
+   - Change keys every 90 days
+   - Immediately rotate if compromised
+   - Use different keys for dev/prod
+
+3. **Limit key permissions**
+   - Use read-only keys when possible
+   - Set spending limits
+   - Monitor API usage
+
+### Code Privacy
+
+**What gets sent to LLMs:**
+- Code snippets for review (not entire files)
+- Pattern descriptions and examples
+- User prompts and questions
+
+**What does NOT get sent:**
+- Your entire codebase
+- Environment variables or secrets
+- File paths or system information
+
+**Options for sensitive code:**
+1. Use local-only mode (disable LLM features)
+2. Self-host LLM models (Code Llama, Mistral)
+3. Use on-premises AI solutions
+
+### Rate Limiting
+
+The framework includes built-in rate limiting to prevent excessive API costs:
+- Caching for repeated queries
+- Configurable request limits
+- Automatic fallback to template mode
+
+### Compliance
+
+For regulated industries:
+- Review your organization's AI usage policies
+- Consider data residency requirements
+- Use appropriate LLM providers (e.g., Azure OpenAI for HIPAA)
+- Implement audit logging as needed

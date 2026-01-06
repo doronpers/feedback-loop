@@ -77,6 +77,13 @@ Be conversational, friendly, and practical. Use examples from the pattern librar
         Returns:
             Assistant's response
         """
+        # Input validation
+        if not user_message or not user_message.strip():
+            return "Please provide a message."
+        
+        if len(user_message) > 5000:
+            return "Message too long. Please keep messages under 5000 characters."
+        
         # Build full prompt with context
         full_prompt = f"{self.system_context}\n\n"
         

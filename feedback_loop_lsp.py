@@ -51,9 +51,14 @@ class PatternChecker:
         try:
             self.pattern_manager = PatternManager()
             self.patterns = self.pattern_manager.get_all_patterns()
-        except:
+        except Exception as e:
+            logger.warning(f"Failed to load pattern manager: {e}")
             self.pattern_manager = None
             self.patterns = []
+        
+        # Add simple caching for repeated checks
+        self._cache = {}
+        self._cache_max_size = 100
     
     def check_code(self, code: str, uri: str) -> List:
         """Check code for pattern violations.
@@ -68,6 +73,11 @@ class PatternChecker:
         if not PYGLS_AVAILABLE:
             return []
         
+        # Check cache first for performance
+        code_hash = hash(code)
+        if code_hash in self._cache:
+            return self._cache[code_hash]
+        
         diagnostics = []
         
         try:
@@ -79,11 +89,18 @@ class PatternChecker:
             diagnostics.extend(self._check_list_access(tree, code))
             diagnostics.extend(self._check_json_dumps(tree, code))
             
-        except SyntaxError as e:
+        except SyntaxError:
             # Ignore syntax errors - user might be typing
             pass
         except Exception as e:
             logger.error(f"Error analyzing code: {e}")
+        
+        # Cache result
+        if len(self._cache) >= self._cache_max_size:
+            # Simple FIFO eviction
+            first_key = next(iter(self._cache))
+            del self._cache[first_key]
+        self._cache[code_hash] = diagnostics
         
         return diagnostics
     

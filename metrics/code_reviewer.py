@@ -39,6 +39,19 @@ class CodeReviewer:
         Returns:
             Dictionary with review results
         """
+        # Input validation
+        if not code or not code.strip():
+            return {
+                "error": "No code provided for review.",
+                "suggestions": []
+            }
+        
+        if len(code) > 50000:  # Limit code size
+            return {
+                "error": "Code too large for review (max 50KB). Please review in smaller chunks.",
+                "suggestions": []
+            }
+        
         if not self.llm_manager.is_any_available():
             return {
                 "error": "No LLM providers available. Set API keys to use code review.",

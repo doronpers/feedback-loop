@@ -191,7 +191,11 @@ class OpenAIProvider(LLMProvider):
 
 
 class GeminiProvider(LLMProvider):
-    """Google Gemini LLM provider."""
+    """Google Gemini LLM provider.
+    
+    Note: Uses the newer google.genai package (recommended) with fallback
+    to google.generativeai if available.
+    """
 
     def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
         """Initialize Gemini provider.
@@ -201,10 +205,21 @@ class GeminiProvider(LLMProvider):
             model: Gemini model to use
         """
         super().__init__(api_key or os.environ.get("GOOGLE_API_KEY"), model)
+        self._using_new_api = False
         
         if self.is_available():
             try:
-                import google.generativeai as genai
+                # Try new google.genai package first
+                try:
+                    import google.genai as genai
+                    self._using_new_api = True
+                    logger.info("Using new google.genai package")
+                except ImportError:
+                    # Fallback to deprecated package
+                    import google.generativeai as genai
+                    logger.warning("Using deprecated google.generativeai package. "
+                                 "Please migrate to google.genai: pip install google-genai")
+                
                 genai.configure(api_key=self.api_key)
                 self.client = genai.GenerativeModel(self.model)
                 logger.info(f"Gemini provider initialized with model: {self.model}")
@@ -243,9 +258,17 @@ class GeminiProvider(LLMProvider):
 
     def is_available(self) -> bool:
         """Check if Gemini is available."""
+        if self.api_key is None:
+            return False
         try:
-            import google.generativeai
-            return self.api_key is not None
+            # Try new package first
+            try:
+                import google.genai
+                return True
+            except ImportError:
+                # Fallback to deprecated package
+                import google.generativeai
+                return True
         except ImportError:
             return False
 
