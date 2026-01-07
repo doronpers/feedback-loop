@@ -340,13 +340,16 @@ Options:
 
 ## Navigation Guide
 
-**Want to...**
+**Note**: This is archived historical documentation. The links below reflect the original structure when this document was created.
 
-**Try it immediately**: → [DARK_HORSE_QUICK_START.md](DARK_HORSE_QUICK_START.md)  
-**Comprehensive guide**: → [docs/DARK_HORSE_USERS_GUIDE.md](docs/DARK_HORSE_USERS_GUIDE.md)  
-**Understand the analysis**: → [docs/DARK_HORSE_ANALYSIS.md](docs/DARK_HORSE_ANALYSIS.md)  
-**Executive summary**: → [DARK_HORSE_SUMMARY.md](DARK_HORSE_SUMMARY.md)  
-**See all changes**: → This file (you are here)
+**For current documentation, see:**
+- [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
+- [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive guide
+- [docs/DARK_HORSE_ANALYSIS.md](../DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+
+**Historical references:**
+- ~~DARK_HORSE_SUMMARY.md~~ (merged into this file)
+- See this file for complete historical context
 
 ---
 

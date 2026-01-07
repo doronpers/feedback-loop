@@ -133,6 +133,7 @@ Collects and stores usage metrics from various sources.
 - `log_from_plan_file()` - Parse and log patterns from Planning-with-Files style task plans
 - `export_json()` - Export metrics as JSON
 - `get_summary()` - Get metrics summary
+- `load_from_json()` - Load metrics from JSON string
 
 **Example:**
 ```python

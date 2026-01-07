@@ -128,7 +128,7 @@ Pair feedback-loop with the [Planning with Files](https://github.com/OthmanAdi/p
 ## Patterns to Apply
 - [ ] numpy_json_serialization (from feedback-loop)
 - [x] bounds_checking (from feedback-loop)
-- [ ] structured_logging
+- [ ] structured_logging (from feedback-loop)
 
 ## Notes
 - Other content ignored
@@ -139,6 +139,7 @@ from metrics.collector import MetricsCollector
 
 collector = MetricsCollector()
 # Extracts: ["numpy_json_serialization", "bounds_checking", "structured_logging"]
+# Note: Annotations like "(from feedback-loop)" are automatically stripped
 patterns = collector.log_from_plan_file("task_plan.md")
 print(f"Logged {len(patterns)} patterns from plan")
 
