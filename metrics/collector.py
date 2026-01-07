@@ -320,7 +320,7 @@ class MetricsCollector:
         for line in content.splitlines():
             stripped = line.strip()
             if stripped.startswith("##"):
-                heading_text = stripped.lstrip("#").strip().lower()
+                heading_text = stripped[2:].strip().lower()
                 if heading_text == heading_lower:
                     in_section = True
                     found_section = True
@@ -335,9 +335,13 @@ class MetricsCollector:
             if not in_section:
                 continue
 
-            match = re.match(r"-\s*\[[ xX]\]\s*([^\s(#\n]+(?:\s+[^\s(#\n]+)*)", stripped)
+            # Match checklist items like "- [ ] pattern_name" without trailing annotations.
+            match = re.match(
+                r"-\s*\[[ xX]\]\s*(?P<pattern>[^\s(#\n]+(?:\s+[^\s(#\n]+)*)",
+                stripped
+            )
             if match:
-                pattern_name = match.group(1).strip()
+                pattern_name = match.group("pattern").strip()
                 # Drop trailing annotations like "(from feedback-loop)"
                 pattern_name = pattern_name.split("(")[0].strip()
                 if pattern_name:
