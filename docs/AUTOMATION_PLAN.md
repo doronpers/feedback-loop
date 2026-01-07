@@ -548,8 +548,12 @@ def auto_sync_from_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"):
 """Configuration management for feedback-loop automation."""
 
 import json
+import logging
 from pathlib import Path
 from typing import Any, Dict
+
+logger = logging.getLogger(__name__)
+
 
 class ConfigManager:
     """Manages feedback-loop configuration."""
@@ -1148,7 +1152,7 @@ pip install -e ".[automation]"  # Includes watchdog
 
 # Add to setup.py
 extras_require={
-    "automation": ["watchdog>=2.0.0"],
+    "automation": ["watchdog>=2.0.0,<4.0.0"],
     # ... other extras
 }
 ```
