@@ -90,8 +90,8 @@ Includes:
 
 **Want to understand the thinking behind this?**
 
-👉 **[Dark Horse Analysis](docs/DARK_HORSE_ANALYSIS.md)** (questions & observations)  
-👉 **[Dark Horse Summary](DARK_HORSE_SUMMARY.md)** (executive summary)
+👉 **[Dark Horse Analysis](docs/DARK_HORSE_ANALYSIS.md)** - Questions & observations for maintainers  
+👉 **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context and executive summary
 
 ---
 

@@ -1,3 +1,14 @@
+# Dark Horse Optimization History
+
+**Historical documentation: This file consolidates DARK_HORSE_OVERVIEW.md and DARK_HORSE_SUMMARY.md for archival purposes.**
+
+> **Note**: For current Dark Horse functionality, see:
+> - [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
+> - [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive user guide
+> - [docs/DARK_HORSE_ANALYSIS.md](../DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+
+---
+
 # Dark Horse Optimization Overview
 
 **A comprehensive review and enhancement of feedback-loop for individualized learning paths**
