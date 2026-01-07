@@ -129,8 +129,11 @@ Collects and stores usage metrics from various sources.
 - `log_code_review_issue()` - Track code review findings
 - `log_performance_metric()` - Track performance issues
 - `log_deployment_issue()` - Track deployment problems
+- `log_code_generation()` - Track code generation events with applied patterns
+- `log_from_plan_file()` - Parse and log patterns from Planning-with-Files style task plans
 - `export_json()` - Export metrics as JSON
 - `get_summary()` - Get metrics summary
+- `load_from_json()` - Load metrics from JSON string
 
 **Example:**
 ```python
@@ -143,6 +146,58 @@ collector.log_bug(
     line=15
 )
 ```
+
+**Planning with Files Integration:**
+
+The `log_from_plan_file()` method bridges Planning-with-Files workflows with metrics tracking. It parses a markdown plan file containing a `## Patterns to Apply` checklist, extracts pattern names, and logs them as a code generation entry.
+
+**Usage:**
+```python
+collector = MetricsCollector()
+
+# Parse patterns from plan file and log as code generation
+patterns = collector.log_from_plan_file("task_plan.md")
+# Returns: ["numpy_json_serialization", "bounds_checking"]
+
+# Optionally specify custom section heading
+patterns = collector.log_from_plan_file("plan.md", section_heading="Required Patterns")
+```
+
+**What it logs:**
+- Creates a `code_generation` entry with:
+  - `prompt`: `"plan:<filename>"` (e.g., `"plan:task_plan.md"`)
+  - `patterns_applied`: List of extracted pattern names
+  - `confidence`: `1.0` (plan-based patterns are explicit)
+  - `success`: `True`
+  - `metadata`: Contains `source="plan_file"`, `section_heading`, and `plan_path`
+
+**Safety Guarantees:**
+- **Path Traversal Protection**: Rejects paths with `..` components (raises `ValueError`)
+- **Allowed Roots Enforcement**: Files must be within allowed roots (`cwd` or `/tmp`), controlled by `ALLOWED_PLAN_ROOTS`
+- **Missing File Handling**: Raises `FileNotFoundError` if plan file doesn't exist
+- **Annotation Stripping**: Removes trailing parenthetical annotations like `"(from feedback-loop)"` from pattern names
+- **Heading-Bound Parsing**: Extracts checklist items only between the specified heading and the next heading
+
+**Parsing Behavior:**
+- Recognizes checklist items matching `- [ ]` or `- [x]` or `- [X]`
+- Extracts the first sequence of non-whitespace, non-parenthesis, non-hash tokens as the pattern name
+- Stops parsing when it encounters the next `##` heading after the target section
+- Uses default heading `"Patterns to Apply"` if not specified
+
+**Example Plan File:**
+```markdown
+# Task: Add JSON API endpoint
+
+## Patterns to Apply
+- [ ] numpy_json_serialization (from feedback-loop)
+- [x] bounds_checking (from feedback-loop)
+- [ ] input_validation
+
+## Implementation Notes
+- Use FastAPI for the endpoint
+```
+
+The method will extract `["numpy_json_serialization", "bounds_checking", "input_validation"]` and ignore the "Implementation Notes" section.
 
 ### MetricsAnalyzer
 

@@ -107,17 +107,46 @@ python demo_metrics.py
 
 Pair feedback-loop with the [Planning with Files](https://github.com/OthmanAdi/planning-with-files) workflow to keep current tasks aligned with historical pattern knowledge.
 
+**How it works**: The `log_from_plan_file()` method ingests task plans containing a `## Patterns to Apply` checklist section, parses pattern names from checklist items, and logs them as a code generation event for metrics tracking.
+
+**What it logs**:
+- **Prompt**: `"plan:<filename>"` format (e.g., `"plan:task_plan.md"`)
+- **Patterns Applied**: List of pattern names extracted from the checklist
+- **Metadata**: Source type (`"plan_file"`), section heading, and full plan path
+
+**Safety Guarantees**:
+- ✅ **Path Traversal Protection**: Rejects paths containing `..` components
+- ✅ **Allowed Roots Only**: Plan files must be within `cwd` or `/tmp` (enforced via `ALLOWED_PLAN_ROOTS`)
+- ✅ **Missing File Error**: Raises `FileNotFoundError` if plan file doesn't exist
+- ✅ **Annotation Stripping**: Removes trailing annotations like `"(from feedback-loop)"` from pattern names
+- ✅ **Heading-Bound Parsing**: Extracts patterns only from the specified section (default: `"Patterns to Apply"`), stops at next heading
+
+**Usage Example**:
+
 ```markdown
+# task_plan.md
 ## Patterns to Apply
 - [ ] numpy_json_serialization (from feedback-loop)
-- [ ] bounds_checking (from feedback-loop)
+- [x] bounds_checking (from feedback-loop)
+- [ ] structured_logging (from feedback-loop)
+
+## Notes
+- Other content ignored
 ```
 
 ```python
 from metrics.collector import MetricsCollector
 
 collector = MetricsCollector()
-collector.log_from_plan_file("task_plan.md")  # Records planned patterns for analysis
+# Extracts: ["numpy_json_serialization", "bounds_checking", "structured_logging"]
+# Note: Annotations like "(from feedback-loop)" are automatically stripped
+patterns = collector.log_from_plan_file("task_plan.md")
+print(f"Logged {len(patterns)} patterns from plan")
+
+# Logs as code_generation entry with:
+# - prompt="plan:task_plan.md"
+# - patterns_applied=["numpy_json_serialization", "bounds_checking", "structured_logging"]
+# - metadata={"source": "plan_file", "section_heading": "Patterns to Apply", "plan_path": "/full/path/to/task_plan.md"}
 ```
 
 ### Your First 15 Minutes

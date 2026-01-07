@@ -142,6 +142,7 @@ Want to improve the project?
 docs/
 ├── INDEX.md                    # ← You are here
 ├── DARK_HORSE_USERS_GUIDE.md   # Non-linear learning paths
+├── DARK_HORSE_ANALYSIS.md      # Analysis for maintainers
 ├── USER_SURVEY.md              # Share your experience
 ├── GETTING_STARTED.md          # Quick start (5 min)
 ├── QUICK_REFERENCE.md          # One-page lookup
@@ -149,10 +150,12 @@ docs/
 ├── METRICS_GUIDE.md            # Metrics system guide
 ├── FASTAPI_GUIDE.md            # FastAPI patterns
 ├── CONTRIBUTING.md             # Contribution guidelines
-└── IMPLEMENTATION_DETAILS.md   # Technical deep dive
+├── IMPLEMENTATION_DETAILS.md   # Technical deep dive
+└── archive/                    # Historical context documents
 
 Root level:
 ├── README.md                   # Project overview
+├── DARK_HORSE_QUICK_START.md   # Quick entry for non-linear learners
 ├── RESULTS.md                  # Test results
 ├── CHANGELOG.md                # Version history
 └── metrics/README.md           # API reference

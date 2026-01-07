@@ -515,3 +515,57 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 **Questions or feedback?** Open a GitHub Discussion or issue. We want to know how you're using this tool in ways we never imagined.
 
 **Help shape the future:** Take our [User Survey](USER_SURVEY.md) to share your micro-motives, learning style, and unique usage patterns.
+
+---
+
+## Appendix: Documentation Navigation Map
+
+**Visual guide to how all Dark Horse materials connect:**
+
+```
+feedback-loop/
+│
+├── 🚀 DARK_HORSE_QUICK_START.md ◄─── START HERE (action-oriented)
+│   │
+│   ├─► "Just show me" → python demo.py
+│   ├─► "Ask questions" → ./bin/fl-chat
+│   ├─► "One-page" → docs/QUICK_REFERENCE.md
+│   ├─► "Implementation" → Source code
+│   ├─► "Break things" → pytest tests/test_bad_patterns.py
+│   ├─► "Solve problem" → grep in examples/
+│   └─► "Integrate" → pytest --enable-metrics
+│
+├── 📖 docs/DARK_HORSE_USERS_GUIDE.md ◄─── THIS GUIDE (comprehensive)
+│   │
+│   ├─► Section 1: What is a Dark Horse Developer?
+│   ├─► Section 2: Know Your Micro-Motives (7 entry points)
+│   ├─► Section 3: Know Your Choices (5 navigation styles)
+│   ├─► Section 4: Know Your Strategies (6 workflow strategies)
+│   ├─► Section 5: Ignore the Destination (fulfillment-based success)
+│   ├─► Section 6: Self-Assessment (find your profile)
+│   ├─► Section 7: Learning Profiles (4 deep dives)
+│   ├─► Section 8: Customization Examples
+│   └─► Section 9: FAQ + Resources
+│
+├── 🔍 docs/DARK_HORSE_ANALYSIS.md ◄─── FOR MAINTAINERS
+│   │
+│   ├─► Questions for Maintainers (10 questions)
+│   ├─► Observations about individualization
+│   ├─► What was provided and why
+│   └─► Next steps recommendations
+│
+└── 📚 docs/archive/ ◄─── HISTORICAL CONTEXT
+    │
+    └─► DARK_HORSE_OPTIMIZATION_HISTORY.md
+        ├─► Overview of what was done
+        ├─► Executive summary and impact
+        └─► Context for the optimization effort
+```
+
+**Traditional Documentation (still available):**
+- [Getting Started](GETTING_STARTED.md) - Linear introduction
+- [Quick Reference](QUICK_REFERENCE.md) - One-page pattern lookup
+- [AI Patterns Guide](AI_PATTERNS_GUIDE.md) - Complete pattern catalog
+- [Metrics Guide](METRICS_GUIDE.md) - System integration details
+- [FastAPI Guide](FASTAPI_GUIDE.md) - API-specific patterns
+- [Documentation Index](INDEX.md) - Master navigation
