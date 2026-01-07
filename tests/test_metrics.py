@@ -257,6 +257,29 @@ class TestMetricsCollector:
 
         assert collector.data == previous_data, "Data should be restored after load failure"
 
+    def test_log_from_plan_file_extracts_patterns_and_logs_generation(self, tmp_path):
+        """Ensure plan file patterns are parsed and recorded in code generation metrics."""
+        plan_file = tmp_path / "task_plan.md"
+        plan_file.write_text(
+            """
+            # Task Plan
+            ## Patterns to Apply
+            - [ ] numpy_json_serialization (from feedback-loop)
+            - [x] bounds_checking
+            ## Notes
+            - [ ] ignore_me_section
+            """
+        )
+
+        collector = MetricsCollector()
+        patterns = collector.log_from_plan_file(str(plan_file))
+
+        assert patterns == ["numpy_json_serialization", "bounds_checking"]
+        assert collector.data["code_generation"][-1]["patterns_applied"] == patterns
+        metadata = collector.data["code_generation"][-1]["metadata"]
+        assert metadata["source"] == "plan_file"
+        assert metadata["plan_path"] == str(plan_file.resolve())
+
 
 class TestMetricsAnalyzer:
     """Tests for MetricsAnalyzer."""
