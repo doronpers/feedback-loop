@@ -16,8 +16,15 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 # Matches checklist lines like "- [ ] pattern_name" while ignoring trailing annotations.
+# Group explanation:
+#   -\s*\[[ xX]\]\s*        -> leading checkbox marker
+#   (?P<pattern>[^\s(#\n]+  -> first token of the pattern name (no spaces/(#))
+#   (?:\s+[^\s(#\n]+)*      -> optional additional tokens separated by spaces
 CHECKLIST_PATTERN = re.compile(
-    r"-\s*\[[ xX]\]\s*(?P<pattern>[^\s(#\n]+(?:\s+[^\s(#\n]+)*)"
+    r"-\s*\[[ xX]\]\s*(?P<pattern>"
+    r"[^\s(#\n]+"
+    r"(?:\s+[^\s(#\n]+)*"
+    r")"
 )
 
 
