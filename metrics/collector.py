@@ -34,6 +34,7 @@ class MetricsCollector:
     # Expected metric categories
     METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
                         "performance_metrics", "deployment_issues", "code_generation"]
+    ALLOWED_PLAN_ROOTS = [Path.cwd().resolve(), Path("/tmp").resolve()]
     
     def __init__(self):
         """Initialize the metrics collector."""
@@ -303,9 +304,8 @@ class MetricsCollector:
 
         plan_path = plan_path.resolve()
 
-        allowed_roots = [Path.cwd().resolve(), Path("/tmp").resolve()]
-        if not any(self._is_within_root(plan_path, root) for root in allowed_roots):
-            raise ValueError(f"Plan file must be within allowed roots: {allowed_roots}")
+        if not any(self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS):
+            raise ValueError(f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}")
 
         if not plan_path.exists():
             raise FileNotFoundError(f"Plan file not found: {plan_path}")
@@ -361,11 +361,6 @@ class MetricsCollector:
             if not in_section:
                 continue
 
-            # Match checklist items like "- [ ] pattern_name" without trailing annotations.
-            # Group explanation:
-            #   -\s*\[[ xX]\]\s*   -> leading checkbox marker
-            #   ([^\s(#\n]+        -> first token of the pattern name (no spaces/(#))
-            #   (?:\s+[^\s(#\n]+)* -> optional additional tokens separated by spaces
             match = CHECKLIST_PATTERN.match(stripped)
             if match:
                 pattern_name = match.group("pattern").strip()
