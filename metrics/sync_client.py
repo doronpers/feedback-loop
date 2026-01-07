@@ -251,8 +251,10 @@ class CloudSyncClient(SyncClient):
             }
         
         try:
-            # TODO: Implement actual API call to cloud backend
-            # This is a placeholder for future implementation
+            # TODO: PRODUCTION - Implement actual API call to cloud backend
+            # This is a placeholder implementation for Phase 1
+            # Phase 2 should implement actual HTTP requests using requests/httpx
+            # See docs/PRODUCTION_CHECKLIST.md for implementation plan
             logger.debug(f"Would sync {len(patterns)} patterns to cloud")
             
             return {

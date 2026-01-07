@@ -27,9 +27,11 @@ app = FastAPI(
 )
 
 # CORS middleware for web dashboard
+# TODO: PRODUCTION - Configure specific allowed origins instead of wildcard
+# Current wildcard allows any domain, which poses security risks
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # TODO: Configure allowed origins in production
+    allow_origins=["*"],  # Replace with specific domains in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,7 +105,9 @@ class ConfigResponse(BaseModel):
 # In-Memory Storage (Replace with database in production)
 # ============================================================================
 
-# This is a placeholder - in production, use proper database
+# TODO: PRODUCTION - Replace with PostgreSQL database
+# In-memory dictionaries lose data on restart and don't support concurrent access
+# See docs/PRODUCTION_CHECKLIST.md for migration plan
 USERS_DB = {}
 SESSIONS_DB = {}
 PATTERNS_DB = {}
@@ -121,7 +125,12 @@ def create_api_key(user_id: int) -> str:
 
 
 def hash_password(password: str) -> str:
-    """Hash password (placeholder - use bcrypt in production)."""
+    """Hash password (placeholder - use bcrypt in production).
+    
+    TODO: PRODUCTION - Replace with bcrypt, scrypt, or argon2
+    Current SHA-256 implementation is vulnerable to rainbow table attacks.
+    Recommendation: Use passlib with bcrypt
+    """
     return hashlib.sha256(password.encode()).hexdigest()
 
 
