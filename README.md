@@ -19,6 +19,30 @@
 
 👉 **See the [LLM Integration Guide](docs/LLM_GUIDE.md) for details**
 
+## 🌟 NEW: Cloud Sync & Team Collaboration (Phase 1)
+
+**Transform feedback-loop into a team collaboration platform!**
+
+- 🔐 **Authentication & API Gateway** - Secure cloud backend with FastAPI
+- 👥 **Team Management** - Organizations, teams, and role-based access control
+- ☁️ **Pattern Synchronization** - Share patterns across your team automatically
+- 📊 **Metrics Aggregation** - Team-wide analytics and ROI tracking (coming soon)
+- 🏢 **Enterprise Ready** - SSO, audit logging, and self-hosted deployment (roadmap)
+
+**Quick Start:**
+```bash
+# Start the API server (development)
+python api/main.py
+
+# Login to enable cloud sync
+feedback-loop login
+
+# Patterns now sync automatically with your team!
+feedback-loop analyze
+```
+
+👉 **See the [Cloud Sync Guide](docs/CLOUD_SYNC.md) for complete documentation**
+
 ## The Problem
 
 Ever notice how you fix the same bugs repeatedly? JSON serialization fails with NumPy arrays. Index errors on empty lists. Memory leaks from unclosed files. These aren't complex problems—they're **pattern recognition failures** in development workflows.
@@ -240,6 +264,7 @@ These aren't arbitrary best practices—they're **distilled from real failures**
 #### For Teams
 | Guide | Purpose | Time |
 |-------|---------|------|
+| [Cloud Sync Guide](docs/CLOUD_SYNC.md) | Team collaboration setup | 15 min |
 | [Metrics Guide](docs/METRICS_GUIDE.md) | Set up automated tracking | 15 min |
 | [FastAPI Guide](docs/FASTAPI_GUIDE.md) | API-specific patterns | 20 min |
 | [Contributing](docs/CONTRIBUTING.md) | Add your own patterns | 10 min |
