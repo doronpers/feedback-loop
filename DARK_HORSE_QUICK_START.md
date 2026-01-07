@@ -118,4 +118,17 @@ Pick whichever sounds most interesting RIGHT NOW:
 
 ---
 
+## Want More Depth?
+
+**Go deeper when ready:**
+- **[Dark Horse Users Guide](docs/DARK_HORSE_USERS_GUIDE.md)** - Comprehensive guide with strategies, profiles, and customization
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - One-page pattern lookup
+- **[Traditional Docs](README.md#documentation)** - If you prefer linear learning
+
+**For Maintainers:**
+- **[Dark Horse Analysis](docs/DARK_HORSE_ANALYSIS.md)** - Questions and recommendations for repo maintainers
+- **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context of the Dark Horse optimization
+
+---
+
 *This repository supports YOUR way of learning and working.*
