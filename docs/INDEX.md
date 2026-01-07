@@ -77,11 +77,22 @@ Technical details and API documentation:
    - Breaking changes
    - Feature additions
 
+## Community & Feedback
+
+Help shape the future:
+
+10. **[User Survey](USER_SURVEY.md)** ← Share your experience
+    - Understand your micro-motives
+    - How you actually use the tool
+    - What brings you fulfillment
+    - Accessibility needs
+    - Future direction input
+
 ## Contributing
 
 Want to improve the project?
 
-10. **[Contributing Guide](CONTRIBUTING.md)** ← How to help
+11. **[Contributing Guide](CONTRIBUTING.md)** ← How to help
     - Adding new patterns
     - Improving documentation
     - Code style guidelines
@@ -100,6 +111,7 @@ Want to improve the project?
 | Set up metrics collection | [Metrics Guide](METRICS_GUIDE.md) |
 | Handle large file uploads | [FastAPI Guide](FASTAPI_GUIDE.md) |
 | Use the API programmatically | [Metrics API](../metrics/README.md) |
+| Share my experience | [User Survey](USER_SURVEY.md) |
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 | See test results | [Results](../RESULTS.md) |
 
@@ -130,6 +142,7 @@ Want to improve the project?
 docs/
 ├── INDEX.md                    # ← You are here
 ├── DARK_HORSE_USERS_GUIDE.md   # Non-linear learning paths
+├── USER_SURVEY.md              # Share your experience
 ├── GETTING_STARTED.md          # Quick start (5 min)
 ├── QUICK_REFERENCE.md          # One-page lookup
 ├── AI_PATTERNS_GUIDE.md        # Complete workflow guide

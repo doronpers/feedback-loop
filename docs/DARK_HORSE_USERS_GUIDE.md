@@ -504,6 +504,7 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 - Customize extensively
 - Ignore what doesn't serve you
 - Share what you discover
+- Take the [User Survey](USER_SURVEY.md) to help us understand diverse learning styles
 
 **The best way to use feedback-loop is YOUR way.**
 
@@ -512,3 +513,5 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 *This guide was created by applying Todd Rose's Dark Horse principles to the feedback-loop repository. It acknowledges that developers have diverse learning styles, motivations, and workflows—and that's a strength, not a problem to solve.*
 
 **Questions or feedback?** Open a GitHub Discussion or issue. We want to know how you're using this tool in ways we never imagined.
+
+**Help shape the future:** Take our [User Survey](USER_SURVEY.md) to share your micro-motives, learning style, and unique usage patterns.
