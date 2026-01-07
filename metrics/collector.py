@@ -314,21 +314,28 @@ class MetricsCollector:
         """Extract patterns from a Planning-with-Files style checklist section."""
         patterns: List[str] = []
         in_section = False
-        heading_lower = section_heading.lower()
+        found_section = False
+        heading_lower = section_heading.strip().lower()
 
         for line in content.splitlines():
             stripped = line.strip()
             if stripped.startswith("##"):
-                # Enter section when the heading matches; exit when a new heading is found.
-                in_section = heading_lower in stripped.lower()
-                if not in_section and patterns:
+                heading_text = stripped.lstrip("#").strip().lower()
+                if heading_text == heading_lower:
+                    in_section = True
+                    found_section = True
+                    continue
+
+                if found_section:
                     break
+
+                in_section = False
                 continue
 
             if not in_section:
                 continue
 
-            match = re.match(r"-\s*\[[ xX]\]\s*([^(\n#]+)", stripped)
+            match = re.match(r"-\s*\[[ xX]\]\s*([^\s(#\n]+(?:\s+[^\s(#\n]+)*)", stripped)
             if match:
                 pattern_name = match.group(1).strip()
                 # Drop trailing annotations like "(from feedback-loop)"
