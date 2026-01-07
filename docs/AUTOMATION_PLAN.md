@@ -1147,15 +1147,17 @@ Based on user feedback, consider:
 # Core installation (no changes)
 pip install -e .
 
-# With automation features
-pip install -e ".[automation]"  # Includes watchdog
+# With automation features (proposed)
+pip install -e ".[automation]"  # Would include watchdog
 
-# Add to setup.py
+# Proposed addition to setup.py (to be implemented in Phase 2):
 extras_require={
     "automation": ["watchdog>=2.0.0,<4.0.0"],
     # ... other extras
 }
 ```
+
+**Note:** The `automation` extra is a proposed change that would be implemented during Phase 2. Until then, users can install watchdog manually: `pip install watchdog`
 
 ---
 
