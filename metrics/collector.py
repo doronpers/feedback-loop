@@ -15,6 +15,11 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
+# Matches checklist lines like "- [ ] pattern_name" while ignoring trailing annotations.
+CHECKLIST_PATTERN = re.compile(
+    r"-\s*\[[ xX]\]\s*(?P<pattern>[^\s(#\n]+(?:\s+[^\s(#\n]+)*)"
+)
+
 
 class MetricsCollector:
     """Collects and stores various types of usage metrics."""
@@ -290,6 +295,11 @@ class MetricsCollector:
             raise ValueError(f"Path traversal detected in: {plan_file}")
 
         plan_path = plan_path.resolve()
+
+        allowed_roots = [Path.cwd().resolve(), Path("/tmp").resolve()]
+        if not any(self._is_within_root(plan_path, root) for root in allowed_roots):
+            raise ValueError(f"Plan file must be within allowed roots: {allowed_roots}")
+
         if not plan_path.exists():
             raise FileNotFoundError(f"Plan file not found: {plan_path}")
 
@@ -309,6 +319,15 @@ class MetricsCollector:
         )
 
         return patterns
+
+    @staticmethod
+    def _is_within_root(path: Path, root: Path) -> bool:
+        """Return True if path is contained within root."""
+        try:
+            path.relative_to(root)
+            return True
+        except ValueError:
+            return False
 
     def _extract_patterns_from_plan(self, content: str, section_heading: str) -> List[str]:
         """Extract patterns from a Planning-with-Files style checklist section."""
@@ -340,10 +359,7 @@ class MetricsCollector:
             #   -\s*\[[ xX]\]\s*   -> leading checkbox marker
             #   ([^\s(#\n]+        -> first token of the pattern name (no spaces/(#))
             #   (?:\s+[^\s(#\n]+)* -> optional additional tokens separated by spaces
-            match = re.match(
-                r"-\s*\[[ xX]\]\s*(?P<pattern>[^\s(#\n]+(?:\s+[^\s(#\n]+)*)",
-                stripped
-            )
+            match = CHECKLIST_PATTERN.match(stripped)
             if match:
                 pattern_name = match.group("pattern").strip()
                 # Drop trailing annotations like "(from feedback-loop)"
