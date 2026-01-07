@@ -103,6 +103,23 @@ python demo_metrics.py
 - 📊 **Metrics collection** - How test failures become patterns
 - 🤖 **AI generation** - Code that learns from your history
 
+### 🗂️ Planning with Files Bridge
+
+Pair feedback-loop with the [Planning with Files](https://github.com/OthmanAdi/planning-with-files) workflow to keep current tasks aligned with historical pattern knowledge.
+
+```markdown
+## Patterns to Apply
+- [ ] numpy_json_serialization (from feedback-loop)
+- [ ] bounds_checking (from feedback-loop)
+```
+
+```python
+from metrics.collector import MetricsCollector
+
+collector = MetricsCollector()
+collector.log_from_plan_file("task_plan.md")  # Records planned patterns for analysis
+```
+
 ### Your First 15 Minutes
 
 1. **[Interactive Setup](#interactive-setup-recommended)** (5 min) - Get everything configured

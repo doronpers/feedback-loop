@@ -8,10 +8,24 @@ performance metrics, and deployment issues.
 import copy
 import json
 import logging
+import re
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+# Matches checklist lines like "- [ ] pattern_name" while ignoring trailing annotations.
+# Group explanation:
+#   -\s*\[[ xX]\]\s*        -> leading checkbox marker
+#   (?P<pattern>[^\s(#\n]+  -> first token of the pattern name (no spaces/(#))
+#   (?:\s+[^\s(#\n]+)*      -> optional additional tokens separated by spaces
+CHECKLIST_PATTERN = re.compile(
+    r"-\s*\[[ xX]\]\s*(?P<pattern>"
+    r"[^\s(#\n]+"
+    r"(?:\s+[^\s(#\n]+)*"
+    r")"
+)
 
 
 class MetricsCollector:
@@ -20,6 +34,7 @@ class MetricsCollector:
     # Expected metric categories
     METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
                         "performance_metrics", "deployment_issues", "code_generation"]
+    ALLOWED_PLAN_ROOTS = [Path.cwd().resolve(), Path("/tmp").resolve()]
     
     def __init__(self):
         """Initialize the metrics collector."""
@@ -260,6 +275,101 @@ class MetricsCollector:
 
         self.data["code_generation"].append(generation_entry)
         logger.debug(f"Logged code generation: {len(patterns_applied)} patterns applied")
+
+    def log_from_plan_file(
+        self,
+        plan_file: str,
+        section_heading: str = "Patterns to Apply"
+    ) -> List[str]:
+        """Parse a Planning-with-Files style plan and log its pattern checklist.
+
+        This extracts pattern identifiers from a checklist section (e.g.,
+        ``## Patterns to Apply``) and records them in the code generation
+        metrics so pattern usage planning is tracked alongside execution.
+
+        Args:
+            plan_file: Path to the plan markdown file.
+            section_heading: Heading text that marks the checklist section.
+
+        Returns:
+            List of pattern identifiers discovered in the plan file.
+
+        Raises:
+            FileNotFoundError: If the plan file does not exist.
+            ValueError: If path traversal is attempted in ``plan_file``.
+        """
+        plan_path = Path(plan_file)
+        if ".." in plan_path.parts:
+            raise ValueError(f"Path traversal detected in: {plan_file}")
+
+        plan_path = plan_path.resolve()
+
+        if not any(self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS):
+            raise ValueError(f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}")
+
+        if not plan_path.exists():
+            raise FileNotFoundError(f"Plan file not found: {plan_path}")
+
+        content = plan_path.read_text()
+        patterns = self._extract_patterns_from_plan(content, section_heading)
+
+        self.log_code_generation(
+            prompt=f"plan:{plan_path.name}",
+            patterns_applied=patterns,
+            confidence=1.0,
+            success=True,
+            metadata={
+                "source": "plan_file",
+                "section_heading": section_heading,
+                "plan_path": str(plan_path)
+            }
+        )
+
+        return patterns
+
+    @staticmethod
+    def _is_within_root(path: Path, root: Path) -> bool:
+        """Return True if path is contained within root."""
+        try:
+            path.relative_to(root)
+            return True
+        except ValueError:
+            return False
+
+    def _extract_patterns_from_plan(self, content: str, section_heading: str) -> List[str]:
+        """Extract patterns from a Planning-with-Files style checklist section."""
+        patterns: List[str] = []
+        in_section = False
+        found_section = False
+        heading_lower = section_heading.strip().lower()
+
+        for line in content.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("##"):
+                heading_text = stripped[2:].strip().lower()
+                if heading_text == heading_lower:
+                    in_section = True
+                    found_section = True
+                    continue
+
+                if found_section:
+                    break
+
+                in_section = False
+                continue
+
+            if not in_section:
+                continue
+
+            match = CHECKLIST_PATTERN.match(stripped)
+            if match:
+                pattern_name = match.group("pattern").strip()
+                # Drop trailing annotations like "(from feedback-loop)"
+                pattern_name = pattern_name.split("(")[0].strip()
+                if pattern_name:
+                    patterns.append(pattern_name)
+
+        return patterns
 
     def export_json(self) -> str:
         """Export all collected metrics as JSON.
