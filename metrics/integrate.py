@@ -18,6 +18,7 @@ from metrics.collector import MetricsCollector
 from metrics.analyzer import MetricsAnalyzer
 from metrics.pattern_manager import PatternManager
 from metrics.code_generator import PatternAwareGenerator
+from metrics.sync_client import SyncClient, LocalSyncClient, CloudSyncClient, create_sync_client
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,8 @@ class MetricsIntegration:
         self,
         metrics_file: str = "metrics_data.json",
         patterns_file: str = "patterns.json",
-        ai_patterns_md: str = "docs/AI_PATTERNS_GUIDE.md"
+        ai_patterns_md: str = "docs/AI_PATTERNS_GUIDE.md",
+        sync_client: Optional[SyncClient] = None
     ):
         """Initialize the integration system.
         
@@ -37,6 +39,7 @@ class MetricsIntegration:
             metrics_file: Path to store collected metrics
             patterns_file: Path to pattern library JSON
             ai_patterns_md: Path to AI_PATTERNS_GUIDE.md file
+            sync_client: Optional SyncClient for cloud sync (defaults to LocalSyncClient)
         """
         self.metrics_file = metrics_file
         self.patterns_file = patterns_file
@@ -44,6 +47,12 @@ class MetricsIntegration:
         
         self.collector = MetricsCollector()
         self.pattern_manager = PatternManager(patterns_file)
+        
+        # Initialize sync client (defaults to local file system)
+        self.sync_client = sync_client or LocalSyncClient(
+            patterns_file=patterns_file,
+            metrics_file=metrics_file
+        )
     
     def collect_metrics(self) -> None:
         """Collect and save current metrics."""
@@ -485,6 +494,68 @@ class MetricsIntegration:
         return "\n".join(lines)
 
 
+def _handle_login(api_url: str) -> None:
+    """Handle login to cloud backend.
+    
+    Args:
+        api_url: Base URL of the cloud API
+    """
+    import getpass
+    
+    print("=== Feedback Loop - Cloud Login ===")
+    print(f"API URL: {api_url}\n")
+    
+    # Get credentials
+    email = input("Email: ").strip()
+    password = getpass.getpass("Password: ")
+    
+    try:
+        import requests
+        
+        # Make login request
+        response = requests.post(
+            f"{api_url}/api/v1/auth/login",
+            json={"email": email, "password": password}
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Save API key to local config
+            config_dir = Path.home() / ".feedback-loop"
+            config_dir.mkdir(exist_ok=True)
+            config_file = config_dir / "auth.json"
+            
+            with open(config_file, 'w') as f:
+                json.dump({
+                    "api_url": api_url,
+                    "api_key": data["access_token"],
+                    "username": data["username"],
+                    "user_id": data["user_id"],
+                    "organization_id": data["organization_id"],
+                    "logged_in_at": datetime.now().isoformat()
+                }, f, indent=2)
+            
+            print(f"\n✓ Login successful!")
+            print(f"  Username: {data['username']}")
+            print(f"  Role: {data['role']}")
+            print(f"  Organization ID: {data['organization_id']}")
+            print(f"\n✓ Credentials saved to {config_file}")
+            print("\nYou can now use cloud sync features:")
+            print("  - Patterns will sync with your team")
+            print("  - Metrics will be aggregated for analytics")
+            print("  - Team settings will be enforced")
+        else:
+            error_detail = response.json().get("detail", "Unknown error")
+            print(f"\n✗ Login failed: {error_detail}")
+    
+    except ImportError:
+        print("\n✗ Error: 'requests' library not installed")
+        print("  Install with: pip install requests")
+    except Exception as e:
+        print(f"\n✗ Login failed: {e}")
+
+
 def main() -> int:
     """Main CLI entry point.
     
@@ -615,6 +686,17 @@ def main() -> int:
         help="Path to markdown file (default: docs/AI_PATTERNS_GUIDE.md)"
     )
 
+    # Login command (for cloud sync)
+    login_parser = subparsers.add_parser(
+        "login",
+        help="Login to feedback-loop cloud for team collaboration"
+    )
+    login_parser.add_argument(
+        "--api-url",
+        default="http://localhost:8000",
+        help="API URL (default: http://localhost:8000)"
+    )
+
     args = parser.parse_args()
     
     # Configure logging
@@ -675,6 +757,9 @@ def main() -> int:
                 ai_patterns_md=args.markdown_file
             )
             integration.sync_patterns_to_markdown()
+
+        elif args.command == "login":
+            _handle_login(args.api_url)
 
         return 0
     
