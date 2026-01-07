@@ -297,7 +297,7 @@ class MetricsCollector:
         patterns = self._extract_patterns_from_plan(content, section_heading)
 
         self.log_code_generation(
-            prompt=f"plan:{plan_path}",
+            prompt=f"plan:{plan_path.name}",
             patterns_applied=patterns,
             confidence=1.0,
             success=True,
@@ -336,6 +336,10 @@ class MetricsCollector:
                 continue
 
             # Match checklist items like "- [ ] pattern_name" without trailing annotations.
+            # Group explanation:
+            #   -\s*\[[ xX]\]\s*   -> leading checkbox marker
+            #   ([^\s(#\n]+        -> first token of the pattern name (no spaces/(#))
+            #   (?:\s+[^\s(#\n]+)* -> optional additional tokens separated by spaces
             match = re.match(
                 r"-\s*\[[ xX]\]\s*(?P<pattern>[^\s(#\n]+(?:\s+[^\s(#\n]+)*)",
                 stripped
