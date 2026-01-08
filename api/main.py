@@ -143,7 +143,13 @@ def create_api_key(user_id: int) -> str:
 
 def hash_password(password: str) -> str:
     """Hash password using PBKDF2 with per-user salt."""
-    iterations = int(os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", "210000"))
+    raw_iterations = os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", "210000")
+    try:
+        iterations = int(raw_iterations)
+        if iterations <= 0:
+            iterations = 210000
+    except (TypeError, ValueError):
+        iterations = 210000
     salt = secrets.token_bytes(16)
     digest = hashlib.pbkdf2_hmac(
         "sha256",
@@ -170,8 +176,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     if algorithm != "pbkdf2_sha256":
         return False
 
-    salt = base64.b64decode(salt_b64)
-    expected_digest = base64.b64decode(digest_b64)
+    try:
+        salt = base64.b64decode(salt_b64)
+        expected_digest = base64.b64decode(digest_b64)
+    except (ValueError, Exception):
+        # Handle malformed base64 data
+        return False
+
     derived = hashlib.pbkdf2_hmac(
         "sha256",
         plain_password.encode("utf-8"),
