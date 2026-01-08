@@ -7,7 +7,10 @@ Handles authentication, pattern sync, team management, and analytics.
 
 from datetime import datetime, timedelta
 from typing import Optional, List
-from fastapi import FastAPI, Depends, HTTPException, status, Header
+import base64
+import hmac
+import os
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
@@ -26,12 +29,26 @@ app = FastAPI(
     redoc_url="/api/redoc"
 )
 
+# CORS configuration for web dashboard.
+# Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
+def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
+    """Parse allowed origins from env configuration."""
+    if not raw_value:
+        return [
+            "http://localhost:3000",
+            "http://localhost:5173",
+        ]
+    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+
+
+allowed_origins = parse_allowed_origins(
+    os.getenv("FEEDBACK_LOOP_ALLOWED_ORIGINS")
+)
+
 # CORS middleware for web dashboard
-# TODO: PRODUCTION - Configure specific allowed origins instead of wildcard
-# Current wildcard allows any domain, which poses security risks
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with specific domains in production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -125,18 +142,43 @@ def create_api_key(user_id: int) -> str:
 
 
 def hash_password(password: str) -> str:
-    """Hash password (placeholder - use bcrypt in production).
-    
-    TODO: PRODUCTION - Replace with bcrypt, scrypt, or argon2
-    Current SHA-256 implementation is vulnerable to rainbow table attacks.
-    Recommendation: Use passlib with bcrypt
-    """
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password using PBKDF2 with per-user salt."""
+    iterations = int(os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", "210000"))
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        iterations
+    )
+    salt_b64 = base64.b64encode(salt).decode("utf-8")
+    digest_b64 = base64.b64encode(digest).decode("utf-8")
+    return f"pbkdf2_sha256${iterations}${salt_b64}${digest_b64}"
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password (placeholder - use bcrypt in production)."""
-    return hash_password(plain_password) == hashed_password
+    """Verify password against PBKDF2 hash or legacy SHA-256."""
+    if "$" not in hashed_password:
+        legacy = hashlib.sha256(plain_password.encode("utf-8")).hexdigest()
+        return hmac.compare_digest(legacy, hashed_password)
+
+    try:
+        algorithm, iterations, salt_b64, digest_b64 = hashed_password.split("$", 3)
+    except ValueError:
+        return False
+
+    if algorithm != "pbkdf2_sha256":
+        return False
+
+    salt = base64.b64decode(salt_b64)
+    expected_digest = base64.b64decode(digest_b64)
+    derived = hashlib.pbkdf2_hmac(
+        "sha256",
+        plain_password.encode("utf-8"),
+        salt,
+        int(iterations)
+    )
+    return hmac.compare_digest(derived, expected_digest)
 
 
 async def get_current_user(
