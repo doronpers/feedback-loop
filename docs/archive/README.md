@@ -1,20 +1,16 @@
 # Documentation Archive
 
-This directory contains historical documentation that provides context about the repository's evolution but is not needed for daily use.
+This directory contains historical or exploratory documentation that is not required for day-to-day use.
 
 ## Contents
 
-### DARK_HORSE_OPTIMIZATION_HISTORY.md
-Historical record of the Dark Horse optimization effort that added support for individualized learning paths to the feedback-loop project. This document combines:
-- The original overview of what was done and why
-- The executive summary of impact and recommendations
-- Context for maintainers about the Dark Horse principles applied
+- **DARK_HORSE_OPTIMIZATION_HISTORY.md** — historical record of the Dark Horse documentation overhaul.
+- **DARK_HORSE_ANALYSIS.md** — maintainer-facing reflection questions and observations.
+- **IDE_COMPANION_FEASIBILITY.md** — detailed feasibility study for an IDE companion.
+- **IDE_COMPANION_SUMMARY.md** — executive summary of the IDE companion research.
+- **PHASE1_SUMMARY.md** — summary of the initial cloud-sync phase work.
+- **AUTOMATION_PLAN.md** — extended automation roadmap draft.
 
-**Note**: For current Dark Horse functionality and guidance, see:
-- [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
-- [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive guide
-- [docs/DARK_HORSE_ANALYSIS.md](../DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+## Why archive?
 
-## Why Archive?
-
-These documents provide valuable historical context but created redundancy in the documentation structure. The useful navigation and user-facing content has been integrated into the main guides, while the historical context is preserved here for reference.
+These documents add valuable context but can distract from the primary user flow. The current guidance lives in the main docs, while this archive keeps history accessible.

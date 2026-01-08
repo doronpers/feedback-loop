@@ -73,6 +73,10 @@ The API gateway provides RESTful endpoints for:
 - CORS support for web dashboard
 - Request validation with Pydantic
 
+**Configuration Notes:**
+- `FEEDBACK_LOOP_ALLOWED_ORIGINS` (comma-separated) controls CORS origins.
+- Passwords are stored with PBKDF2 hashing in the in-memory store.
+
 ### 1.2 User & Organization Management
 
 **Status:** ✅ Schema Implemented
@@ -219,6 +223,10 @@ python main.py
 # Or use uvicorn directly
 uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+**Environment configuration** (optional):
+- `FEEDBACK_LOOP_ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173"`
+- `FEEDBACK_LOOP_PASSWORD_ITERATIONS=210000`
 
 The API will be available at:
 - API endpoints: http://localhost:8000/api/v1/
