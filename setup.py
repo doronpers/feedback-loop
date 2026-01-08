@@ -39,6 +39,10 @@ setup(
         "httpx>=0.24.0",
         "uvicorn>=0.23.0",
         "pygls>=1.0.0",
+        "requests>=2.28.0",
+        "sqlalchemy>=2.0.0",
+        "pydantic>=2.0.0",
+        "email-validator>=2.0.0",
     ],
     extras_require={
         "test": test_requires,
