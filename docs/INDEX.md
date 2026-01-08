@@ -9,7 +9,7 @@ A concise map of the documentation set. Start with the shortest path to value, t
 
 ## Core guides
 
-- **[AI Patterns Guide](AI_PATTERNS_GUIDE.md)** — workflows + pattern catalog.
+- **[AI Patterns Guide](AI_PATTERNS_GUIDE.md)** — condensed workflows + pattern catalog.
 - **[Metrics Guide](METRICS_GUIDE.md)** — collection, analysis, CI/CD.
 - **[LLM Integration Guide](LLM_GUIDE.md)** — provider setup + prompts.
 - **[Cloud Sync](CLOUD_SYNC.md)** — team sync + API usage.

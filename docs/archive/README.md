@@ -6,6 +6,7 @@ This directory contains historical or exploratory documentation that is not requ
 
 - **DARK_HORSE_OPTIMIZATION_HISTORY.md** — historical record of the Dark Horse documentation overhaul.
 - **DARK_HORSE_ANALYSIS.md** — maintainer-facing reflection questions and observations.
+- **AI_PATTERNS_GUIDE_FULL.md** — full AI patterns workflow and extended examples.
 - **IDE_COMPANION_FEASIBILITY.md** — detailed feasibility study for an IDE companion.
 - **IDE_COMPANION_SUMMARY.md** — executive summary of the IDE companion research.
 - **PHASE1_SUMMARY.md** — summary of the initial cloud-sync phase work.
