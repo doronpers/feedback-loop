@@ -547,7 +547,7 @@ feedback-loop/
 │   ├─► Section 8: Customization Examples
 │   └─► Section 9: FAQ + Resources
 │
-├── 🔍 docs/DARK_HORSE_ANALYSIS.md ◄─── FOR MAINTAINERS
+├── 🔍 docs/archive/DARK_HORSE_ANALYSIS.md ◄─── FOR MAINTAINERS
 │   │
 │   ├─► Questions for Maintainers (10 questions)
 │   ├─► Observations about individualization

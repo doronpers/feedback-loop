@@ -5,7 +5,7 @@
 > **Note**: For current Dark Horse functionality, see:
 > - [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
 > - [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive user guide
-> - [docs/DARK_HORSE_ANALYSIS.md](../DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+> - [docs/archive/DARK_HORSE_ANALYSIS.md](../archive/DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
 
 ---
 
@@ -103,7 +103,7 @@ Success = Your fulfillment, not feature completeness
 
 ---
 
-#### 3. docs/DARK_HORSE_ANALYSIS.md (12KB, 319 lines)
+#### 3. docs/archive/DARK_HORSE_ANALYSIS.md (12KB, 319 lines)
 **Purpose**: Todd Rose-style critical analysis  
 **For**: Repository maintainers and contributors
 
@@ -345,7 +345,7 @@ Options:
 **For current documentation, see:**
 - [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
 - [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive guide
-- [docs/DARK_HORSE_ANALYSIS.md](../DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+- [docs/archive/DARK_HORSE_ANALYSIS.md](../archive/DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
 
 **Historical references:**
 - ~~DARK_HORSE_SUMMARY.md~~ (merged into this file)
@@ -410,7 +410,7 @@ A comprehensive guide that includes:
 **Key message**: "The best way to use feedback-loop is YOUR way."
 
 ### 2. Dark Horse Analysis (12KB)
-**Location**: `docs/DARK_HORSE_ANALYSIS.md`
+**Location**: `docs/archive/DARK_HORSE_ANALYSIS.md`
 
 A Todd Rose-style analysis containing:
 - **10 key questions** for repository maintainers to reflect on
@@ -500,7 +500,7 @@ As Todd Rose, I'd be curious to know:
 5. **What brings YOU fulfillment in maintaining this?**  
    → Leading by example with micro-motives
 
-See `docs/DARK_HORSE_ANALYSIS.md` for 5 more questions.
+See `docs/archive/DARK_HORSE_ANALYSIS.md` for 5 more questions.
 
 ---
 

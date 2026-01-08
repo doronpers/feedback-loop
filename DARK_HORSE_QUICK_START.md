@@ -90,7 +90,7 @@ Includes:
 
 **Want to understand the thinking behind this?**
 
-👉 **[Dark Horse Analysis](docs/DARK_HORSE_ANALYSIS.md)** - Questions & observations for maintainers  
+👉 **[Dark Horse Analysis](docs/archive/DARK_HORSE_ANALYSIS.md)** - Questions & observations for maintainers  
 👉 **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context and executive summary
 
 ---
@@ -126,7 +126,7 @@ Pick whichever sounds most interesting RIGHT NOW:
 - **[Traditional Docs](README.md#documentation)** - If you prefer linear learning
 
 **For Maintainers:**
-- **[Dark Horse Analysis](docs/DARK_HORSE_ANALYSIS.md)** - Questions and recommendations for repo maintainers
+- **[Dark Horse Analysis](docs/archive/DARK_HORSE_ANALYSIS.md)** - Questions and recommendations for repo maintainers
 - **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context of the Dark Horse optimization
 
 ---

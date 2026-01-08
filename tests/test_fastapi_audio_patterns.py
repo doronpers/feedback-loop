@@ -364,6 +364,9 @@ class TestEdgeCases:
         restricted_file = tmp_path / "restricted.wav"
         restricted_file.write_bytes(b"content")
         restricted_file.chmod(0o000)  # Remove all permissions
+
+        if os.access(restricted_file, os.R_OK):
+            pytest.skip("Permissions not enforced in this environment")
         
         try:
             with pytest.raises(HTTPException) as exc_info:

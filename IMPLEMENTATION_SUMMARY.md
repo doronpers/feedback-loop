@@ -46,8 +46,8 @@ This pull request successfully transforms feedback-loop into a more accessible, 
 
 ### 6. Comprehensive Documentation (35+ pages)
 - `docs/LLM_GUIDE.md` - LLM integration guide
-- `docs/IDE_COMPANION_FEASIBILITY.md` - 24-page technical assessment
-- `docs/IDE_COMPANION_SUMMARY.md` - Executive summary
+- `docs/archive/IDE_COMPANION_FEASIBILITY.md` - 24-page technical assessment
+- `docs/archive/IDE_COMPANION_SUMMARY.md` - Executive summary
 - Updated README and guides
 
 ### 7. Tests (250+ lines)

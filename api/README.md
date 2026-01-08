@@ -38,6 +38,16 @@ uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 python api/main.py
 ```
 
+### Configuration
+
+```bash
+# Restrict CORS origins (comma-separated)
+export FEEDBACK_LOOP_ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173"
+
+# Tune PBKDF2 iterations for password hashing
+export FEEDBACK_LOOP_PASSWORD_ITERATIONS=210000
+```
+
 The API will be available at:
 - http://localhost:8000/api/v1/
 - API docs: http://localhost:8000/api/docs
