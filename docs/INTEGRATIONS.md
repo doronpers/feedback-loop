@@ -4,8 +4,8 @@ This page summarizes how to connect feedback-loop with common developer workflow
 
 ## GitHub Actions (CI)
 
-- See **Continuous Feedback via GitHub Actions** in `docs/IMPLEMENTATION_DETAILS.md` for the full workflow and PR comment behavior.
-- See the **GitHub Actions Example** in `docs/METRICS_GUIDE.md` for a copy-paste workflow recipe.
+- See **Continuous Feedback via GitHub Actions** in `IMPLEMENTATION_DETAILS.md` for the full workflow and PR comment behavior.
+- See the **GitHub Actions Example** in `METRICS_GUIDE.md` for a copy-paste workflow recipe.
 
 ## Pre-commit hook (local Git)
 
