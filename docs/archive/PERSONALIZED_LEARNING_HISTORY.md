@@ -1,15 +1,15 @@
-# Dark Horse Optimization History
+# Personalized Learning History
 
-**Historical documentation: This file consolidates DARK_HORSE_OVERVIEW.md and DARK_HORSE_SUMMARY.md for archival purposes.**
+**Historical documentation: This file documents the design and implementation of personalized learning approaches.**
 
-> **Note**: For current Dark Horse functionality, see:
-> - [DARK_HORSE_QUICK_START.md](../../DARK_HORSE_QUICK_START.md) - Quick entry points
-> - [docs/DARK_HORSE_USERS_GUIDE.md](../DARK_HORSE_USERS_GUIDE.md) - Comprehensive user guide
-> - [docs/archive/DARK_HORSE_ANALYSIS.md](../archive/DARK_HORSE_ANALYSIS.md) - Analysis for maintainers
+> **Note**: For current functionality, see:
+> - [PERSONALIZED_LEARNING_GUIDE.md](../../PERSONALIZED_LEARNING_GUIDE.md) - Quick entry points
+> - [docs/FLEXIBLE_LEARNING_PATHS.md](../FLEXIBLE_LEARNING_PATHS.md) - Comprehensive user guide
+> - [docs/archive/PERSONALIZED_LEARNING_ANALYSIS.md](../archive/PERSONALIZED_LEARNING_ANALYSIS.md) - Analysis for maintainers
 
 ---
 
-# Dark Horse Optimization Overview
+# Personalized Learning Approach Overview
 
 **A comprehensive review and enhancement of feedback-loop for individualized learning paths**
 
@@ -17,7 +17,7 @@
 
 ## What Was Done
 
-Acting as Todd Rose (author of "Dark Horse: Achieving Success Through the Pursuit of Fulfillment"), I reviewed the feedback-loop repository and added extensive support for developers who learn differently, work differently, and succeed differently.
+Inspired by Todd Rose's work on individualized paths to success (from "Dark Horse: Achieving Success Through the Pursuit of Fulfillment"), this initiative reviewed the feedback-loop repository and added extensive support for developers who learn differently, work differently, and succeed differently.
 
 ---
 
@@ -38,15 +38,15 @@ Traditional documentation assumes:
 
 ---
 
-## The Solution: Dark Horse Principles
+## The Solution: Personalized Learning Principles
 
 ### 1. Individualization over Standardization
 Multiple entry points instead of one "correct" path
 
-### 2. Know Your Micro-Motives  
+### 2. Understand Your Motivations
 Navigation based on what drives YOU (curiosity, problem-solving, mastery, etc.)
 
-### 3. Fulfillment Strategies
+### 3. Flexible Strategies
 6 different workflow strategies, all equally valid
 
 ### 4. Know Your Choices

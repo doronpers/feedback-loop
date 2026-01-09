@@ -298,7 +298,7 @@ pytest tests/ -v
 - [ ] React/Vite frontend
 - [ ] Time saved calculations
 - [ ] ROI metrics visualization
-- [ ] Dark Horse fulfillment metrics
+- [ ] Personalized fulfillment metrics
 
 ### Phase 4: Enterprise & Compliance
 - [ ] SSO/SAML integration (Okta, AzureAD)

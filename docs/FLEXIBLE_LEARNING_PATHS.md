@@ -1,12 +1,10 @@
-# Dark Horse Users Guide
+# Flexible Learning Paths
 
 **For developers who learn differently, work differently, and succeed differently.**
 
-> "Excellence is always idiosyncratic." — Todd Rose
+## About This Guide
 
-## What is a "Dark Horse" Developer?
-
-You might be a Dark Horse developer if you:
+This guide is for developers who don't follow traditional learning paths. You might find this useful if you:
 
 - **Reject linear paths**: Skip tutorials, jump to source code, or learn backwards from solutions to problems
 - **Follow intrinsic motivation**: Code because you're curious about *how* things work, not just to ship features
@@ -19,15 +17,15 @@ You might be a Dark Horse developer if you:
 
 ---
 
-## The Dark Horse Principles Applied to feedback-loop
+## Personalized Learning Approaches
 
-### 1. Know Your Micro-Motives
+### 1. Identify Your Motivation
 
 **What drives YOU to use this tool?**
 
 Different motivations lead to different entry points:
 
-| Your Micro-Motive | Start Here | Why |
+| Your Primary Interest | Start Here | Why |
 |-------------------|------------|-----|
 | **"I want to understand systems"** | [`demo_metrics.py`](/demo_metrics.py) → [`metrics/`](/metrics/) source | See how feedback loops work in practice, then dive into implementation |
 | **"I need to solve a specific problem"** | [Quick Reference](QUICK_REFERENCE.md) → Pattern #X | Get the solution now, understand theory later |
@@ -202,7 +200,7 @@ Use what serves YOUR goals, ignore the rest.
 4. **Reference**: Bookmark [Quick Reference](QUICK_REFERENCE.md)
 5. **Mastery**: Deep dive [Metrics Guide](METRICS_GUIDE.md) + [FastAPI Guide](FASTAPI_GUIDE.md)
 
-**But remember**: You can skip ahead anytime your micro-motives pull you elsewhere.
+**But remember**: You can skip ahead anytime your interests pull you elsewhere.
 
 ---
 
@@ -352,7 +350,7 @@ python -m metrics.integrate analyze > team-patterns.json
 
 ---
 
-## Frequently Asked Questions (Dark Horse Edition)
+## Frequently Asked Questions
 
 ### "I don't learn from documentation. Can I still use this?"
 
@@ -432,7 +430,7 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 
 ---
 
-## Success Metrics (Dark Horse Style)
+## Alternative Success Metrics
 
 **Standard metrics** (ignore if you want):
 - Lines of code
@@ -440,7 +438,7 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 - Features used
 - Documentation read
 
-**Dark Horse metrics** (what actually matters):
+**Alternative metrics** (what actually matters):
 - ✅ Are you enjoying using this tool?
 - ✅ Is it solving problems you care about?
 - ✅ Are you learning in a way that works for you?
@@ -451,7 +449,7 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 
 ---
 
-## Contributing Your Dark Horse Path
+## Contributing Your Learning Path
 
 **Found a unique way to use feedback-loop?** Share it:
 
@@ -469,10 +467,10 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 
 ---
 
-## Resources for Dark Horse Developers
+## Additional Resources
 
 ### Books
-- *Dark Horse* by Todd Rose & Ogi Ogas (obviously)
+- *Dark Horse* by Todd Rose & Ogi Ogas (on personalized paths to success)
 - *A Mind for Numbers* by Barbara Oakley (learning strategies)
 - *Range* by David Epstein (generalists vs. specialists)
 
@@ -510,22 +508,22 @@ Don't try to do everything. Pick what excites you RIGHT NOW:
 
 ---
 
-*This guide was created by applying Todd Rose's Dark Horse principles to the feedback-loop repository. It acknowledges that developers have diverse learning styles, motivations, and workflows—and that's a strength, not a problem to solve.*
+*This guide acknowledges that developers have diverse learning styles, motivations, and workflows—and that's a strength, not a problem to solve.*
 
 **Questions or feedback?** Open a GitHub Discussion or issue. We want to know how you're using this tool in ways we never imagined.
 
-**Help shape the future:** Take our [User Survey](USER_SURVEY.md) to share your micro-motives, learning style, and unique usage patterns.
+**Help shape the future:** Take our [User Survey](USER_SURVEY.md) to share your motivations, learning style, and unique usage patterns.
 
 ---
 
 ## Appendix: Documentation Navigation Map
 
-**Visual guide to how all Dark Horse materials connect:**
+**Visual guide to how personalized learning materials connect:**
 
 ```
 feedback-loop/
 │
-├── 🚀 DARK_HORSE_QUICK_START.md ◄─── START HERE (action-oriented)
+├── 🚀 PERSONALIZED_LEARNING_GUIDE.md ◄─── START HERE (action-oriented)
 │   │
 │   ├─► "Just show me" → python demo.py
 │   ├─► "Ask questions" → ./bin/fl-chat
@@ -535,19 +533,19 @@ feedback-loop/
 │   ├─► "Solve problem" → grep in examples/
 │   └─► "Integrate" → pytest --enable-metrics
 │
-├── 📖 docs/DARK_HORSE_USERS_GUIDE.md ◄─── THIS GUIDE (comprehensive)
+├── 📖 docs/FLEXIBLE_LEARNING_PATHS.md ◄─── THIS GUIDE (comprehensive)
 │   │
-│   ├─► Section 1: What is a Dark Horse Developer?
-│   ├─► Section 2: Know Your Micro-Motives (7 entry points)
+│   ├─► Section 1: About This Guide
+│   ├─► Section 2: Identify Your Motivation (7 entry points)
 │   ├─► Section 3: Know Your Choices (5 navigation styles)
-│   ├─► Section 4: Know Your Strategies (6 workflow strategies)
-│   ├─► Section 5: Ignore the Destination (fulfillment-based success)
+│   ├─► Section 4: Personalized Workflows (6 strategies)
+│   ├─► Section 5: Focus on Your Goals (fulfillment-based success)
 │   ├─► Section 6: Self-Assessment (find your profile)
 │   ├─► Section 7: Learning Profiles (4 deep dives)
 │   ├─► Section 8: Customization Examples
 │   └─► Section 9: FAQ + Resources
 │
-├── 🔍 docs/archive/DARK_HORSE_ANALYSIS.md ◄─── FOR MAINTAINERS
+├── 🔍 docs/archive/PERSONALIZED_LEARNING_ANALYSIS.md ◄─── FOR MAINTAINERS
 │   │
 │   ├─► Questions for Maintainers (10 questions)
 │   ├─► Observations about individualization
@@ -556,10 +554,10 @@ feedback-loop/
 │
 └── 📚 docs/archive/ ◄─── HISTORICAL CONTEXT
     │
-    └─► DARK_HORSE_OPTIMIZATION_HISTORY.md
+    └─► PERSONALIZED_LEARNING_HISTORY.md
         ├─► Overview of what was done
         ├─► Executive summary and impact
-        └─► Context for the optimization effort
+        └─► Context for the design decisions
 ```
 
 **Traditional Documentation (still available):**
