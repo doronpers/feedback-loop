@@ -1,0 +1,33 @@
+{
+  "bugs": [
+    {
+      "pattern": "numpy_json_serialization",
+      "error": "TypeError: Object of type float64 is not JSON serializable",
+      "code": "result = {\"score\": np.mean(data)}",
+      "file_path": "api/endpoints.py",
+      "line": 42,
+      "stack_trace": null,
+      "timestamp": "2026-01-09T12:43:10.577896",
+      "count": 1
+    }
+  ],
+  "test_failures": [],
+  "code_reviews": [],
+  "performance_metrics": [],
+  "deployment_issues": [],
+  "code_generation": [
+    {
+      "prompt": "Create function to process data",
+      "patterns_applied": [
+        "numpy_json_serialization",
+        "bounds_checking"
+      ],
+      "confidence": 0.92,
+      "success": true,
+      "code_length": 150,
+      "compilation_error": null,
+      "metadata": {},
+      "timestamp": "2026-01-09T12:43:10.577911"
+    }
+  ]
+}
