@@ -32,6 +32,13 @@ pip install -e .
 pip install -e .[test]
 ```
 
+### Desktop Launchers (Easy Mode!)
+
+**Mac:** Double-click `launch-feedback-loop.command`  
+**Windows:** Double-click `launch-feedback-loop.bat`
+
+These launchers provide an interactive menu to run any feedback-loop tool. See [DESKTOP_LAUNCHERS.md](DESKTOP_LAUNCHERS.md) for details.
+
 ### Interactive setup
 
 ```bash
