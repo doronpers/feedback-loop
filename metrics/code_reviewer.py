@@ -288,7 +288,8 @@ Provide your response in the following format:
                     line = line.strip()
                     if line:
                         # Match numbered lists (1., 2., etc), bullet points (-, *), or simple text
-                        match = re.match(r'^[\d\.\-\*\s]+(.+)$', line)
+                        # Pattern: optional number/bullet + optional space + content
+                        match = re.match(r'^(?:\d+\.|\*|\-)?\s*(.+)$', line)
                         if match:
                             clean_line = match.group(1).strip()
                             if clean_line:
@@ -302,8 +303,8 @@ Provide your response in the following format:
                 else:
                     rating_text = rating_section.strip().split("\n")[0].strip()
                 
-                # Extract number
-                numbers = re.findall(r'\d+', rating_text)
+                # Extract number from the beginning of rating text
+                numbers = re.findall(r'^\s*(\d+)', rating_text)
                 if numbers:
                     difficulty = min(10, max(1, int(numbers[0])))
             
