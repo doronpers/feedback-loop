@@ -2,12 +2,26 @@
 
 This directory contains Apache Superset dashboard configurations and integration scripts for visualizing feedback-loop metrics.
 
+## 📚 Documentation Index
+
+**Start Here:**
+- **[SUPERSET_ANALYSIS_SUMMARY.md](SUPERSET_ANALYSIS_SUMMARY.md)** - Executive summary and quick start guide
+- **[DASHBOARD_DESIGN_RECOMMENDATIONS.md](DASHBOARD_DESIGN_RECOMMENDATIONS.md)** - Detailed dashboard designs with SQL queries
+- **[DATABASE_CONFIGURATION.md](DATABASE_CONFIGURATION.md)** - Complete database schema and connection guide
+
+**Also See:**
+- **[SUPERSET_INTEGRATION.md](../docs/SUPERSET_INTEGRATION.md)** - General integration guide
+
 ## Overview
 
 Apache Superset is used to provide powerful analytics and visualization capabilities for:
 - **Code Quality Metrics**: Track complexity, coverage, and lint scores over time
 - **Pattern Analysis**: Visualize pattern frequency and effectiveness
 - **Development Trends**: Monitor AI-assisted development metrics and improvement patterns
+- **Fusion Engine Analytics**: Monitor AI code generation with pattern fusion
+- **Confidence Scoring**: Track pattern effectiveness and calibration
+- **Detection Results**: Comprehensive bug, test, and review issue tracking
+- **Audit Reporting**: Compliance and pattern analysis reporting
 
 ## Directory Structure
 
