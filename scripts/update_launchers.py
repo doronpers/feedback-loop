@@ -34,12 +34,15 @@ def find_tools() -> List[Dict[str, str]]:
                 with open(script, 'r') as f:
                     lines = f.readlines()
                     description = "Tool"
-                    for idx, line in enumerate(lines[:10]):
+                    for idx, line in enumerate(lines[:15]):
+                        # Check for docstring start (both quote styles)
                         if '"""' in line or "'''" in line:
                             # Found docstring, try to extract description
-                            for next_line in lines[idx+1:idx+5]:
-                                if next_line.strip() and not next_line.strip().startswith('"""'):
-                                    description = next_line.strip()
+                            for next_line in lines[idx+1:min(idx+10, len(lines))]:
+                                # Skip lines that are part of the docstring delimiter or empty
+                                stripped = next_line.strip()
+                                if stripped and not stripped.startswith('"""') and not stripped.startswith("'''"):
+                                    description = stripped
                                     break
                             break
                     
@@ -66,6 +69,10 @@ def find_demos() -> List[str]:
 def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
     """Generate Mac launcher script content."""
     
+    # Calculate max tool name width for alignment
+    max_name_width = max((len(tool["name"]) for tool in tools), default=10)
+    max_name_width = max(max_name_width, 10)  # At least 10 characters
+    
     # Build menu items
     menu_items = []
     case_items = []
@@ -83,7 +90,7 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
         tool_key = tool["name"].split()[0]  # Get first word
         emoji, desc = tool_map.get(tool_key, ("🔧", tool.get("description", "Tool")))
         
-        menu_items.append(f'    echo "  {item_num}) {emoji} {tool["name"]:<15} - {desc}"')
+        menu_items.append(f'    echo "  {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}"')
         
         case_items.append(f"""        {item_num})
             echo "🚀 Launching {tool['name']}..."
@@ -255,6 +262,10 @@ done
 def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
     """Generate Windows batch file content."""
     
+    # Calculate max tool name width for alignment
+    max_name_width = max((len(tool["name"]) for tool in tools), default=10)
+    max_name_width = max(max_name_width, 10)  # At least 10 characters
+    
     # Build menu items
     menu_items = []
     goto_checks = []
@@ -274,7 +285,7 @@ def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str]) -> 
         emoji, desc = tool_map.get(tool_key, ("🔧", tool.get("description", "Tool")))
         label = tool_key.upper()
         
-        menu_items.append(f'echo   {item_num}) {emoji} {tool["name"]:<15} - {desc}')
+        menu_items.append(f'echo   {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}')
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto {label}')
         
         script_path = tool['script'].replace('/', '\\')

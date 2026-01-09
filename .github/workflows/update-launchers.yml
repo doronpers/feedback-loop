@@ -90,8 +90,8 @@ jobs:
       - name: Check for launcher changes
         id: check_changes
         run: |
-          git add -N launch-feedback-loop.command launch-feedback-loop.bat DESKTOP_LAUNCHERS.md
-          if git diff --quiet HEAD -- launch-feedback-loop.command launch-feedback-loop.bat DESKTOP_LAUNCHERS.md; then
+          git add -N launch-feedback-loop.command launch-feedback-loop.bat
+          if git diff --quiet HEAD -- launch-feedback-loop.command launch-feedback-loop.bat; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes detected in launchers"
           else
