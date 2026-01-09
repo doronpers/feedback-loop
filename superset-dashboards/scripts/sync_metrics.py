@@ -143,10 +143,18 @@ class MetricsSync:
     
     def _update_last_sync_time(self):
         """Update last sync timestamp in log file."""
+        # Mask sensitive database credentials before logging
+        if '@' in self.db_uri:
+            # Extract only the host/database portion for logging
+            uri_parts = self.db_uri.split('@')
+            masked_uri = '@'.join(['***', uri_parts[-1]])
+        else:
+            masked_uri = self.db_uri
+        
         log_data = {
             'last_sync': datetime.now().isoformat(),
             'metrics_path': str(self.metrics_path),
-            'db_uri': self.db_uri.split('@')[-1] if '@' in self.db_uri else self.db_uri
+            'db_uri': masked_uri
         }
         
         with open(self.log_path, 'w') as f:

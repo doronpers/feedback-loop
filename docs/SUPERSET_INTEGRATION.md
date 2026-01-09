@@ -140,8 +140,8 @@ docker run -d \
 
 **Option A: Docker (Recommended)**
 ```bash
-# Clone Superset (or your fork)
-git clone https://github.com/doronpers/superset.git
+# Clone official Apache Superset
+git clone https://github.com/apache/superset.git
 cd superset
 
 # Start Superset
@@ -150,6 +150,8 @@ docker-compose -f docker-compose-non-dev.yml up -d
 # Access at http://localhost:8088
 # Default credentials: admin/admin
 ```
+
+**Note:** If you need custom modifications, you can use a fork (e.g., `https://github.com/doronpers/superset`), but for most use cases, the official Apache Superset repository is recommended.
 
 **Option B: Manual Installation**
 ```bash

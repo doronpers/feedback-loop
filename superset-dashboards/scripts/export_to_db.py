@@ -223,7 +223,7 @@ class MetricsExporter:
                     success=gen.get('success', False),
                     code_length=gen.get('code_length'),
                     compilation_error=gen.get('compilation_error'),
-                    generation_metadata=gen.get('metadata', {}),  # Use renamed field
+                    generation_metadata=gen.get('metadata', {}),  # Store input metadata in generation_metadata field
                     timestamp=self._parse_timestamp(gen.get('timestamp')),
                     patterns_count=len(patterns)
                 )
@@ -293,7 +293,7 @@ class MetricsExporter:
         """Parse timestamp string to datetime object.
         
         Args:
-            timestamp_str: ISO format timestamp string
+            timestamp_str: ISO format timestamp string (supports Z or +HH:MM timezone)
             
         Returns:
             datetime object
@@ -302,9 +302,15 @@ class MetricsExporter:
             return datetime.utcnow()
         
         try:
-            # Try parsing ISO format
-            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            # Handle ISO format with 'Z' suffix (UTC)
+            if timestamp_str.endswith('Z'):
+                timestamp_str = timestamp_str.replace('Z', '+00:00')
+            
+            # Parse ISO format timestamp
+            return datetime.fromisoformat(timestamp_str)
         except (ValueError, AttributeError):
+            # If parsing fails, return current time
+            logger.warning(f"Failed to parse timestamp: {timestamp_str}, using current time")
             return datetime.utcnow()
 
 
