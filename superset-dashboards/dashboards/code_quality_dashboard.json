@@ -1,0 +1,145 @@
+{
+  "dashboard_title": "Code Quality Dashboard",
+  "description": "Visualizes bugs, test failures, and code review issues for feedback-loop metrics",
+  "position_json": {
+    "DASHBOARD_VERSION_KEY": "v2",
+    "GRID_ID": {
+      "type": "GRID",
+      "id": "GRID_ID",
+      "children": [
+        "ROW-header",
+        "ROW-metrics",
+        "ROW-bugs",
+        "ROW-patterns"
+      ]
+    },
+    "ROW-header": {
+      "type": "ROW",
+      "id": "ROW-header",
+      "children": ["CHART-title", "CHART-summary"],
+      "meta": {"background": "BACKGROUND_TRANSPARENT"}
+    },
+    "ROW-metrics": {
+      "type": "ROW",
+      "id": "ROW-metrics",
+      "children": ["CHART-bugs-count", "CHART-test-failures", "CHART-code-reviews", "CHART-deployment"]
+    },
+    "ROW-bugs": {
+      "type": "ROW",
+      "id": "ROW-bugs",
+      "children": ["CHART-bug-trends", "CHART-pattern-distribution"]
+    },
+    "ROW-patterns": {
+      "type": "ROW",
+      "id": "ROW-patterns",
+      "children": ["CHART-top-patterns", "CHART-severity-breakdown"]
+    }
+  },
+  "slices": [
+    {
+      "slice_name": "Total Bugs",
+      "viz_type": "big_number_total",
+      "description": "Total number of bugs tracked",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "big_number_total",
+        "metrics": ["COUNT(*)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Test Failures",
+      "viz_type": "big_number_total",
+      "description": "Total number of test failures",
+      "query_context": {
+        "datasource": "metrics_test_failures",
+        "viz_type": "big_number_total",
+        "metrics": ["COUNT(*)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Code Review Issues",
+      "viz_type": "big_number_total",
+      "description": "Total number of code review issues",
+      "query_context": {
+        "datasource": "metrics_code_reviews",
+        "viz_type": "big_number_total",
+        "metrics": ["COUNT(*)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Deployment Issues",
+      "viz_type": "big_number_total",
+      "description": "Total deployment issues",
+      "query_context": {
+        "datasource": "metrics_deployment",
+        "viz_type": "big_number_total",
+        "metrics": ["COUNT(*)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Bug Trends Over Time",
+      "viz_type": "line",
+      "description": "Line chart showing bug counts by pattern over time",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "line",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["timestamp", "pattern"],
+        "time_grain_sqla": "P1D",
+        "time_range": "Last 30 days",
+        "order_desc": true
+      }
+    },
+    {
+      "slice_name": "Pattern Distribution",
+      "viz_type": "pie",
+      "description": "Pie chart of bug patterns distribution",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "pie",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["pattern"],
+        "order_desc": true,
+        "row_limit": 10
+      }
+    },
+    {
+      "slice_name": "Top Problem Patterns",
+      "viz_type": "table",
+      "description": "Table showing most frequent problem patterns",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "table",
+        "metrics": ["COUNT(*)", "SUM(count)"],
+        "groupby": ["pattern", "error"],
+        "order_desc": true,
+        "row_limit": 20
+      }
+    },
+    {
+      "slice_name": "Severity Breakdown",
+      "viz_type": "dist_bar",
+      "description": "Bar chart showing severity distribution of code review issues",
+      "query_context": {
+        "datasource": "metrics_code_reviews",
+        "viz_type": "dist_bar",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["severity"],
+        "order_desc": true
+      }
+    }
+  ],
+  "metadata": {
+    "color_scheme": "supersetColors",
+    "refresh_frequency": 300,
+    "timed_refresh_immune_slices": [],
+    "expanded_slices": {},
+    "filter_scopes": {},
+    "default_filters": "{}",
+    "native_filter_configuration": []
+  }
+}

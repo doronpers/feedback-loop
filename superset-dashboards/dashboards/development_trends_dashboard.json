@@ -1,0 +1,216 @@
+{
+  "dashboard_title": "Development Trends Dashboard",
+  "description": "Tracks AI-assisted development metrics, code generation, and improvement patterns over time",
+  "position_json": {
+    "DASHBOARD_VERSION_KEY": "v2",
+    "GRID_ID": {
+      "type": "GRID",
+      "id": "GRID_ID",
+      "children": [
+        "ROW-header",
+        "ROW-generation",
+        "ROW-performance",
+        "ROW-trends"
+      ]
+    }
+  },
+  "slices": [
+    {
+      "slice_name": "Code Generation Success Rate",
+      "viz_type": "big_number",
+      "description": "Overall AI code generation success rate",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number",
+        "metrics": ["AVG(CASE WHEN success THEN 100 ELSE 0 END)"],
+        "filters": [],
+        "suffix": "%",
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Average Confidence Score",
+      "viz_type": "big_number",
+      "description": "Average confidence score of code generation",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number",
+        "metrics": ["AVG(confidence * 100)"],
+        "filters": [],
+        "suffix": "%",
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Patterns Per Generation",
+      "viz_type": "big_number",
+      "description": "Average patterns applied per code generation",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number",
+        "metrics": ["AVG(patterns_count)"],
+        "filters": [],
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Total Code Generated",
+      "viz_type": "big_number_total",
+      "description": "Total lines of code generated",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number_total",
+        "metrics": ["SUM(code_length)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Generation Success Over Time",
+      "viz_type": "area",
+      "description": "Area chart showing success rate trend",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "area",
+        "metrics": [
+          "SUM(CASE WHEN success THEN 1 ELSE 0 END)",
+          "SUM(CASE WHEN NOT success THEN 1 ELSE 0 END)"
+        ],
+        "groupby": ["timestamp"],
+        "time_grain_sqla": "P1D",
+        "time_range": "Last 90 days",
+        "order_desc": true
+      }
+    },
+    {
+      "slice_name": "Confidence Distribution",
+      "viz_type": "box_plot",
+      "description": "Box plot showing confidence score distribution",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "box_plot",
+        "metrics": ["confidence"],
+        "groupby": ["timestamp"],
+        "time_grain_sqla": "P1W",
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Performance Metrics",
+      "viz_type": "scatter",
+      "description": "Scatter plot of execution time vs file size",
+      "query_context": {
+        "datasource": "metrics_performance",
+        "viz_type": "scatter",
+        "metrics": ["execution_time_ms", "file_size_bytes"],
+        "groupby": ["function_name"],
+        "filters": [{"col": "execution_time_ms", "op": "IS NOT NULL"}]
+      }
+    },
+    {
+      "slice_name": "Deployment Issues Timeline",
+      "viz_type": "event_flow",
+      "description": "Timeline of deployment issues",
+      "query_context": {
+        "datasource": "metrics_deployment",
+        "viz_type": "event_flow",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["timestamp", "issue_type", "environment"],
+        "time_grain_sqla": "P1D",
+        "time_range": "Last 60 days",
+        "order_desc": true
+      }
+    },
+    {
+      "slice_name": "Resolution Time Distribution",
+      "viz_type": "histogram",
+      "description": "Histogram of deployment issue resolution times",
+      "query_context": {
+        "datasource": "metrics_deployment",
+        "viz_type": "histogram",
+        "metrics": ["AVG(resolution_time_minutes)"],
+        "groupby": ["environment"],
+        "filters": [{"col": "resolution_time_minutes", "op": "IS NOT NULL"}]
+      }
+    },
+    {
+      "slice_name": "Code Generation Activity",
+      "viz_type": "cal_heatmap",
+      "description": "Calendar heatmap showing code generation activity",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "cal_heatmap",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["timestamp"],
+        "time_range": "Last 90 days"
+      }
+    },
+    {
+      "slice_name": "Top Prompts by Success",
+      "viz_type": "table",
+      "description": "Table showing most successful prompt patterns",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "table",
+        "metrics": [
+          "COUNT(*)",
+          "AVG(CASE WHEN success THEN 100 ELSE 0 END)",
+          "AVG(confidence * 100)",
+          "AVG(patterns_count)"
+        ],
+        "groupby": ["prompt"],
+        "order_desc": true,
+        "row_limit": 20
+      }
+    },
+    {
+      "slice_name": "Environment Comparison",
+      "viz_type": "bar",
+      "description": "Bar chart comparing issues by environment",
+      "query_context": {
+        "datasource": "metrics_deployment",
+        "viz_type": "bar",
+        "metrics": ["COUNT(*)", "AVG(resolution_time_minutes)"],
+        "groupby": ["environment"],
+        "order_desc": true
+      }
+    }
+  ],
+  "metadata": {
+    "color_scheme": "supersetColors",
+    "refresh_frequency": 300,
+    "timed_refresh_immune_slices": [],
+    "expanded_slices": {},
+    "filter_scopes": {},
+    "default_filters": "{}",
+    "native_filter_configuration": [
+      {
+        "id": "NATIVE_FILTER_timerange",
+        "name": "Time Range",
+        "filterType": "filter_timerange",
+        "targets": []
+      },
+      {
+        "id": "NATIVE_FILTER_success",
+        "name": "Success Status",
+        "filterType": "filter_select",
+        "targets": [
+          {
+            "datasetId": "metrics_code_generation",
+            "column": "success"
+          }
+        ]
+      },
+      {
+        "id": "NATIVE_FILTER_environment",
+        "name": "Environment",
+        "filterType": "filter_select",
+        "targets": [
+          {
+            "datasetId": "metrics_deployment",
+            "column": "environment"
+          }
+        ]
+      }
+    ]
+  }
+}

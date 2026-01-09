@@ -212,4 +212,11 @@ patterns.json
 demo_patterns.json
 generated_code.meta.json
 *.meta.json
+
+# Superset integration files
+metrics.db
+metrics.db-journal
+sync_log.json
+sync_config.json
+
 .DS_Store
