@@ -298,6 +298,8 @@ class MetricsPlugin:
                     logger.error(f"Analysis failed: {e}")
                     if not is_quiet:
                         print(f"\n❌ Analysis failed: {e}")
+            except Exception as e:
+                logger.error(f"Failed to save metrics: {e}")
     
     def _is_quiet(self) -> bool:
         """Check if output should be quiet."""
@@ -307,5 +309,6 @@ class MetricsPlugin:
             return config_manager.is_quiet()
         except ImportError:
             return False
-            except Exception as e:
-                logger.error(f"Failed to save metrics: {e}")
+        except Exception as e:
+            logger.error(f"Failed to check quiet mode: {e}")
+            return False

@@ -77,11 +77,45 @@ feedback-loop generate "Create a safe file handler"
 - **[Quick Reference](docs/QUICK_REFERENCE.md)**
 - **[AI Patterns Guide](docs/AI_PATTERNS_GUIDE.md)**
 - **[Metrics Guide](docs/METRICS_GUIDE.md)**
+- **[Memory Integration](docs/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
 - **[Superset Analytics Integration](docs/SUPERSET_INTEGRATION.md)** ⭐ NEW
 - **[LLM Integration Guide](docs/LLM_GUIDE.md)**
 - **[Cloud Sync](docs/CLOUD_SYNC.md)**
 - **[API Reference](metrics/README.md)**
 - **[Contributing](docs/CONTRIBUTING.md)**
+
+## Memory-Enhanced Patterns (Optional)
+
+feedback-loop now supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
+
+✨ **Semantic Search**: Query patterns by concept, not just name  
+🧠 **Self-Evolving**: Patterns improve based on usage over time  
+🔗 **Cross-Project**: Share learnings across all your codebases  
+💡 **Smart Recommendations**: Get context-aware pattern suggestions  
+
+### Quick Setup
+
+```bash
+# 1. Install MemU
+pip install memu-py
+
+# 2. Enable memory (optional)
+export FEEDBACK_LOOP_MEMORY_ENABLED=true
+export OPENAI_API_KEY=sk-...  # For embeddings
+
+# 3. Sync patterns to memory
+feedback-loop memory sync
+
+# 4. Query semantically
+feedback-loop memory query "How do I handle JSON serialization with NumPy?"
+
+# 5. Get recommendations
+feedback-loop memory recommend --context "Building FastAPI file upload endpoint"
+```
+
+**Note:** Memory integration is **opt-in** and backward compatible. All existing functionality works without MemU.
+
+See **[Memory Integration Guide](docs/MEMORY_INTEGRATION.md)** for detailed documentation.
 
 ## Core patterns (short list)
 

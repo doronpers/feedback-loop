@@ -45,11 +45,16 @@ class MetricsCollector:
         Path("/private/var").resolve()
     ]
     
-    def __init__(self):
-        """Initialize the metrics collector."""
+    def __init__(self, memory_service=None):
+        """Initialize the metrics collector.
+        
+        Args:
+            memory_service: Optional FeedbackLoopMemory instance for memory integration
+        """
         self.data: Dict[str, List[Dict[str, Any]]] = {
             category: [] for category in self.METRIC_CATEGORIES
         }
+        self.memory_service = memory_service
     
     @classmethod
     def get_metric_categories(cls) -> List[str]:
@@ -416,6 +421,53 @@ class MetricsCollector:
         """Clear all collected metrics."""
         self.data = {category: [] for category in self.METRIC_CATEGORIES}
         logger.debug("Cleared all metrics")
+    
+    async def store_session_to_memory(self, session_id: Optional[str] = None) -> bool:
+        """Store current session metrics to MemU memory.
+        
+        Args:
+            session_id: Optional session identifier (auto-generated if not provided)
+        
+        Returns:
+            True if stored successfully, False otherwise
+        """
+        if not self.memory_service:
+            logger.debug("Memory service not available")
+            return False
+        
+        try:
+            from datetime import datetime
+            import uuid
+            
+            session_data = {
+                "session_id": session_id or str(uuid.uuid4()),
+                "timestamp": datetime.now().isoformat(),
+                "patterns_applied": self._extract_patterns_from_generation(),
+                "bugs": self.data.get("bugs", []),
+                "test_failures": self.data.get("test_failures", []),
+                "metrics": self.get_summary()
+            }
+            
+            result = await self.memory_service.memorize_development_session(session_data)
+            if result:
+                logger.debug(f"Stored session to memory: {session_data['session_id']}")
+                return True
+            return False
+            
+        except Exception as e:
+            logger.error(f"Failed to store session to memory: {e}")
+            return False
+    
+    def _extract_patterns_from_generation(self) -> List[str]:
+        """Extract pattern names from code generation events.
+        
+        Returns:
+            List of pattern names
+        """
+        patterns = []
+        for gen in self.data.get("code_generation", []):
+            patterns.extend(gen.get("patterns_applied", []))
+        return list(set(patterns))  # Remove duplicates
 
     def load_from_json(self, json_str: str) -> None:
         """Load metrics from a JSON string and normalize their structure.

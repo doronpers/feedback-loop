@@ -43,6 +43,7 @@ setup(
         "sqlalchemy>=2.0.0",
         "pydantic>=2.0.0",
         "email-validator>=2.0.0",
+        "memu-py>=0.1.0",  # Agentic memory framework for pattern learning
     ],
     extras_require={
         "test": test_requires,
