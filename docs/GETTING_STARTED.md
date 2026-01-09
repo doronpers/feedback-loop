@@ -2,7 +2,7 @@
 
 **Time to read: 5 minutes**
 
-> 💡 **Prefer a non-linear approach?** This guide follows a step-by-step path. If you learn by exploration, experimentation, or your own unique style, check out the [Dark Horse Users Guide](DARK_HORSE_USERS_GUIDE.md) for alternative entry points.
+> 💡 **Prefer a non-linear approach?** This guide follows a step-by-step path. If you learn by exploration, experimentation, or your own unique style, check out the [Flexible Learning Paths](FLEXIBLE_LEARNING_PATHS.md) for alternative entry points.
 
 ## What You'll Learn
 

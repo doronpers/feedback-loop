@@ -1,13 +1,13 @@
 # feedback-loop User Survey
 
-**Help us understand YOUR micro-motives and improve the tool for diverse users**
+**Help us understand YOUR motivations and improve the tool for diverse users**
 
 ---
 
 ## Why This Survey?
 
 We believe developers learn differently, work differently, and succeed differently. This survey helps us understand:
-- What brings YOU to this tool (your micro-motives)
+- What brings YOU to this tool (your motivations)
 - How YOU actually use it (not how we think you should)
 - What brings YOU fulfillment (not just feature usage)
 - How we can better support YOUR path to excellence
@@ -18,7 +18,7 @@ We believe developers learn differently, work differently, and succeed different
 
 ---
 
-## Section 1: Understanding Your Micro-Motives
+## Section 1: Understanding Your Motivations
 
 ### 1. What initially brought you to feedback-loop? (Select all that apply)
 
@@ -75,7 +75,7 @@ We believe developers learn differently, work differently, and succeed different
 ### 5. Which entry point did you use? (Select one)
 
 - [ ] Traditional: README → Getting Started → Advanced
-- [ ] Dark Horse Quick Start
+- [ ] Personalized Learning Guide
 - [ ] Went straight to pattern examples
 - [ ] Started with code, ignored docs
 - [ ] Interactive chat assistant

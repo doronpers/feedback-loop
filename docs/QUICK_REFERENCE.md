@@ -2,7 +2,7 @@
 
 **One-page reference for common patterns and commands.**
 
-> 💡 **Learn differently?** This is organized linearly. For personalized paths based on YOUR motivations and style, see the [Dark Horse Users Guide](DARK_HORSE_USERS_GUIDE.md).
+> 💡 **Learn differently?** This is organized linearly. For personalized paths based on YOUR motivations and style, see the [Flexible Learning Paths](FLEXIBLE_LEARNING_PATHS.md).
 
 ## The 9 Patterns
 

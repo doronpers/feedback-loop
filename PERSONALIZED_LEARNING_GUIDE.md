@@ -1,8 +1,6 @@
-# Dark Horse Quick Start
+# Personalized Learning Guide
 
 **For developers who learn differently**
-
-> "Excellence is always idiosyncratic." — Todd Rose
 
 ---
 
@@ -75,7 +73,7 @@ That's it. No docs needed.
 
 **Want the complete personalized navigation?**
 
-👉 **[Dark Horse Users Guide](docs/DARK_HORSE_USERS_GUIDE.md)** (comprehensive)
+👉 **[Flexible Learning Paths](docs/FLEXIBLE_LEARNING_PATHS.md)** (comprehensive)
 
 Includes:
 - 6 different workflow strategies
@@ -90,8 +88,8 @@ Includes:
 
 **Want to understand the thinking behind this?**
 
-👉 **[Dark Horse Analysis](docs/archive/DARK_HORSE_ANALYSIS.md)** - Questions & observations for maintainers  
-👉 **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context and executive summary
+👉 **[Personalized Learning Analysis](docs/archive/PERSONALIZED_LEARNING_ANALYSIS.md)** - Questions & observations for maintainers
+👉 **[Personalized Learning History](docs/archive/PERSONALIZED_LEARNING_HISTORY.md)** - Historical context and design decisions
 
 ---
 
@@ -121,13 +119,13 @@ Pick whichever sounds most interesting RIGHT NOW:
 ## Want More Depth?
 
 **Go deeper when ready:**
-- **[Dark Horse Users Guide](docs/DARK_HORSE_USERS_GUIDE.md)** - Comprehensive guide with strategies, profiles, and customization
+- **[Flexible Learning Paths](docs/FLEXIBLE_LEARNING_PATHS.md)** - Comprehensive guide with strategies, profiles, and customization
 - **[Quick Reference](docs/QUICK_REFERENCE.md)** - One-page pattern lookup
 - **[Traditional Docs](README.md#documentation)** - If you prefer linear learning
 
 **For Maintainers:**
-- **[Dark Horse Analysis](docs/archive/DARK_HORSE_ANALYSIS.md)** - Questions and recommendations for repo maintainers
-- **[Optimization History](docs/archive/DARK_HORSE_OPTIMIZATION_HISTORY.md)** - Historical context of the Dark Horse optimization
+- **[Personalized Learning Analysis](docs/archive/PERSONALIZED_LEARNING_ANALYSIS.md)** - Questions and recommendations for repo maintainers
+- **[Personalized Learning History](docs/archive/PERSONALIZED_LEARNING_HISTORY.md)** - Historical context and design decisions
 
 ---
 

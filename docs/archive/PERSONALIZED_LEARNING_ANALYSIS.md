@@ -1,16 +1,16 @@
-# Dark Horse Analysis: Questions & Observations
+# Personalized Learning Analysis: Questions & Observations
 
-**A Todd Rose-style review of feedback-loop through the lens of individualization and fulfillment**
+**A review of feedback-loop through the lens of individualization and fulfillment**
 
 ---
 
 ## Questions for Repository Maintainers
 
-As Todd Rose, reviewing this repository with an eye toward optimizing for "Dark Horse" users, I have the following questions and observations:
+This analysis reviews the repository with an eye toward optimizing for developers with diverse learning styles and approaches:
 
-### 1. Understanding User Micro-Motives
+### 1. Understanding User Motivations
 
-**Question**: What are the diverse micro-motives that bring developers to this tool?
+**Question**: What are the diverse motivations that bring developers to this tool?
 
 Current evidence from docs suggests users come for:
 - ✅ **Problem-solving** ("Fix recurring bugs")
@@ -21,7 +21,7 @@ Current evidence from docs suggests users come for:
 - ❓ **Community** (Do users come for connection/collaboration?)
 - ❓ **Creativity** (Using patterns as building blocks for novel solutions?)
 
-**Recommendation**: Consider adding telemetry (opt-in) or user surveys to discover micro-motives you haven't anticipated. Different motives need different entry points.
+**Recommendation**: Consider adding telemetry (opt-in) or user surveys to discover motivations you haven't anticipated. Different motivations need different entry points.
 
 ---
 
@@ -40,7 +40,7 @@ Current evidence from docs suggests users come for:
 - Only want 1-2 patterns, not a "framework"?
 - Learn by reading source code, not documentation?
 
-**What I've addressed**: The Dark Horse Users Guide now provides entry points for these use cases, but deeper integration could happen at the tool level.
+**What was addressed**: The Flexible Learning Paths guide now provides entry points for these use cases, but deeper integration could happen at the tool level.
 
 ---
 
