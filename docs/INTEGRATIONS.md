@@ -17,5 +17,5 @@ This page summarizes how to connect feedback-loop with common developer workflow
 
 ## VS Code / Cursor (LSP)
 
-- The VS Code extension POC and language server setup are described in `vscode-extension/README.md`.
+- The VS Code extension POC and language server setup are described in `../vscode-extension/README.md`.
 - Cursor is VS Code–based, so the same setup applies there.
