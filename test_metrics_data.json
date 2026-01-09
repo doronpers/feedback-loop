@@ -1,0 +1,71 @@
+{
+  "bugs": [
+    {
+      "pattern": "numpy_json_serialization",
+      "error": "TypeError: Object of type float64 is not JSON serializable",
+      "code": "result = {\"score\": np.mean(data)}",
+      "file_path": "api/endpoints.py",
+      "line": 42,
+      "stack_trace": null,
+      "timestamp": "2026-01-09T16:49:25.383704",
+      "count": 1
+    }
+  ],
+  "test_failures": [
+    {
+      "test_name": "test_numpy_serialization",
+      "failure_reason": "JSON serialization failed for NumPy types",
+      "pattern_violated": "numpy_json_serialization",
+      "code_snippet": "assert json.dumps({\"val\": np.float64(1.0)})",
+      "timestamp": "2026-01-09T16:49:25.383717",
+      "count": 1
+    }
+  ],
+  "code_reviews": [
+    {
+      "issue_type": "Missing exception handling",
+      "pattern": "specific_exceptions",
+      "severity": "high",
+      "file_path": "core/parser.py",
+      "line": 67,
+      "suggestion": "Use specific exceptions instead of bare except",
+      "timestamp": "2026-01-09T16:49:25.383722"
+    }
+  ],
+  "performance_metrics": [
+    {
+      "metric_type": "execution_time",
+      "details": {
+        "function": "process_large_file",
+        "avg_time_ms": 5420,
+        "max_time_ms": 8900
+      },
+      "timestamp": "2026-01-09T16:49:25.383725"
+    }
+  ],
+  "deployment_issues": [
+    {
+      "issue_type": "File upload limit exceeded",
+      "pattern": "large_file_processing",
+      "environment": "production",
+      "root_cause": "nginx client_max_body_size not configured",
+      "resolution_time_minutes": 45,
+      "timestamp": "2026-01-09T16:49:25.383727"
+    }
+  ],
+  "code_generation": [
+    {
+      "prompt": "Create function to process NumPy array",
+      "patterns_applied": [
+        "numpy_json_serialization",
+        "bounds_checking"
+      ],
+      "confidence": 0.92,
+      "success": true,
+      "code_length": 150,
+      "compilation_error": null,
+      "metadata": {},
+      "timestamp": "2026-01-09T16:49:25.383730"
+    }
+  ]
+}

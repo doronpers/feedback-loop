@@ -1,0 +1,148 @@
+{
+  "dashboard_title": "Pattern Analysis Dashboard",
+  "description": "Visualizes pattern frequency, effectiveness, and application metrics",
+  "position_json": {
+    "DASHBOARD_VERSION_KEY": "v2",
+    "GRID_ID": {
+      "type": "GRID",
+      "id": "GRID_ID",
+      "children": [
+        "ROW-header",
+        "ROW-overview",
+        "ROW-effectiveness",
+        "ROW-details"
+      ]
+    }
+  },
+  "slices": [
+    {
+      "slice_name": "Total Patterns Applied",
+      "viz_type": "big_number_total",
+      "description": "Total number of pattern applications",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number_total",
+        "metrics": ["SUM(patterns_count)"],
+        "filters": []
+      }
+    },
+    {
+      "slice_name": "Pattern Success Rate",
+      "viz_type": "big_number",
+      "description": "Overall pattern application success rate",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "big_number",
+        "metrics": ["AVG(CASE WHEN success THEN 100 ELSE 0 END)"],
+        "filters": [],
+        "suffix": "%"
+      }
+    },
+    {
+      "slice_name": "Pattern Frequency",
+      "viz_type": "bar",
+      "description": "Bar chart showing most frequently used patterns",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "bar",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["pattern"],
+        "order_desc": true,
+        "row_limit": 15
+      }
+    },
+    {
+      "slice_name": "Pattern Effectiveness Heatmap",
+      "viz_type": "heatmap",
+      "description": "Heatmap showing pattern effectiveness scores",
+      "query_context": {
+        "datasource": "pattern_effectiveness",
+        "viz_type": "heatmap",
+        "metrics": ["AVG(effectiveness_score)"],
+        "groupby": ["pattern_name", "period_start"],
+        "time_grain_sqla": "P1W"
+      }
+    },
+    {
+      "slice_name": "Pattern Application Trends",
+      "viz_type": "line",
+      "description": "Line chart showing pattern applications over time",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "line",
+        "metrics": ["COUNT(*)", "AVG(patterns_count)"],
+        "groupby": ["timestamp"],
+        "time_grain_sqla": "P1D",
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Pattern Success vs Failure",
+      "viz_type": "mixed_timeseries",
+      "description": "Mixed chart showing success/failure rates",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "mixed_timeseries",
+        "metrics": [
+          "SUM(CASE WHEN success THEN 1 ELSE 0 END)",
+          "SUM(CASE WHEN NOT success THEN 1 ELSE 0 END)"
+        ],
+        "groupby": ["timestamp"],
+        "time_grain_sqla": "P1D",
+        "time_range": "Last 30 days"
+      }
+    },
+    {
+      "slice_name": "Top Patterns by Category",
+      "viz_type": "table",
+      "description": "Table showing pattern statistics",
+      "query_context": {
+        "datasource": "metrics_bugs",
+        "viz_type": "table",
+        "metrics": ["COUNT(*)", "COUNT(DISTINCT file_path)"],
+        "groupby": ["pattern"],
+        "order_desc": true,
+        "row_limit": 20
+      }
+    },
+    {
+      "slice_name": "Pattern Confidence Distribution",
+      "viz_type": "histogram",
+      "description": "Histogram showing confidence score distribution",
+      "query_context": {
+        "datasource": "metrics_code_generation",
+        "viz_type": "histogram",
+        "metrics": ["COUNT(*)"],
+        "groupby": ["confidence"],
+        "bin_count": 20
+      }
+    }
+  ],
+  "metadata": {
+    "color_scheme": "supersetColors",
+    "refresh_frequency": 300,
+    "timed_refresh_immune_slices": [],
+    "expanded_slices": {},
+    "filter_scopes": {},
+    "default_filters": "{}",
+    "native_filter_configuration": [
+      {
+        "id": "NATIVE_FILTER_pattern",
+        "name": "Pattern Name",
+        "filterType": "filter_select",
+        "targets": [
+          {
+            "datasetId": "metrics_bugs",
+            "column": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "NATIVE_FILTER_timerange",
+        "name": "Time Range",
+        "filterType": "filter_timerange",
+        "targets": []
+      }
+    ]
+  }
+}
