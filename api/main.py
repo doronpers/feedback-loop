@@ -141,15 +141,19 @@ def create_api_key(user_id: int) -> str:
     return f"fl_{user_id}_{random_str}"
 
 
+
+# Security Constants
+PBKDF2_ITERATIONS = 210000
+
 def hash_password(password: str) -> str:
     """Hash password using PBKDF2 with per-user salt."""
-    raw_iterations = os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", "210000")
+    # Use environment variable if set, otherwise default to constant
     try:
-        iterations = int(raw_iterations)
+        iterations = int(os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", str(PBKDF2_ITERATIONS)))
         if iterations <= 0:
-            iterations = 210000
+            iterations = PBKDF2_ITERATIONS
     except (TypeError, ValueError):
-        iterations = 210000
+        iterations = PBKDF2_ITERATIONS
     salt = secrets.token_bytes(16)
     digest = hashlib.pbkdf2_hmac(
         "sha256",

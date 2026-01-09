@@ -34,7 +34,14 @@ class MetricsCollector:
     # Expected metric categories
     METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
                         "performance_metrics", "deployment_issues", "code_generation"]
-    ALLOWED_PLAN_ROOTS = [Path.cwd().resolve(), Path("/tmp").resolve()]
+    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
+                        "performance_metrics", "deployment_issues", "code_generation"]
+    # Allow standard temp dirs and macOS specific temp dirs (which start with /private/var)
+    ALLOWED_PLAN_ROOTS = [
+        Path.cwd().resolve(), 
+        Path("/tmp").resolve(),
+        Path("/private/var").resolve()
+    ]
     
     def __init__(self):
         """Initialize the metrics collector."""

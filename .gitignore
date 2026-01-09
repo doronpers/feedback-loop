@@ -212,3 +212,4 @@ patterns.json
 demo_patterns.json
 generated_code.meta.json
 *.meta.json
+.DS_Store
