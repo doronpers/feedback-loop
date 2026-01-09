@@ -634,6 +634,192 @@ def _handle_login(api_url: str) -> None:
         print(f"\n✗ Login failed: {e}")
 
 
+async def _handle_memory_sync(patterns_file: str) -> None:
+    """Handle memory sync command.
+    
+    Args:
+        patterns_file: Path to patterns file
+    """
+    from metrics.memory_service import FeedbackLoopMemory
+    
+    print("=== Feedback Loop - Memory Sync ===\n")
+    
+    # Check if memory is enabled
+    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
+        print("⚠  Memory integration is not enabled")
+        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+        return
+    
+    try:
+        # Initialize memory service
+        memory = FeedbackLoopMemory(
+            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
+            openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        if not await memory.initialize():
+            print("✗ Failed to initialize memory service")
+            print("  Make sure MemU is installed: pip install memu-py")
+            return
+        
+        # Load patterns
+        pattern_manager = PatternManager(patterns_file, use_memory=False)
+        pattern_manager.memory = memory
+        
+        print(f"📚 Syncing {len(pattern_manager.patterns)} patterns to memory...")
+        synced_count = await pattern_manager.sync_patterns_to_memory()
+        
+        print(f"\n✓ Synced {synced_count} patterns to MemU memory")
+        print("  Storage:", memory.storage_type)
+        
+    except Exception as e:
+        print(f"\n✗ Sync failed: {e}")
+        logger.exception("Memory sync failed")
+
+
+async def _handle_memory_query(query: str, limit: int) -> None:
+    """Handle memory query command.
+    
+    Args:
+        query: Search query
+        limit: Maximum number of results
+    """
+    from metrics.memory_service import FeedbackLoopMemory
+    
+    print("=== Feedback Loop - Memory Query ===\n")
+    print(f"Query: {query}")
+    print(f"Limit: {limit}\n")
+    
+    # Check if memory is enabled
+    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
+        print("⚠  Memory integration is not enabled")
+        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+        return
+    
+    try:
+        # Initialize memory service
+        memory = FeedbackLoopMemory(
+            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
+            openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        if not await memory.initialize():
+            print("✗ Failed to initialize memory service")
+            return
+        
+        # Query patterns
+        print("🔍 Searching patterns...")
+        result = await memory.retrieve_patterns(query, method="rag", limit=limit)
+        
+        if not result or not result.get("results"):
+            print("\n✗ No patterns found")
+            return
+        
+        print(f"\n✓ Found {len(result['results'])} patterns:\n")
+        for idx, pattern in enumerate(result["results"], 1):
+            metadata = pattern.get("metadata", {})
+            score = pattern.get("score", 0.0)
+            print(f"{idx}. {metadata.get('pattern_name', 'Unknown')} (score: {score:.2f})")
+            print(f"   {pattern.get('content', '')[:100]}...")
+            print()
+        
+    except Exception as e:
+        print(f"\n✗ Query failed: {e}")
+        logger.exception("Memory query failed")
+
+
+async def _handle_memory_recommend(context: str, limit: int) -> None:
+    """Handle memory recommend command.
+    
+    Args:
+        context: Development context
+        limit: Maximum number of recommendations
+    """
+    from metrics.memory_service import FeedbackLoopMemory
+    
+    print("=== Feedback Loop - Pattern Recommendations ===\n")
+    print(f"Context: {context}")
+    print(f"Limit: {limit}\n")
+    
+    # Check if memory is enabled
+    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
+        print("⚠  Memory integration is not enabled")
+        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+        return
+    
+    try:
+        # Initialize memory service
+        memory = FeedbackLoopMemory(
+            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
+            openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        if not await memory.initialize():
+            print("✗ Failed to initialize memory service")
+            return
+        
+        # Get recommendations
+        print("💡 Getting recommendations...")
+        recommendations = await memory.get_pattern_recommendations(context, limit)
+        
+        if not recommendations:
+            print("\n✗ No recommendations found")
+            return
+        
+        print(f"\n✓ Recommended {len(recommendations)} patterns:\n")
+        for idx, rec in enumerate(recommendations, 1):
+            print(f"{idx}. {rec['pattern_name']} (score: {rec['score']:.2f})")
+            print(f"   {rec['content'][:100]}...")
+            print()
+        
+    except Exception as e:
+        print(f"\n✗ Recommendation failed: {e}")
+        logger.exception("Memory recommendation failed")
+
+
+async def _handle_memory_stats() -> None:
+    """Handle memory stats command."""
+    from metrics.memory_service import FeedbackLoopMemory
+    
+    print("=== Feedback Loop - Memory Statistics ===\n")
+    
+    # Check if memory is enabled
+    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
+        print("⚠  Memory integration is not enabled")
+        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+        return
+    
+    try:
+        # Initialize memory service
+        memory = FeedbackLoopMemory(
+            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
+            openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        if not await memory.initialize():
+            print("✗ Failed to initialize memory service")
+            return
+        
+        # Get statistics
+        stats = await memory.get_memory_stats()
+        
+        if not stats:
+            print("✗ Failed to retrieve statistics")
+            return
+        
+        print("📊 Memory Statistics:")
+        print(f"  Total memories: {stats.get('total_memories', 0)}")
+        print(f"  Patterns: {stats.get('patterns_count', 0)}")
+        print(f"  Sessions: {stats.get('sessions_count', 0)}")
+        print(f"  Reviews: {stats.get('reviews_count', 0)}")
+        print(f"  Storage type: {stats.get('storage_type', 'unknown')}")
+        print(f"  Status: {'✓ Initialized' if stats.get('initialized') else '✗ Not initialized'}")
+        
+    except Exception as e:
+        print(f"\n✗ Failed to get statistics: {e}")
+        logger.exception("Memory stats failed")
+
+
 def main() -> int:
     """Main CLI entry point.
     
@@ -796,6 +982,63 @@ def main() -> int:
         help="Path to markdown file (default: docs/AI_PATTERNS_GUIDE.md)"
     )
 
+    # Memory commands (for MemU integration)
+    memory_parser = subparsers.add_parser(
+        "memory",
+        help="Memory operations (MemU integration)"
+    )
+    memory_subparsers = memory_parser.add_subparsers(dest="memory_command", help="Memory command")
+    
+    # memory sync - Sync patterns to memory
+    memory_sync_parser = memory_subparsers.add_parser(
+        "sync",
+        help="Sync all patterns to MemU memory"
+    )
+    memory_sync_parser.add_argument(
+        "--patterns-file",
+        default="patterns.json",
+        help="Path to patterns file (default: patterns.json)"
+    )
+    
+    # memory query - Semantic pattern search
+    memory_query_parser = memory_subparsers.add_parser(
+        "query",
+        help="Query patterns using semantic search"
+    )
+    memory_query_parser.add_argument(
+        "query",
+        help="Natural language query"
+    )
+    memory_query_parser.add_argument(
+        "--limit",
+        type=int,
+        default=5,
+        help="Maximum number of results (default: 5)"
+    )
+    
+    # memory recommend - Get pattern recommendations
+    memory_recommend_parser = memory_subparsers.add_parser(
+        "recommend",
+        help="Get pattern recommendations for context"
+    )
+    memory_recommend_parser.add_argument(
+        "--context",
+        required=True,
+        help="Current development context"
+    )
+    memory_recommend_parser.add_argument(
+        "--limit",
+        type=int,
+        default=3,
+        help="Maximum number of recommendations (default: 3)"
+    )
+    
+    # memory stats - Show memory statistics
+    memory_stats_parser = memory_subparsers.add_parser(
+        "stats",
+        help="Show memory statistics"
+    )
+
     # Login command (for cloud sync)
     login_parser = subparsers.add_parser(
         "login",
@@ -882,6 +1125,22 @@ def main() -> int:
 
         elif args.command == "login":
             _handle_login(args.api_url)
+        
+        elif args.command == "memory":
+            if not args.memory_command:
+                print("Error: memory command requires a subcommand (sync, query, recommend, stats)")
+                return 1
+            
+            import asyncio
+            
+            if args.memory_command == "sync":
+                asyncio.run(_handle_memory_sync(args.patterns_file))
+            elif args.memory_command == "query":
+                asyncio.run(_handle_memory_query(args.query, args.limit))
+            elif args.memory_command == "recommend":
+                asyncio.run(_handle_memory_recommend(args.context, args.limit))
+            elif args.memory_command == "stats":
+                asyncio.run(_handle_memory_stats())
 
         return 0
     

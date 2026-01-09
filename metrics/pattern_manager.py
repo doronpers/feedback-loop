@@ -19,11 +19,18 @@ logger = logging.getLogger(__name__)
 class PatternManager:
     """Manages pattern library with CRUD operations and archiving."""
     
-    def __init__(self, pattern_library_path: str = "patterns.json"):
+    def __init__(
+        self,
+        pattern_library_path: str = "patterns.json",
+        use_memory: bool = False,
+        memory_config: Optional[Dict[str, Any]] = None
+    ):
         """Initialize the pattern manager.
         
         Args:
             pattern_library_path: Path to the pattern library JSON file
+            use_memory: Whether to enable MemU integration
+            memory_config: Optional configuration for memory service
         
         Raises:
             ValueError: If path contains traversal attempts (..)
@@ -41,6 +48,19 @@ class PatternManager:
         
         self.patterns: List[Dict[str, Any]] = []
         self.changelog: List[Dict[str, Any]] = []
+        
+        # Initialize memory service if enabled
+        self.use_memory = use_memory
+        self.memory = None
+        if use_memory:
+            from metrics.memory_service import FeedbackLoopMemory
+            memory_config = memory_config or {}
+            self.memory = FeedbackLoopMemory(
+                storage_type=memory_config.get("storage_type", "inmemory"),
+                openai_api_key=memory_config.get("openai_api_key"),
+                db_url=memory_config.get("db_url")
+            )
+            logger.debug("Memory service initialized")
         
         # Try to load existing patterns
         if os.path.exists(self.pattern_library_path):
@@ -75,6 +95,99 @@ class PatternManager:
         except IOError as e:
             logger.debug(f"Failed to save patterns: {e}")
             raise
+    
+    async def store_pattern_to_memory(self, pattern: Dict[str, Any]) -> bool:
+        """Store pattern in MemU for semantic retrieval.
+        
+        Args:
+            pattern: Pattern dictionary to store
+        
+        Returns:
+            True if stored successfully, False otherwise
+        """
+        if not self.memory:
+            logger.debug("Memory service not enabled")
+            return False
+        
+        try:
+            result = await self.memory.memorize_pattern(pattern)
+            if result:
+                logger.debug(f"Stored pattern '{pattern.get('name')}' to memory")
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Failed to store pattern to memory: {e}")
+            return False
+    
+    async def sync_patterns_to_memory(self) -> int:
+        """Sync all patterns to MemU memory.
+        
+        Returns:
+            Number of patterns successfully synced
+        """
+        if not self.memory:
+            logger.debug("Memory service not enabled")
+            return 0
+        
+        synced_count = 0
+        for pattern in self.patterns:
+            if await self.store_pattern_to_memory(pattern):
+                synced_count += 1
+        
+        logger.info(f"Synced {synced_count}/{len(self.patterns)} patterns to memory")
+        return synced_count
+    
+    async def retrieve_similar_patterns(
+        self,
+        query: str,
+        limit: int = 5
+    ) -> List[Dict[str, Any]]:
+        """Retrieve patterns using semantic search.
+        
+        Args:
+            query: Natural language query
+            limit: Maximum number of results
+        
+        Returns:
+            List of similar patterns
+        """
+        if not self.memory:
+            logger.debug("Memory service not enabled, falling back to keyword search")
+            return self._keyword_search(query, limit)
+        
+        try:
+            result = await self.memory.retrieve_patterns(query, method="rag", limit=limit)
+            if result and "results" in result:
+                return result["results"]
+            return []
+        except Exception as e:
+            logger.error(f"Failed to retrieve patterns from memory: {e}")
+            return []
+    
+    def _keyword_search(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """Fallback keyword-based pattern search.
+        
+        Args:
+            query: Search query
+            limit: Maximum number of results
+        
+        Returns:
+            List of matching patterns
+        """
+        query_lower = query.lower()
+        matches = []
+        
+        for pattern in self.patterns:
+            name = pattern.get("name", "").lower()
+            description = pattern.get("description", "").lower()
+            
+            if query_lower in name or query_lower in description:
+                matches.append(pattern)
+            
+            if len(matches) >= limit:
+                break
+        
+        return matches
     
     def load_from_ai_patterns_md(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md") -> None:
         """Load patterns from AI_PATTERNS_GUIDE.md file.
