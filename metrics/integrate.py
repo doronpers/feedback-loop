@@ -18,6 +18,7 @@ from metrics.collector import MetricsCollector
 from metrics.analyzer import MetricsAnalyzer
 from metrics.pattern_manager import PatternManager
 from metrics.code_generator import PatternAwareGenerator
+from metrics.synthesizer import CodeSynthesizer
 from metrics.sync_client import SyncClient, LocalSyncClient, CloudSyncClient, create_sync_client
 
 logger = logging.getLogger(__name__)
@@ -237,6 +238,83 @@ class MetricsIntegration:
                 "confidence": float(result.confidence)
             }, f, indent=2)
         print(f"✓ Metadata saved to {metadata_file}")
+    
+    def synthesize_code(
+        self,
+        prompt: str,
+        num_candidates: int = 3,
+        output_file: Optional[str] = None,
+        input_files: Optional[List[str]] = None
+    ) -> None:
+        """Synthesize optimal code from multiple candidates.
+        
+        Args:
+            prompt: User prompt
+            num_candidates: Number of candidates to generate (ignored if input_files provided)
+            output_file: Optional file to save result
+            input_files: Optional list of file paths to use as candidates
+        """
+        logger.debug(f"Synthesizing code for: {prompt}")
+        
+        # Load metrics context
+        metrics_context = None
+        if Path(self.metrics_file).exists():
+            with open(self.metrics_file, 'r') as f:
+                metrics_data = json.load(f)
+            analyzer = MetricsAnalyzer(metrics_data)
+            metrics_context = analyzer.get_context()
+            
+        # Initialize generator
+        if not self.pattern_manager.patterns and Path(self.ai_patterns_md).exists():
+            self.pattern_manager.load_from_ai_patterns_md(self.ai_patterns_md)
+            
+        generator = PatternAwareGenerator(
+            self.pattern_manager.get_all_patterns(),
+            pattern_library_version="1.0.0"
+        )
+        
+        # Initialize synthesizer
+        synthesizer = CodeSynthesizer(generator)
+        
+        # Determine input mode
+        if input_files:
+            print(f"\n🔄 Synthesizing {len(input_files)} provided files...")
+            result = synthesizer.synthesize(
+                prompt=prompt,
+                num_candidates=num_candidates,
+                metrics_context=metrics_context,
+                input_files=input_files
+            )
+        else:
+            # Check if we should read from stdin (interactive paste)
+            print(f"\n🔄 Generating {num_candidates} candidates...")
+            result = synthesizer.synthesize(
+                prompt=prompt,
+                num_candidates=num_candidates,
+                metrics_context=metrics_context
+            )
+        
+        # Print Result
+        print("\n" + "="*60)
+        print("SYNTHESIZED CODE:")
+        print("="*60)
+        print(result.final_code)
+        print("\n" + "="*60)
+        print("REPORT:")
+        print("="*60)
+        print(result.report)
+        
+        # Save to file
+        if output_file:
+            with open(output_file, 'w') as f:
+                f.write(result.final_code)
+            print(f"\n✓ Synthesized code saved to {output_file}")
+            
+            # Save report
+            report_file = output_file + ".report.txt"
+            with open(report_file, 'w') as f:
+                f.write(result.report)
+            print(f"✓ Synthesis report saved to {report_file}")
     
     def generate_report(
         self,
@@ -626,6 +704,38 @@ def main() -> int:
         help="Path to patterns file (default: patterns.json)"
     )
     
+    # Synthesize command
+    synthesize_parser = subparsers.add_parser("synthesize", help="Synthesize optimal code from candidates")
+    synthesize_parser.add_argument(
+        "prompt",
+        help="Prompt for code generation"
+    )
+    synthesize_parser.add_argument(
+        "--candidates",
+        type=int,
+        default=3,
+        help="Number of candidates to generate (default: 3, ignored if --inputs provided)"
+    )
+    synthesize_parser.add_argument(
+        "--inputs",
+        nargs="+",
+        help="Input files to use as candidates (instead of generating)"
+    )
+    synthesize_parser.add_argument(
+        "--output",
+        help="Output file for synthesized code"
+    )
+    synthesize_parser.add_argument(
+        "--metrics-file",
+        default="metrics_data.json",
+        help="Path to metrics file (default: metrics_data.json)"
+    )
+    synthesize_parser.add_argument(
+        "--patterns-file",
+        default="patterns.json",
+        help="Path to patterns file (default: patterns.json)"
+    )
+    
     # Report command
     report_parser = subparsers.add_parser("report", help="Generate analysis report")
     report_parser.add_argument(
@@ -733,6 +843,18 @@ def main() -> int:
                 output_file=args.output,
                 apply_patterns=not args.no_apply,
                 min_confidence=args.min_confidence
+            )
+            
+        elif args.command == "synthesize":
+            integration = MetricsIntegration(
+                metrics_file=args.metrics_file,
+                patterns_file=args.patterns_file
+            )
+            integration.synthesize_code(
+                prompt=args.prompt,
+                num_candidates=args.candidates,
+                output_file=args.output,
+                input_files=args.inputs
             )
         
         elif args.command == "report":

@@ -52,6 +52,10 @@ class MetricsPlugin:
         if self.metrics_output:
             self.enable_metrics = True
 
+        # Default output file if metrics enabled but no file specified
+        if self.enable_metrics and not self.metrics_output:
+            self.metrics_output = "metrics_data.json"
+
         self.collector = None
         if self.enable_metrics:
             try:
@@ -212,5 +216,18 @@ class MetricsPlugin:
                 summary = self.collector.get_summary()
                 logger.info(f"Metrics saved to {self.metrics_output}")
                 logger.info(f"Test failures logged: {summary['test_failures']}")
+
+                # Automatic Analysis
+                try:
+                    from metrics.integrate import MetricsIntegration
+                    print("\n🔄 Feedback Loop: Analyzing results...")
+                    integration = MetricsIntegration(
+                        metrics_file=self.metrics_output,
+                        patterns_file="patterns.json"
+                    )
+                    integration.analyze_metrics(update_patterns=True)
+                except Exception as e:
+                    logger.error(f"Analysis failed: {e}")
+                    print(f"\n❌ Analysis failed: {e}")
             except Exception as e:
                 logger.error(f"Failed to save metrics: {e}")
