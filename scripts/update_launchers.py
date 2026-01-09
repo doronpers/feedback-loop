@@ -66,7 +66,15 @@ def find_demos() -> List[str]:
     return demos
 
 
-def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
+def find_superset_quickstart() -> str:
+    """Find the Superset quickstart script."""
+    superset_script = Path("superset-dashboards/quickstart_superset.py")
+    if superset_script.exists():
+        return str(superset_script)
+    return None
+
+
+def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superset_script: str = None) -> str:
     """Generate Mac launcher script content."""
     
     # Calculate max tool name width for alignment
@@ -127,6 +135,29 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
                 echo "✓ Demo completed successfully"
             else
                 echo "⚠️  Demo exited with code: $STATUS"
+            fi
+            echo ""
+            echo "Press any key to return to menu..."
+            read -n 1 -s
+            echo ""
+            ;;""")
+        item_num += 1
+    
+    # Add Superset quickstart if available
+    if superset_script:
+        menu_items.append(f'    echo "  {item_num}) 📊 Superset Setup   - Set up analytics dashboards"')
+        case_items.append(f"""        {item_num})
+            echo "🚀 Launching Superset Quickstart..."
+            echo "════════════════════════════════════════════════════════════════════"
+            echo ""
+            python3 {superset_script}
+            STATUS=$?
+            echo ""
+            echo "════════════════════════════════════════════════════════════════════"
+            if [ $STATUS -eq 0 ]; then
+                echo "✓ Superset setup completed successfully"
+            else
+                echo "⚠️  Superset setup exited with code: $STATUS"
             fi
             echo ""
             echo "Press any key to return to menu..."
@@ -259,7 +290,7 @@ done
 '''
 
 
-def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str]) -> str:
+def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str], superset_script: str = None) -> str:
     """Generate Windows batch file content."""
     
     # Calculate max tool name width for alignment
@@ -325,6 +356,31 @@ if %STATUS%==0 (
     echo ✓ Demo completed successfully
 ) else (
     echo ⚠️  Demo exited with code: %STATUS%
+)
+echo.
+echo Press any key to return to menu...
+pause >nul
+echo.
+goto START''')
+        item_num += 1
+    
+    # Add Superset quickstart
+    if superset_script:
+        script_path = superset_script.replace('/', '\\')
+        menu_items.append(f'echo   {item_num}) 📊 Superset Setup   - Set up analytics dashboards')
+        goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto SUPERSET')
+        sections.append(f''':SUPERSET
+echo 🚀 Launching Superset Quickstart...
+echo ════════════════════════════════════════════════════════════════════
+echo.
+python {script_path}
+set STATUS=%ERRORLEVEL%
+echo.
+echo ════════════════════════════════════════════════════════════════════
+if %STATUS%==0 (
+    echo ✓ Superset setup completed successfully
+) else (
+    echo ⚠️  Superset setup exited with code: %STATUS%
 )
 echo.
 echo Press any key to return to menu...
@@ -473,18 +529,22 @@ def main():
     # Find tools and demos
     tools = find_tools()
     demos = find_demos()
+    superset_script = find_superset_quickstart()
     
     print(f"Found {len(tools)} tools and {len(demos)} demos")
     for tool in tools:
         print(f"  - {tool['name']}: {tool['script']}")
+    
+    if superset_script:
+        print(f"Found Superset quickstart: {superset_script}")
     
     if not tools:
         print("Warning: No tools found in bin/ directory", file=sys.stderr)
         return 1
     
     # Generate launchers
-    mac_content = generate_mac_launcher(tools, demos)
-    win_content = generate_windows_launcher(tools, demos)
+    mac_content = generate_mac_launcher(tools, demos, superset_script)
+    win_content = generate_windows_launcher(tools, demos, superset_script)
     
     # Check if updates are needed
     mac_file = Path("launch-feedback-loop.command")
