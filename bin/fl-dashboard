@@ -7,8 +7,28 @@ Displays metrics, patterns, and recommendations in a beautiful terminal UI.
 
 import json
 import sys
+import os
 from datetime import datetime
 from pathlib import Path
+
+# Auto-venv detection
+def _ensure_venv():
+    # If already in venv, do nothing
+    if sys.prefix != sys.base_prefix:
+        return
+
+    # Check for venv in project root
+    project_root = Path(__file__).parent.parent
+    venv_python = project_root / "venv" / "bin" / "python3"
+    
+    if venv_python.exists() and os.access(venv_python, os.X_OK):
+        # Re-execute with venv python
+        try:
+            os.execv(str(venv_python), [str(venv_python)] + sys.argv)
+        except OSError:
+            pass
+
+_ensure_venv()
 from typing import Dict, List, Any
 
 
