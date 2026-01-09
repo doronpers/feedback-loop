@@ -5,6 +5,7 @@ Provides LLM-powered code review with pattern suggestions and best practices.
 """
 
 import logging
+import re
 from typing import Dict, List, Optional
 
 from metrics.llm_providers import get_llm_manager
@@ -37,7 +38,7 @@ class CodeReviewer:
             context: Optional context about the code
             
         Returns:
-            Dictionary with review results
+            Dictionary with review results including debrief
         """
         # Input validation
         if not code or not code.strip():
@@ -69,11 +70,15 @@ class CodeReviewer:
                 fallback=True
             )
             
+            # Generate debrief
+            debrief = self.generate_debrief(code, response.text, context)
+            
             # Parse response
             return {
                 "review": response.text,
                 "provider": response.provider,
-                "model": response.model
+                "model": response.model,
+                "debrief": debrief
             }
             
         except Exception as e:
@@ -203,6 +208,183 @@ Keep suggestions practical and pattern-aware."""
             logger.error(f"Suggestions failed: {e}")
             return f"Could not generate suggestions: {e}"
 
+    def generate_debrief(self, code: str, review: str, context: Optional[str] = None) -> Dict[str, any]:
+        """Generate a debrief with improvement strategies and difficulty rating.
+        
+        Args:
+            code: The code that was reviewed
+            review: The review feedback provided
+            context: Optional context about the code
+            
+        Returns:
+            Dictionary containing improvement strategies and difficulty rating
+        """
+        if not self.llm_manager.is_any_available():
+            return {
+                "strategies": ["No LLM providers available. Set API keys to use this feature."],
+                "difficulty": 5,
+                "explanation": "Cannot generate debrief without LLM access."
+            }
+
+        prompt = f"""Based on the code review provided, generate a debrief that includes:
+
+1. **Improvement Strategies**: 3-5 specific, actionable strategies the developer can use to improve their code quality and avoid similar issues in future submissions.
+2. **Difficulty Rating**: Rate the difficulty of executing these improvements on a scale of 1-10, where:
+   - 1-3: Easy (simple changes, no architectural impact)
+   - 4-6: Moderate (requires refactoring or new patterns)
+   - 7-9: Hard (significant architectural changes or deep understanding needed)
+   - 10: Very Hard (requires extensive rewrite or advanced expertise)
+
+## Code Reviewed:
+```python
+{code}
+```
+
+## Review Feedback:
+{review}
+"""
+        
+        if context:
+            prompt += f"\n## Context:\n{context}\n"
+        
+        prompt += """
+## Output Format:
+Provide your response in the following format:
+
+**Improvement Strategies:**
+1. [Strategy 1]
+2. [Strategy 2]
+3. [Strategy 3]
+...
+
+**Difficulty Rating:** [1-10]
+
+**Explanation:**
+[Brief explanation of why this difficulty rating was assigned and what makes these improvements more or less challenging]
+"""
+
+        try:
+            response = self.llm_manager.generate(
+                prompt,
+                max_tokens=1500,
+                fallback=True
+            )
+            
+            # Parse the response
+            debrief_text = response.text
+            strategies = []
+            difficulty = 5
+            explanation = ""
+            
+            # Extract strategies
+            if "**Improvement Strategies:**" in debrief_text:
+                strategies_section = debrief_text.split("**Improvement Strategies:**")[1]
+                if "**Difficulty Rating:**" in strategies_section:
+                    strategies_section = strategies_section.split("**Difficulty Rating:**")[0]
+                
+                # Parse numbered list using regex for better handling
+                lines = strategies_section.strip().split("\n")
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        # Match numbered lists (1., 2., etc), bullet points (-, *), or simple text
+                        # Pattern: optional number/bullet + optional space + content
+                        match = re.match(r'^(?:\d+\.|\*|\-)?\s*(.+)$', line)
+                        if match:
+                            clean_line = match.group(1).strip()
+                            if clean_line:
+                                strategies.append(clean_line)
+            
+            # Extract difficulty rating
+            if "**Difficulty Rating:**" in debrief_text:
+                rating_section = debrief_text.split("**Difficulty Rating:**")[1]
+                if "**Explanation:**" in rating_section:
+                    rating_text = rating_section.split("**Explanation:**")[0].strip()
+                else:
+                    rating_text = rating_section.strip().split("\n")[0].strip()
+                
+                # Extract number from the beginning of rating text
+                numbers = re.findall(r'^\s*(\d+)', rating_text)
+                if numbers:
+                    difficulty = min(10, max(1, int(numbers[0])))
+            
+            # Extract explanation
+            if "**Explanation:**" in debrief_text:
+                explanation = debrief_text.split("**Explanation:**")[1].strip()
+            
+            # Fallback if parsing failed
+            if not strategies:
+                strategies = [debrief_text]
+            
+            return {
+                "strategies": strategies,
+                "difficulty": difficulty,
+                "explanation": explanation
+            }
+            
+        except Exception as e:
+            logger.error(f"Debrief generation failed: {e}")
+            return {
+                "strategies": [f"Could not generate debrief: {e}"],
+                "difficulty": 5,
+                "explanation": "Error during debrief generation."
+            }
+
+
+def display_debrief(debrief: Dict[str, any]) -> None:
+    """Display the debrief section in a formatted way.
+    
+    Args:
+        debrief: Debrief dictionary containing strategies, difficulty, and explanation
+    """
+    print("="*70)
+    print("📋 REVIEW DEBRIEF")
+    print("="*70)
+    print()
+    
+    if "strategies" in debrief and debrief["strategies"]:
+        print("💡 Improvement Strategies:")
+        print()
+        for i, strategy in enumerate(debrief["strategies"], 1):
+            print(f"  {i}. {strategy}")
+        print()
+    
+    if "difficulty" in debrief:
+        difficulty = debrief["difficulty"]
+        print(f"📊 Difficulty of Execution: {difficulty}/10")
+        
+        # Visual representation
+        filled = "█" * difficulty
+        empty = "░" * (10 - difficulty)
+        print(f"   {filled}{empty}")
+        
+        # Difficulty level description
+        if difficulty <= 3:
+            level = "Easy"
+            emoji = "🟢"
+        elif difficulty <= 6:
+            level = "Moderate"
+            emoji = "🟡"
+        elif difficulty <= 9:
+            level = "Hard"
+            emoji = "🔴"
+        else:
+            level = "Very Hard"
+            emoji = "⚫"
+        
+        print(f"   {emoji} Level: {level}")
+        print()
+    
+    if "explanation" in debrief and debrief["explanation"]:
+        print("📝 Explanation:")
+        explanation_lines = debrief['explanation'].split('\n')
+        for line in explanation_lines:
+            if line.strip():
+                print(f"   {line}")
+        print()
+    
+    print("="*70)
+
 
 def interactive_review():
     """Run interactive code review session."""
@@ -255,6 +437,12 @@ def interactive_review():
         print(f"Error: {result['error']}\n")
     else:
         print(result["review"])
+        print()
+        
+        # Display debrief if available
+        if "debrief" in result:
+            display_debrief(result["debrief"])
+        
         print()
         print(f"Reviewed by: {result['provider']} ({result['model']})")
         print()
