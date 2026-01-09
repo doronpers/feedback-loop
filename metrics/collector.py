@@ -180,7 +180,7 @@ class MetricsCollector:
         suggestion: Optional[str] = None
     ) -> None:
         """Log a code review issue.
-        
+
         Args:
             issue_type: Type of issue found
             pattern: Pattern related to the issue
@@ -188,11 +188,24 @@ class MetricsCollector:
             file_path: File where issue was found
             line: Optional line number
             suggestion: Optional suggestion for fixing
+
+        Raises:
+            ValueError: If required parameters are empty
         """
-        if severity not in ["low", "medium", "high", "critical"]:
-            logger.debug(f"Invalid severity level: {severity}, defaulting to medium")
+        # Validate required parameters
+        if not issue_type or not issue_type.strip():
+            raise ValueError("issue_type cannot be empty")
+        if not pattern or not pattern.strip():
+            raise ValueError("pattern cannot be empty")
+        if not file_path or not file_path.strip():
+            raise ValueError("file_path cannot be empty")
+
+        # Validate severity (defensive: warn and correct instead of raising)
+        valid_severities = ["low", "medium", "high", "critical"]
+        if severity not in valid_severities:
+            logger.warning(f"Invalid severity level: {severity}. Must be one of {valid_severities}. Defaulting to 'medium'")
             severity = "medium"
-        
+
         review_entry = {
             "issue_type": issue_type,
             "pattern": pattern,

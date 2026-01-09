@@ -93,7 +93,7 @@ class PatternManager:
                 json.dump(data, f, indent=2)
             logger.debug(f"Saved {len(self.patterns)} patterns to {self.pattern_library_path}")
         except IOError as e:
-            logger.debug(f"Failed to save patterns: {e}")
+            logger.error(f"Failed to save patterns to {self.pattern_library_path}: {e}", exc_info=True)
             raise
     
     async def store_pattern_to_memory(self, pattern: Dict[str, Any]) -> bool:
@@ -233,7 +233,7 @@ class PatternManager:
             
             logger.debug(f"Loaded {len(patterns_parsed)} patterns from {md_path}")
         except IOError as e:
-            logger.debug(f"Failed to load AI_PATTERNS.md: {e}")
+            logger.warning(f"Failed to load AI_PATTERNS.md from {md_path}: {e}")
     
     def _parse_patterns_from_markdown(self, content: str) -> List[Dict[str, Any]]:
         """Parse patterns from markdown content.

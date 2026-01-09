@@ -96,6 +96,16 @@ class ConfigManager:
                 "after_commits": 5,
                 "after_failures": 3,
                 "effectiveness_threshold": 0.5
+            },
+            "code_review": {
+                "max_code_size": 50000,
+                "max_tokens": 2048,
+                "max_tokens_explain": 1500,
+                "max_tokens_suggest": 2048,
+                "max_tokens_debrief": 1500
+            },
+            "analysis": {
+                "time_window_days": 30
             }
         }
     

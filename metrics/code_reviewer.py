@@ -6,8 +6,9 @@ Provides LLM-powered code review with pattern suggestions and best practices.
 
 import logging
 import re
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
+from metrics.config_manager import ConfigManager
 from metrics.llm_providers import get_llm_manager
 from metrics.pattern_manager import PatternManager
 
@@ -19,18 +20,19 @@ class CodeReviewer:
 
     def __init__(self, llm_provider: Optional[str] = None):
         """Initialize code reviewer.
-        
+
         Args:
             llm_provider: Preferred LLM provider
         """
+        self.config = ConfigManager()
         self.llm_manager = get_llm_manager()
         if llm_provider:
             self.llm_manager.preferred_provider = llm_provider
-        
+
         self.pattern_manager = PatternManager()
         self.patterns = self.pattern_manager.get_all_patterns()
 
-    def review_code(self, code: str, context: Optional[str] = None) -> Dict[str, any]:
+    def review_code(self, code: str, context: Optional[str] = None) -> Dict[str, Any]:
         """Review code with pattern awareness.
         
         Args:
@@ -52,9 +54,10 @@ class CodeReviewer:
                 }
             }
         
-        if len(code) > 50000:  # Limit code size
+        max_code_size = self.config.get("code_review.max_code_size", 50000)
+        if len(code) > max_code_size:
             return {
-                "error": "Code too large for review (max 50KB). Please review in smaller chunks.",
+                "error": f"Code too large for review (max {max_code_size} bytes). Please review in smaller chunks.",
                 "suggestions": [],
                 "debrief": {
                     "strategies": ["Break the code into smaller, logical chunks for review."],
@@ -79,9 +82,10 @@ class CodeReviewer:
         
         try:
             # Get LLM review
+            max_tokens = self.config.get("code_review.max_tokens", 2048)
             response = self.llm_manager.generate(
                 prompt,
-                max_tokens=2048,
+                max_tokens=max_tokens,
                 fallback=True
             )
             
@@ -183,9 +187,10 @@ Provide:
 Keep it practical and code-focused."""
 
         try:
+            max_tokens = self.config.get("code_review.max_tokens_explain", 1500)
             response = self.llm_manager.generate(
                 prompt,
-                max_tokens=1500,
+                max_tokens=max_tokens,
                 fallback=True
             )
             return response.text
@@ -222,9 +227,10 @@ Suggest specific improvements with:
 Keep suggestions practical and pattern-aware."""
 
         try:
+            max_tokens = self.config.get("code_review.max_tokens_suggest", 2048)
             response = self.llm_manager.generate(
                 prompt,
-                max_tokens=2048,
+                max_tokens=max_tokens,
                 fallback=True
             )
             return response.text
@@ -232,7 +238,7 @@ Keep suggestions practical and pattern-aware."""
             logger.error(f"Suggestions failed: {e}")
             return f"Could not generate suggestions: {e}"
 
-    def generate_debrief(self, code: str, review: str, context: Optional[str] = None) -> Dict[str, any]:
+    def generate_debrief(self, code: str, review: str, context: Optional[str] = None) -> Dict[str, Any]:
         """Generate a debrief with improvement strategies and difficulty rating.
         
         Args:
@@ -288,12 +294,13 @@ Provide your response in the following format:
 """
 
         try:
+            max_tokens = self.config.get("code_review.max_tokens_debrief", 1500)
             response = self.llm_manager.generate(
                 prompt,
-                max_tokens=1500,
+                max_tokens=max_tokens,
                 fallback=True
             )
-            
+
             # Parse the response
             debrief_text = response.text
             strategies = []
@@ -355,7 +362,7 @@ Provide your response in the following format:
             }
 
 
-def display_debrief(debrief: Dict[str, any]) -> None:
+def display_debrief(debrief: Dict[str, Any]) -> None:
     """Display the debrief section in a formatted way.
     
     Args:
