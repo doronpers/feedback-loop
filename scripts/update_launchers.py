@@ -34,10 +34,10 @@ def find_tools() -> List[Dict[str, str]]:
                 with open(script, 'r') as f:
                     lines = f.readlines()
                     description = "Tool"
-                    for line in lines[:10]:
+                    for idx, line in enumerate(lines[:10]):
                         if '"""' in line or "'''" in line:
                             # Found docstring, try to extract description
-                            for i, next_line in enumerate(lines[lines.index(line)+1:lines.index(line)+5]):
+                            for next_line in lines[idx+1:idx+5]:
                                 if next_line.strip() and not next_line.strip().startswith('"""'):
                                     description = next_line.strip()
                                     break

@@ -45,61 +45,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
       
-      - name: Detect available tools
-        id: detect_tools
+      - name: Update launcher scripts
         run: |
-          # Find all executable scripts in bin/
-          TOOLS=$(ls -1 bin/fl-* 2>/dev/null | sed 's|bin/||' | tr '\n' ',' | sed 's/,$//')
-          echo "tools=$TOOLS" >> $GITHUB_OUTPUT
-          
-          # Find all demo scripts
-          DEMOS=$(ls -1 demo*.py 2>/dev/null | tr '\n' ',' | sed 's/,$//')
-          echo "demos=$DEMOS" >> $GITHUB_OUTPUT
-          
-          echo "Available tools: $TOOLS"
-          echo "Available demos: $DEMOS"
-      
-      - name: Generate launcher scripts
-        run: |
-          python3 << 'EOF'
-          import os
-          import json
-          from pathlib import Path
-          
-          # Get detected tools
-          tools = os.environ.get('TOOLS', '').split(',')
-          demos = os.environ.get('DEMOS', '').split(',')
-          
-          tools = [t for t in tools if t]
-          demos = [d for d in demos if d]
-          
-          print(f"Generating launchers for {len(tools)} tools and {len(demos)} demos")
-          
-          # Check if launchers exist and are up to date
-          command_file = Path('launch-feedback-loop.command')
-          bat_file = Path('launch-feedback-loop.bat')
-          
-          if command_file.exists() and bat_file.exists():
-              # Verify they contain all current tools
-              command_content = command_file.read_text()
-              bat_content = bat_file.read_text()
-              
-              all_present = True
-              for tool in tools:
-                  if tool not in command_content or tool not in bat_content:
-                      print(f"Tool {tool} not found in launchers")
-                      all_present = False
-              
-              if all_present and os.environ.get('FORCE_UPDATE') != 'true':
-                  print("Launchers are up to date")
-                  exit(0)
-          
-          print("Launchers need updating")
-          EOF
-        env:
-          TOOLS: ${{ steps.detect_tools.outputs.tools }}
-          DEMOS: ${{ steps.detect_tools.outputs.demos }}
-          FORCE_UPDATE: ${{ github.event.inputs.force_update }}
+          # Run the update script to regenerate launchers
+          python3 scripts/update_launchers.py
+          echo "Launcher update completed"
       
       - name: Test Mac launcher syntax
         run: |
