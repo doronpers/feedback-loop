@@ -2,6 +2,16 @@
 
 This directory contains launcher scripts that can be double-clicked from your desktop to easily run Feedback Loop tools.
 
+## 🤖 Automatic Updates
+
+The launcher scripts are **automatically maintained** through:
+
+1. **GitHub Actions Workflow**: Whenever changes are made to bin scripts, demos, or requirements, the launchers are automatically checked and updated if needed
+2. **Manual Update Script**: Run `python scripts/update_launchers.py` to manually regenerate the launchers
+3. **Auto-detection**: The update script automatically discovers all tools in `bin/` and demo scripts
+
+This ensures the launchers always include the latest tools without manual editing!
+
 ## 📁 Available Launchers
 
 ### For Mac (macOS)
@@ -119,6 +129,24 @@ chmod +x launch-feedback-loop.command
 - **Create shortcuts** instead of moving the files to maintain the correct paths
 - **Add to dock/taskbar** for even faster access
 - The launchers work from any location if feedback-loop is installed globally
+- **Launchers auto-update** - When new tools are added, run `python scripts/update_launchers.py` or wait for the automated workflow
+
+## 🔄 Maintaining the Launchers
+
+The launcher scripts are auto-generated from `/scripts/update_launchers.py`. When you add new tools:
+
+```bash
+# Check if launchers need updating
+python scripts/update_launchers.py --check-only
+
+# Update launchers
+python scripts/update_launchers.py
+```
+
+The GitHub Actions workflow (`.github/workflows/update-launchers.yml`) automatically runs this script when:
+- New scripts are added to `bin/`
+- Demo files change
+- Requirements or setup files change
 
 ## 📖 More Information
 

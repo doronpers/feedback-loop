@@ -4,6 +4,7 @@ REM Feedback Loop - Windows Desktop Launcher
 REM ###########################################################################
 REM This script can be double-clicked from Windows Explorer to launch feedback-loop
 REM Usage: Double-click this file from your desktop or any folder
+REM AUTO-GENERATED - Run scripts/update_launchers.py to regenerate
 REM ###########################################################################
 
 SETLOCAL EnableDelayedExpansion
@@ -78,10 +79,10 @@ echo ═════════════════════════
 echo Please select a tool to launch:
 echo ════════════════════════════════════════════════════════════════════
 echo.
-echo   1) 💬 Chat Assistant    - Interactive AI-powered chat for coding help
-echo   2) ⚙️  Setup Wizard      - Configure feedback-loop for your project
-echo   3) 📊 Dashboard         - View metrics and pattern insights
-echo   4) 🩺 Doctor            - Diagnose and fix common issues
+echo   1) 💬 Chat            - Interactive AI-powered chat for coding help
+echo   2) 📊 Dashboard       - View metrics and pattern insights
+echo   3) 🩺 Doctor          - Diagnose and fix common issues
+echo   4) ⚙️ Setup           - Configure feedback-loop for your project
 echo   5) 🎬 Demo              - See patterns in action
 echo   6) 📚 Open Documentation
 echo   7) 🚪 Exit
@@ -90,16 +91,16 @@ set /p CHOICE="Enter your choice (1-7): "
 echo.
 
 if "%CHOICE%"=="1" goto CHAT
-if "%CHOICE%"=="2" goto SETUP
-if "%CHOICE%"=="3" goto DASHBOARD
-if "%CHOICE%"=="4" goto DOCTOR
+if "%CHOICE%"=="2" goto DASHBOARD
+if "%CHOICE%"=="3" goto DOCTOR
+if "%CHOICE%"=="4" goto SETUP
 if "%CHOICE%"=="5" goto DEMO
 if "%CHOICE%"=="6" goto DOCS
 if "%CHOICE%"=="7" goto EXIT
 goto INVALID
 
 :CHAT
-echo 🚀 Launching Chat Assistant...
+echo 🚀 Launching Chat...
 echo ════════════════════════════════════════════════════════════════════
 echo.
 python bin\fl-chat
@@ -107,28 +108,9 @@ set STATUS=%ERRORLEVEL%
 echo.
 echo ════════════════════════════════════════════════════════════════════
 if %STATUS%==0 (
-    echo ✓ Chat Assistant exited successfully
+    echo ✓ Chat exited successfully
 ) else (
-    echo ⚠️  Chat Assistant exited with code: %STATUS%
-)
-echo.
-echo Press any key to return to menu...
-pause >nul
-echo.
-goto START
-
-:SETUP
-echo 🚀 Launching Setup Wizard...
-echo ════════════════════════════════════════════════════════════════════
-echo.
-python bin\fl-setup
-set STATUS=%ERRORLEVEL%
-echo.
-echo ════════════════════════════════════════════════════════════════════
-if %STATUS%==0 (
-    echo ✓ Setup Wizard completed successfully
-) else (
-    echo ⚠️  Setup Wizard exited with code: %STATUS%
+    echo ⚠️  Chat exited with code: %STATUS%
 )
 echo.
 echo Press any key to return to menu...
@@ -164,9 +146,28 @@ set STATUS=%ERRORLEVEL%
 echo.
 echo ════════════════════════════════════════════════════════════════════
 if %STATUS%==0 (
-    echo ✓ Doctor completed successfully
+    echo ✓ Doctor exited successfully
 ) else (
     echo ⚠️  Doctor exited with code: %STATUS%
+)
+echo.
+echo Press any key to return to menu...
+pause >nul
+echo.
+goto START
+
+:SETUP
+echo 🚀 Launching Setup...
+echo ════════════════════════════════════════════════════════════════════
+echo.
+python bin\fl-setup
+set STATUS=%ERRORLEVEL%
+echo.
+echo ════════════════════════════════════════════════════════════════════
+if %STATUS%==0 (
+    echo ✓ Setup exited successfully
+) else (
+    echo ⚠️  Setup exited with code: %STATUS%
 )
 echo.
 echo Press any key to return to menu...

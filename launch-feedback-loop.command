@@ -4,6 +4,7 @@
 ###############################################################################
 # This script can be double-clicked from macOS Finder to launch feedback-loop
 # Usage: Double-click this file from your desktop or any folder
+# AUTO-GENERATED - Run scripts/update_launchers.py to regenerate
 ###############################################################################
 
 # Change to the directory where this script is located
@@ -71,10 +72,10 @@ while true; do
     echo "Please select a tool to launch:"
     echo "════════════════════════════════════════════════════════════════════"
     echo ""
-    echo "  1) 💬 Chat Assistant    - Interactive AI-powered chat for coding help"
-    echo "  2) ⚙️  Setup Wizard      - Configure feedback-loop for your project"
-    echo "  3) 📊 Dashboard         - View metrics and pattern insights"
-    echo "  4) 🩺 Doctor            - Diagnose and fix common issues"
+    echo "  1) 💬 Chat            - Interactive AI-powered chat for coding help"
+    echo "  2) 📊 Dashboard       - View metrics and pattern insights"
+    echo "  3) 🩺 Doctor          - Diagnose and fix common issues"
+    echo "  4) ⚙️ Setup           - Configure feedback-loop for your project"
     echo "  5) 🎬 Demo              - See patterns in action"
     echo "  6) 📚 Open Documentation"
     echo "  7) 🚪 Exit"
@@ -85,7 +86,7 @@ while true; do
 
     case $choice in
         1)
-            echo "🚀 Launching Chat Assistant..."
+            echo "🚀 Launching Chat..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
             python3 bin/fl-chat
@@ -93,9 +94,9 @@ while true; do
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
             if [ $STATUS -eq 0 ]; then
-                echo "✓ Chat Assistant exited successfully"
+                echo "✓ Chat exited successfully"
             else
-                echo "⚠️  Chat Assistant exited with code: $STATUS"
+                echo "⚠️  Chat exited with code: $STATUS"
             fi
             echo ""
             echo "Press any key to return to menu..."
@@ -103,24 +104,6 @@ while true; do
             echo ""
             ;;
         2)
-            echo "🚀 Launching Setup Wizard..."
-            echo "════════════════════════════════════════════════════════════════════"
-            echo ""
-            python3 bin/fl-setup
-            STATUS=$?
-            echo ""
-            echo "════════════════════════════════════════════════════════════════════"
-            if [ $STATUS -eq 0 ]; then
-                echo "✓ Setup Wizard completed successfully"
-            else
-                echo "⚠️  Setup Wizard exited with code: $STATUS"
-            fi
-            echo ""
-            echo "Press any key to return to menu..."
-            read -n 1 -s
-            echo ""
-            ;;
-        3)
             echo "🚀 Launching Dashboard..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
@@ -138,7 +121,7 @@ while true; do
             read -n 1 -s
             echo ""
             ;;
-        4)
+        3)
             echo "🚀 Launching Doctor..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
@@ -147,9 +130,27 @@ while true; do
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
             if [ $STATUS -eq 0 ]; then
-                echo "✓ Doctor completed successfully"
+                echo "✓ Doctor exited successfully"
             else
                 echo "⚠️  Doctor exited with code: $STATUS"
+            fi
+            echo ""
+            echo "Press any key to return to menu..."
+            read -n 1 -s
+            echo ""
+            ;;
+        4)
+            echo "🚀 Launching Setup..."
+            echo "════════════════════════════════════════════════════════════════════"
+            echo ""
+            python3 bin/fl-setup
+            STATUS=$?
+            echo ""
+            echo "════════════════════════════════════════════════════════════════════"
+            if [ $STATUS -eq 0 ]; then
+                echo "✓ Setup exited successfully"
+            else
+                echo "⚠️  Setup exited with code: $STATUS"
             fi
             echo ""
             echo "Press any key to return to menu..."
