@@ -52,9 +52,34 @@ class MetricsPlugin:
         if self.metrics_output:
             self.enable_metrics = True
 
+        # Auto-enable metrics based on configuration or environment
+        if not self.enable_metrics:
+            try:
+                from metrics.config_manager import ConfigManager
+                config_manager = ConfigManager.get_instance()
+                if config_manager.should_auto_enable_metrics():
+                    self.enable_metrics = True
+                    logger.info("Auto-enabled metrics collection (config or history detected)")
+            except ImportError:
+                # Config manager not available, check environment variable
+                import os
+                if os.getenv("FEEDBACK_LOOP_AUTO_METRICS") == "1":
+                    self.enable_metrics = True
+                # Also check if metrics_data.json exists
+                elif Path("metrics_data.json").exists():
+                    self.enable_metrics = True
+                # Check for .feedback-loop/auto-metrics marker
+                elif Path(".feedback-loop/auto-metrics").exists():
+                    self.enable_metrics = True
+
         # Default output file if metrics enabled but no file specified
         if self.enable_metrics and not self.metrics_output:
-            self.metrics_output = "metrics_data.json"
+            try:
+                from metrics.config_manager import ConfigManager
+                config_manager = ConfigManager.get_instance()
+                self.metrics_output = config_manager.get("auto_metrics.output_file", "metrics_data.json")
+            except ImportError:
+                self.metrics_output = "metrics_data.json"
 
         self.collector = None
         if self.enable_metrics:
@@ -227,19 +252,60 @@ class MetricsPlugin:
                 # Automatic Analysis (can be skipped via environment variable)
                 if os.getenv("FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS"):
                     logger.info("Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)")
-                    print("\n✓ Metrics saved. Auto-analysis skipped.")
+                    if not self._is_quiet():
+                        print("\n✓ Metrics saved. Auto-analysis skipped.")
+                    return
+
+                # Check if auto-analysis should run based on config
+                failure_count = summary.get('test_failures', 0)
+                should_analyze = True
+                is_quiet = False
+                
+                try:
+                    from metrics.config_manager import ConfigManager
+                    config_manager = ConfigManager.get_instance()
+                    should_analyze = config_manager.should_auto_analyze(failure_count)
+                    is_quiet = config_manager.is_quiet()
+                except ImportError:
+                    # Config manager not available, use default behavior
+                    pass
+
+                if not should_analyze:
+                    if not is_quiet:
+                        print(f"\n✓ Metrics saved ({failure_count} failures, below threshold)")
                     return
 
                 try:
                     from metrics.integrate import MetricsIntegration
-                    print("\n🔄 Feedback Loop: Analyzing results...")
+                    if not is_quiet:
+                        print("\n🔄 Feedback Loop: Analyzing results...")
                     integration = MetricsIntegration(
                         metrics_file=self.metrics_output,
                         patterns_file="patterns.json"
                     )
                     integration.analyze_metrics(update_patterns=True)
+                    
+                    # Show dashboard if configured
+                    try:
+                        from metrics.config_manager import ConfigManager
+                        config_manager = ConfigManager.get_instance()
+                        if config_manager.should_show_dashboard():
+                            from bin.fl_dashboard import main as dashboard_main
+                            dashboard_main()
+                    except (ImportError, Exception):
+                        pass
                 except Exception as e:
                     logger.error(f"Analysis failed: {e}")
-                    print(f"\n❌ Analysis failed: {e}")
+                    if not is_quiet:
+                        print(f"\n❌ Analysis failed: {e}")
+    
+    def _is_quiet(self) -> bool:
+        """Check if output should be quiet."""
+        try:
+            from metrics.config_manager import ConfigManager
+            config_manager = ConfigManager.get_instance()
+            return config_manager.is_quiet()
+        except ImportError:
+            return False
             except Exception as e:
                 logger.error(f"Failed to save metrics: {e}")

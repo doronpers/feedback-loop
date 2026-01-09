@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""
+Post-merge hook for pattern analysis.
+
+This hook analyzes merged changes and checks for pattern violations.
+Install: cp hooks/post-merge .git/hooks/post-merge && chmod +x .git/hooks/post-merge
+"""
+
+import os
+import sys
+import subprocess
+from pathlib import Path
+
+def check_config_enabled():
+    """Check if post-merge analysis is enabled in config."""
+    try:
+        from metrics.config_manager import ConfigManager
+        config_manager = ConfigManager.get_instance()
+        return config_manager.get("git_hooks.post_merge_analyze.enabled", False)
+    except ImportError:
+        # Config manager not available, check environment variable
+        return os.getenv("FEEDBACK_LOOP_POST_MERGE", "0") == "1"
+
+def is_quiet():
+    """Check if output should be quiet."""
+    try:
+        from metrics.config_manager import ConfigManager
+        config_manager = ConfigManager.get_instance()
+        return config_manager.get("git_hooks.post_merge_analyze.quiet", True)
+    except ImportError:
+        return True
+
+def get_merge_base():
+    """Get merge base commit."""
+    try:
+        result = subprocess.run(
+            ["git", "merge-base", "HEAD", "HEAD@{1}"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return None
+
+def main():
+    """Main post-merge hook entry point."""
+    # Check if in git repository
+    if not Path(".git").exists():
+        sys.exit(0)
+
+    # Check if enabled
+    if not check_config_enabled():
+        sys.exit(0)
+
+    quiet = is_quiet()
+    
+    if not quiet:
+        print("\n🔄 Feedback Loop: Analyzing merged changes...")
+
+    try:
+        # Check if we should analyze since merge base
+        try:
+            from metrics.config_manager import ConfigManager
+            config_manager = ConfigManager.get_instance()
+            since_merge_base = config_manager.get("git_hooks.post_merge_analyze.since_merge_base", True)
+        except ImportError:
+            since_merge_base = True
+
+        if since_merge_base:
+            merge_base = get_merge_base()
+            if merge_base:
+                # Analyze commit diff
+                result = subprocess.run(
+                    ["python", "-m", "metrics.integrate", "analyze-commit",
+                     "--base", merge_base, "--head", "HEAD"],
+                    capture_output=quiet,
+                    text=True
+                )
+            else:
+                # Fallback to regular analysis
+                result = subprocess.run(
+                    ["python", "-m", "metrics.integrate", "analyze"],
+                    capture_output=quiet,
+                    text=True
+                )
+        else:
+            # Regular analysis
+            result = subprocess.run(
+                ["python", "-m", "metrics.integrate", "analyze"],
+                capture_output=quiet,
+                text=True
+            )
+        
+        if result.returncode == 0:
+            if not quiet:
+                print("✓ Merge analysis complete")
+        else:
+            if not quiet:
+                print(f"⚠ Merge analysis completed with warnings (exit code: {result.returncode})")
+    except Exception as e:
+        if not quiet:
+            print(f"⚠ Post-merge analysis failed: {e}")
+        # Don't fail the merge
+        sys.exit(0)
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

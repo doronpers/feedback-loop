@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""
+Post-commit hook for pattern analysis.
+
+This hook analyzes metrics and updates patterns after each commit.
+Install: cp hooks/post-commit .git/hooks/post-commit && chmod +x .git/hooks/post-commit
+"""
+
+import os
+import sys
+import subprocess
+from pathlib import Path
+
+def check_config_enabled():
+    """Check if post-commit analysis is enabled in config."""
+    try:
+        from metrics.config_manager import ConfigManager
+        config_manager = ConfigManager.get_instance()
+        return config_manager.get("git_hooks.post_commit_analyze.enabled", False)
+    except ImportError:
+        # Config manager not available, check environment variable
+        return os.getenv("FEEDBACK_LOOP_POST_COMMIT", "0") == "1"
+
+def is_quiet():
+    """Check if output should be quiet."""
+    try:
+        from metrics.config_manager import ConfigManager
+        config_manager = ConfigManager.get_instance()
+        return config_manager.get("git_hooks.post_commit_analyze.quiet", True)
+    except ImportError:
+        return True
+
+def main():
+    """Main post-commit hook entry point."""
+    # Check if in git repository
+    if not Path(".git").exists():
+        sys.exit(0)
+
+    # Check if enabled
+    if not check_config_enabled():
+        sys.exit(0)
+
+    quiet = is_quiet()
+    
+    if not quiet:
+        print("\n🔄 Feedback Loop: Analyzing commit...")
+
+    try:
+        # Run analysis
+        result = subprocess.run(
+            ["python", "-m", "metrics.integrate", "analyze"],
+            capture_output=quiet,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            if not quiet:
+                print("✓ Analysis complete")
+        else:
+            if not quiet:
+                print(f"⚠ Analysis completed with warnings (exit code: {result.returncode})")
+    except Exception as e:
+        if not quiet:
+            print(f"⚠ Post-commit analysis failed: {e}")
+        # Don't fail the commit
+        sys.exit(0)
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
