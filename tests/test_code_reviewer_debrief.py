@@ -194,3 +194,58 @@ Moderate difficulty with given context""",
         # Check that context is included in the prompt
         call_args = mock_llm.generate.call_args
         assert context in call_args[0][0]
+    
+    @patch('metrics.code_reviewer.get_llm_manager')
+    def test_review_code_exception_includes_debrief(self, mock_get_llm):
+        """Test that review_code includes debrief even when an exception occurs."""
+        mock_llm = Mock()
+        mock_llm.is_any_available.return_value = True
+        mock_llm.generate.side_effect = Exception("LLM service error")
+        mock_get_llm.return_value = mock_llm
+        
+        reviewer = CodeReviewer()
+        result = reviewer.review_code("def foo(): pass")
+        
+        # Should have error field
+        assert "error" in result
+        assert "LLM service error" in result["error"]
+        
+        # Should also have debrief field with default values
+        assert "debrief" in result
+        assert "strategies" in result["debrief"]
+        assert len(result["debrief"]["strategies"]) > 0
+        assert "difficulty" in result["debrief"]
+        assert isinstance(result["debrief"]["difficulty"], int)
+        assert 1 <= result["debrief"]["difficulty"] <= 10
+        assert "explanation" in result["debrief"]
+    
+    @patch('metrics.code_reviewer.get_llm_manager')
+    def test_review_code_validation_errors_include_debrief(self, mock_get_llm):
+        """Test that validation errors also include debrief field."""
+        mock_llm = Mock()
+        mock_get_llm.return_value = mock_llm
+        
+        reviewer = CodeReviewer()
+        
+        # Test empty code
+        result = reviewer.review_code("")
+        assert "error" in result
+        assert "debrief" in result
+        assert "strategies" in result["debrief"]
+        assert result["debrief"]["difficulty"] >= 1
+        
+        # Test code too large
+        large_code = "x" * 60000
+        result = reviewer.review_code(large_code)
+        assert "error" in result
+        assert "debrief" in result
+        assert "strategies" in result["debrief"]
+        assert result["debrief"]["difficulty"] >= 1
+        
+        # Test no LLM available
+        mock_llm.is_any_available.return_value = False
+        result = reviewer.review_code("def foo(): pass")
+        assert "error" in result
+        assert "debrief" in result
+        assert "strategies" in result["debrief"]
+        assert result["debrief"]["difficulty"] >= 1

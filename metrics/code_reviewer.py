@@ -44,19 +44,34 @@ class CodeReviewer:
         if not code or not code.strip():
             return {
                 "error": "No code provided for review.",
-                "suggestions": []
+                "suggestions": [],
+                "debrief": {
+                    "strategies": ["Provide valid code for review."],
+                    "difficulty": 1,
+                    "explanation": "No code was provided for review."
+                }
             }
         
         if len(code) > 50000:  # Limit code size
             return {
                 "error": "Code too large for review (max 50KB). Please review in smaller chunks.",
-                "suggestions": []
+                "suggestions": [],
+                "debrief": {
+                    "strategies": ["Break the code into smaller, logical chunks for review."],
+                    "difficulty": 2,
+                    "explanation": "Code exceeded size limit for review."
+                }
             }
         
         if not self.llm_manager.is_any_available():
             return {
                 "error": "No LLM providers available. Set API keys to use code review.",
-                "suggestions": []
+                "suggestions": [],
+                "debrief": {
+                    "strategies": ["Set up API keys for ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY."],
+                    "difficulty": 2,
+                    "explanation": "Cannot generate review or debrief without LLM access."
+                }
             }
 
         # Build review prompt
@@ -85,7 +100,16 @@ class CodeReviewer:
             logger.error(f"Code review failed: {e}")
             return {
                 "error": f"Code review failed: {e}",
-                "suggestions": []
+                "suggestions": [],
+                "debrief": {
+                    "strategies": [
+                        "Check if the LLM service is available and responding.",
+                        "Verify API keys are valid and have sufficient quota.",
+                        "Try again after a short wait if this is a temporary service issue."
+                    ],
+                    "difficulty": 3,
+                    "explanation": "Review failed due to an error during processing."
+                }
             }
 
     def _build_review_prompt(self, code: str, context: Optional[str] = None) -> str:
