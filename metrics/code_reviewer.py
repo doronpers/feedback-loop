@@ -5,6 +5,7 @@ Provides LLM-powered code review with pattern suggestions and best practices.
 """
 
 import logging
+import re
 from typing import Dict, List, Optional
 
 from metrics.llm_providers import get_llm_manager
@@ -281,15 +282,17 @@ Provide your response in the following format:
                 if "**Difficulty Rating:**" in strategies_section:
                     strategies_section = strategies_section.split("**Difficulty Rating:**")[0]
                 
-                # Parse numbered list
+                # Parse numbered list using regex for better handling
                 lines = strategies_section.strip().split("\n")
                 for line in lines:
                     line = line.strip()
-                    if line and (line[0].isdigit() or line.startswith("-") or line.startswith("*")):
-                        # Remove numbering/bullets
-                        clean_line = line.lstrip("0123456789.-* ").strip()
-                        if clean_line:
-                            strategies.append(clean_line)
+                    if line:
+                        # Match numbered lists (1., 2., etc), bullet points (-, *), or simple text
+                        match = re.match(r'^[\d\.\-\*\s]+(.+)$', line)
+                        if match:
+                            clean_line = match.group(1).strip()
+                            if clean_line:
+                                strategies.append(clean_line)
             
             # Extract difficulty rating
             if "**Difficulty Rating:**" in debrief_text:
@@ -300,7 +303,6 @@ Provide your response in the following format:
                     rating_text = rating_section.strip().split("\n")[0].strip()
                 
                 # Extract number
-                import re
                 numbers = re.findall(r'\d+', rating_text)
                 if numbers:
                     difficulty = min(10, max(1, int(numbers[0])))
@@ -316,8 +318,7 @@ Provide your response in the following format:
             return {
                 "strategies": strategies,
                 "difficulty": difficulty,
-                "explanation": explanation,
-                "raw_response": debrief_text
+                "explanation": explanation
             }
             
         except Exception as e:
@@ -327,6 +328,61 @@ Provide your response in the following format:
                 "difficulty": 5,
                 "explanation": "Error during debrief generation."
             }
+
+
+def display_debrief(debrief: Dict[str, any]) -> None:
+    """Display the debrief section in a formatted way.
+    
+    Args:
+        debrief: Debrief dictionary containing strategies, difficulty, and explanation
+    """
+    print("="*70)
+    print("📋 REVIEW DEBRIEF")
+    print("="*70)
+    print()
+    
+    if "strategies" in debrief and debrief["strategies"]:
+        print("💡 Improvement Strategies:")
+        print()
+        for i, strategy in enumerate(debrief["strategies"], 1):
+            print(f"  {i}. {strategy}")
+        print()
+    
+    if "difficulty" in debrief:
+        difficulty = debrief["difficulty"]
+        print(f"📊 Difficulty of Execution: {difficulty}/10")
+        
+        # Visual representation
+        filled = "█" * difficulty
+        empty = "░" * (10 - difficulty)
+        print(f"   {filled}{empty}")
+        
+        # Difficulty level description
+        if difficulty <= 3:
+            level = "Easy"
+            emoji = "🟢"
+        elif difficulty <= 6:
+            level = "Moderate"
+            emoji = "🟡"
+        elif difficulty <= 9:
+            level = "Hard"
+            emoji = "🔴"
+        else:
+            level = "Very Hard"
+            emoji = "⚫"
+        
+        print(f"   {emoji} Level: {level}")
+        print()
+    
+    if "explanation" in debrief and debrief["explanation"]:
+        print("📝 Explanation:")
+        explanation_lines = debrief['explanation'].split('\n')
+        for line in explanation_lines:
+            if line.strip():
+                print(f"   {line}")
+        print()
+    
+    print("="*70)
 
 
 def interactive_review():
@@ -384,51 +440,7 @@ def interactive_review():
         
         # Display debrief if available
         if "debrief" in result:
-            debrief = result["debrief"]
-            print("="*70)
-            print("📋 REVIEW DEBRIEF")
-            print("="*70)
-            print()
-            
-            if "strategies" in debrief and debrief["strategies"]:
-                print("💡 Improvement Strategies:")
-                print()
-                for i, strategy in enumerate(debrief["strategies"], 1):
-                    print(f"  {i}. {strategy}")
-                print()
-            
-            if "difficulty" in debrief:
-                difficulty = debrief["difficulty"]
-                print(f"📊 Difficulty of Execution: {difficulty}/10")
-                
-                # Visual representation
-                filled = "█" * difficulty
-                empty = "░" * (10 - difficulty)
-                print(f"   {filled}{empty}")
-                
-                # Difficulty level description
-                if difficulty <= 3:
-                    level = "Easy"
-                    emoji = "🟢"
-                elif difficulty <= 6:
-                    level = "Moderate"
-                    emoji = "🟡"
-                elif difficulty <= 9:
-                    level = "Hard"
-                    emoji = "🔴"
-                else:
-                    level = "Very Hard"
-                    emoji = "⚫"
-                
-                print(f"   {emoji} Level: {level}")
-                print()
-            
-            if "explanation" in debrief and debrief["explanation"]:
-                print("📝 Explanation:")
-                print(f"   {debrief['explanation']}")
-                print()
-            
-            print("="*70)
+            display_debrief(result["debrief"])
         
         print()
         print(f"Reviewed by: {result['provider']} ({result['model']})")

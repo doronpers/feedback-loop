@@ -16,7 +16,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from metrics.code_reviewer import CodeReviewer
+from metrics.code_reviewer import CodeReviewer, display_debrief
 
 
 def demo_simple_code():
@@ -104,57 +104,6 @@ def process_data(data):
     
     print(f"\n✅ Reviewed by: {result['provider']} ({result['model']})\n")
     return True
-
-
-def display_debrief(debrief):
-    """Display the debrief section in a formatted way."""
-    print("="*70)
-    print("📋 REVIEW DEBRIEF")
-    print("="*70)
-    print()
-    
-    if "strategies" in debrief and debrief["strategies"]:
-        print("💡 Improvement Strategies:")
-        print()
-        for i, strategy in enumerate(debrief["strategies"], 1):
-            print(f"  {i}. {strategy}")
-        print()
-    
-    if "difficulty" in debrief:
-        difficulty = debrief["difficulty"]
-        print(f"📊 Difficulty of Execution: {difficulty}/10")
-        
-        # Visual representation
-        filled = "█" * difficulty
-        empty = "░" * (10 - difficulty)
-        print(f"   {filled}{empty}")
-        
-        # Difficulty level description
-        if difficulty <= 3:
-            level = "Easy"
-            emoji = "🟢"
-        elif difficulty <= 6:
-            level = "Moderate"
-            emoji = "🟡"
-        elif difficulty <= 9:
-            level = "Hard"
-            emoji = "🔴"
-        else:
-            level = "Very Hard"
-            emoji = "⚫"
-        
-        print(f"   {emoji} Level: {level}")
-        print()
-    
-    if "explanation" in debrief and debrief["explanation"]:
-        print("📝 Explanation:")
-        explanation_lines = debrief['explanation'].split('\n')
-        for line in explanation_lines:
-            if line.strip():
-                print(f"   {line}")
-        print()
-    
-    print("="*70)
 
 
 def main():

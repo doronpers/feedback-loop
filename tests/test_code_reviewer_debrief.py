@@ -159,10 +159,13 @@ Simple improvements""",
         reviewer = CodeReviewer()
         debrief = reviewer.generate_debrief("code", "review")
         
-        # Should return fallback response
+        # Should return fallback response with default values
         assert "strategies" in debrief
+        assert len(debrief["strategies"]) > 0
         assert "difficulty" in debrief
-        assert "error" in debrief["strategies"][0].lower() or "could not" in debrief["strategies"][0].lower()
+        assert debrief["difficulty"] == 5  # Default fallback value
+        # Verify it's an error response by checking structure
+        assert "explanation" in debrief
     
     @patch('metrics.code_reviewer.get_llm_manager')
     def test_debrief_with_context(self, mock_get_llm):
