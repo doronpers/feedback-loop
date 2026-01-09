@@ -34,9 +34,11 @@ class MetricsCollector:
     # Expected metric categories
     METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
                         "performance_metrics", "deployment_issues", "code_generation"]
-    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
-                        "performance_metrics", "deployment_issues", "code_generation"]
-    # Allow standard temp dirs and macOS specific temp dirs (which start with /private/var)
+    
+    # Allowed plan file roots for path traversal protection
+    # - Current working directory: normal workspace files
+    # - /tmp: standard Unix temp directory
+    # - /private/var: macOS redirects /tmp to /private/var/folders/... internally
     ALLOWED_PLAN_ROOTS = [
         Path.cwd().resolve(), 
         Path("/tmp").resolve(),

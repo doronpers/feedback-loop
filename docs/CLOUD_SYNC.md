@@ -61,6 +61,7 @@ The public repository (open-source CLI tool) contains "hooks" that remain dorman
 Location: `api/main.py`
 
 The API gateway provides RESTful endpoints for:
+
 - Authentication (`/api/v1/auth/login`, `/api/v1/auth/register`)
 - Pattern synchronization (`/api/v1/patterns/sync`, `/api/v1/patterns/pull`)
 - Configuration management (`/api/v1/config`)
@@ -68,12 +69,14 @@ The API gateway provides RESTful endpoints for:
 - Admin operations (`/api/v1/admin/*`)
 
 **Key Features:**
+
 - API versioning (`/api/v1/`)
 - Bearer token authentication
 - CORS support for web dashboard
 - Request validation with Pydantic
 
 **Configuration Notes:**
+
 - `FEEDBACK_LOOP_ALLOWED_ORIGINS` (comma-separated) controls CORS origins.
 - Passwords are stored with PBKDF2 hashing in the in-memory store.
 
@@ -84,6 +87,7 @@ The API gateway provides RESTful endpoints for:
 Location: `api/models.py`
 
 Database models for:
+
 - **Organizations**: Multi-tenant architecture with subscription tiers
 - **Teams**: Sub-groups within organizations
 - **Users**: Authentication, RBAC, SSO support
@@ -91,11 +95,13 @@ Database models for:
 - **AuditLog**: Immutable audit trail for compliance
 
 **RBAC Roles:**
+
 - `ADMIN`: Can delete patterns, manage team, view analytics
 - `DEVELOPER`: Can read/write patterns
 - `VIEWER`: Read-only access
 
 **Subscription Tiers:**
+
 - `FREE`: Single-user, local only
 - `TEAM`: $25/user/month - Team sync and basic analytics
 - `ENTERPRISE`: $50+/user/month - SSO, compliance, self-hosted
@@ -125,6 +131,7 @@ client = CloudSyncClient(
 ```
 
 **Operations:**
+
 - `sync_patterns()`: Push patterns to storage
 - `pull_patterns()`: Pull patterns from storage
 - `sync_metrics()`: Push metrics for analytics
@@ -145,6 +152,7 @@ feedback-loop login --api-url https://api.example.com
 ```
 
 The login command will:
+
 1. Prompt for email and password
 2. Authenticate with the cloud API
 3. Save credentials to `~/.feedback-loop/auth.json`
@@ -215,23 +223,31 @@ integration.analyze_metrics(update_patterns=True)
 
 ### Development
 
+Start the API server locally for testing:
+
 ```bash
-# Start the API server
 cd api
 python main.py
 
-# Or use uvicorn directly
+# Or use uvicorn directly with auto-reload
 uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**Environment configuration** (optional):
-- `FEEDBACK_LOOP_ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173"`
-- `FEEDBACK_LOOP_PASSWORD_ITERATIONS=210000`
+**Environment Variables** (all optional):
+
+```bash
+# CORS configuration (comma-separated origins)
+export FEEDBACK_LOOP_ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173"
+
+# Password hashing iterations (default: 210000, minimum: 100000)
+export FEEDBACK_LOOP_PASSWORD_ITERATIONS=210000
+```
 
 The API will be available at:
-- API endpoints: http://localhost:8000/api/v1/
-- Interactive docs: http://localhost:8000/api/docs
-- ReDoc: http://localhost:8000/api/redoc
+
+- Endpoints: <http://localhost:8000/api/v1/>
+- Interactive docs: <http://localhost:8000/api/docs>
+- ReDoc: <http://localhost:8000/api/redoc>
 
 ### Production
 
@@ -239,29 +255,14 @@ For production deployment, see the deployment guide in `docs/DEPLOYMENT.md` (com
 
 ## Security
 
-### Authentication
+For comprehensive security guidelines including API key management, data privacy, and best practices, see [SECURITY.md](../SECURITY.md).
 
-The system uses API key-based authentication:
-1. User logs in with email/password
-2. Server generates and returns API key
-3. Client stores API key in `~/.feedback-loop/auth.json`
-4. Subsequent requests include API key in `Authorization: Bearer <key>` header
+**Quick Notes:**
 
-### Data Privacy
-
-Following the principles in `SECURITY.md`:
-- **Zero Knowledge Architecture**: Code snippets sent for metrics are sanitized
-- **Encrypted Storage**: Patterns are encrypted at rest (PostgreSQL + encryption)
-- **Audit Logging**: All changes are logged for compliance
-- **Access Control**: RBAC ensures users only access authorized resources
-
-### Best Practices
-
-1. **Never commit API keys** to version control
-2. **Rotate keys** every 90 days
-3. **Use HTTPS** in production
-4. **Enable rate limiting** on API endpoints
-5. **Implement proper password hashing** (bcrypt/argon2 in production)
+- API keys use Bearer token authentication
+- Passwords hashed with PBKDF2-HMAC-SHA256 (210,000 iterations)
+- CORS configured via `FEEDBACK_LOOP_ALLOWED_ORIGINS` environment variable
+- All code is open source and can be self-hosted for maximum data control
 
 ## Testing
 
@@ -278,6 +279,7 @@ pytest tests/ -v
 ## Roadmap
 
 ### Phase 1: Infrastructure & Authentication ✅ (Current)
+
 - [x] Centralized API Gateway
 - [x] User & Organization Management schemas
 - [x] SyncClient abstraction
@@ -288,6 +290,7 @@ pytest tests/ -v
 - [ ] Encrypted pattern storage
 
 ### Phase 2: Team Sync Engine (Next)
+
 - [ ] Bi-directional pattern sync
 - [ ] Conflict resolution
 - [ ] Pattern versioning
@@ -295,12 +298,14 @@ pytest tests/ -v
 - [ ] Real-time sync updates
 
 ### Phase 3: Analytics & ROI Dashboard
+
 - [ ] React/Vite frontend
 - [ ] Time saved calculations
 - [ ] ROI metrics visualization
 - [ ] Personalized fulfillment metrics
 
 ### Phase 4: Enterprise & Compliance
+
 - [ ] SSO/SAML integration (Okta, AzureAD)
 - [ ] Immutable audit logging
 - [ ] Compliance reporting

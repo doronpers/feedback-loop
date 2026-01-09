@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Tests](https://img.shields.io/badge/tests-119%20passing-success.svg)
+![Tests](https://img.shields.io/badge/tests-183%20collected-success.svg)
 ![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
 
 **A practical framework for AI-assisted development with continuous learning from your code.**
@@ -86,6 +86,7 @@ feedback-loop generate "Create a safe file handler"
 ## Core patterns (short list)
 
 The framework ships with 9 production-tested patterns, including:
+
 - NumPy type conversion
 - NaN/Inf validation
 - Bounds checking

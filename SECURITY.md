@@ -14,6 +14,7 @@
 **CRITICAL: Never commit API keys to version control**
 
 1. **Use environment variables only**
+
    ```bash
    export ANTHROPIC_API_KEY='your-key'
    export OPENAI_API_KEY='your-key'
@@ -37,18 +38,21 @@
 
 ### Code Privacy
 
-#### What gets sent to LLM providers:
+#### What gets sent to LLM providers
+
 - Code snippets for review (max 50KB per request)
 - Pattern descriptions and examples
 - User prompts and questions
 
-#### What does NOT get sent:
+#### What does NOT get sent
+
 - Your entire codebase
 - Environment variables or secrets
 - File paths or system information
 - API keys or credentials
 
-#### For sensitive codebases:
+#### For sensitive codebases
+
 1. **Disable LLM features**: Set `use_llm=False` in code generator
 2. **Self-host models**: Use local LLMs (Code Llama, Mistral, etc.)
 3. **Use on-premises solutions**: Deploy private LLM infrastructure
@@ -57,13 +61,32 @@
 ### Input Validation
 
 All user inputs are validated:
+
 - Code size limits (50KB for review, 5KB for chat)
 - Message length limits (5000 characters for chat)
 - Sanitized before sending to LLM APIs
 
 ### Dependencies
 
-#### Keeping dependencies secure:
+### Password Security
+
+For the cloud backend API (`api/main.py`), passwords are hashed using PBKDF2-HMAC-SHA256:
+
+- **Default iterations**: 210,000 (exceeds NIST minimum of 100,000)
+- **Configurable via**: `FEEDBACK_LOOP_PASSWORD_ITERATIONS` environment variable
+- **Minimum enforced**: 100,000 iterations (values below this fall back to default)
+- **Per-user salt**: Each password uses a unique random salt
+
+```bash
+# Use default (210,000 iterations)
+python api/main.py
+
+# Custom iteration count
+export FEEDBACK_LOOP_PASSWORD_ITERATIONS=250000
+python api/main.py
+```
+
+#### Keeping dependencies secure
 
 ```bash
 # Check for known vulnerabilities
@@ -75,7 +98,8 @@ pip list --outdated
 pip install --upgrade -r requirements.txt
 ```
 
-#### Core dependencies:
+#### Core dependencies
+
 - `anthropic` - Official Anthropic SDK (regularly updated)
 - `openai` - Official OpenAI SDK (regularly updated)
 - `google-genai` - New Google AI SDK (recommended over deprecated package)
@@ -85,11 +109,13 @@ pip install --upgrade -r requirements.txt
 ### Rate Limiting & Cost Control
 
 The framework includes:
+
 - Built-in caching to reduce API calls
 - Configurable request limits
 - Automatic fallback to template mode
 
 **Additional protection:**
+
 1. Set spending alerts in your LLM provider dashboard
 2. Configure `FL_MAX_REQUESTS_PER_HOUR` environment variable
 3. Monitor `metrics_data.json` for usage patterns
@@ -97,6 +123,7 @@ The framework includes:
 ### Language Server Protocol (LSP) Security
 
 The LSP server:
+
 - Runs as local process (not exposed to network)
 - Only analyzes files in workspace
 - No file system writes (read-only analysis)
@@ -104,7 +131,8 @@ The LSP server:
 
 ### CI/CD Security
 
-#### GitHub Actions:
+#### GitHub Actions
+
 ```yaml
 # Use encrypted secrets
 env:
@@ -118,7 +146,8 @@ permissions:
 uses: actions/checkout@v4  # Use specific versions
 ```
 
-#### Best practices:
+#### Best practices
+
 - Never log API keys or secrets
 - Use separate keys for CI/CD
 - Enable branch protection rules
@@ -129,7 +158,8 @@ uses: actions/checkout@v4  # Use specific versions
 **DO NOT open public issues for security vulnerabilities.**
 
 Instead:
-1. Email security concerns to: [security contact - to be added]
+
+1. Email security concerns to: <security@feedback-loop.dev> (or open a private security advisory on GitHub)
 2. Include:
    - Description of the vulnerability
    - Steps to reproduce
@@ -137,11 +167,13 @@ Instead:
    - Suggested fix (if any)
 
 **Response timeline:**
+
 - Initial response: Within 48 hours
 - Status update: Within 7 days
 - Fix timeline: Varies by severity
 
 **Severity levels:**
+
 - **Critical**: Remote code execution, credential exposure
 - **High**: Data leakage, authentication bypass
 - **Medium**: DoS, information disclosure
@@ -149,7 +181,7 @@ Instead:
 
 ## Security Features
 
-### Built-in protections:
+### Built-in protections
 
 1. **Input sanitization**: All user inputs validated
 2. **API key isolation**: Keys never logged or exposed
@@ -157,7 +189,7 @@ Instead:
 4. **Error handling**: Graceful degradation without exposing internals
 5. **Caching**: Reduces external API calls
 
-### Secure defaults:
+### Secure defaults
 
 - LLM features require explicit API key setup
 - No telemetry or data collection without consent
@@ -166,21 +198,24 @@ Instead:
 
 ## Compliance Considerations
 
-### For regulated industries:
+### For regulated industries
 
 **HIPAA/Healthcare:**
+
 - Review data residency requirements
 - Consider Azure OpenAI (BAA available)
 - Implement audit logging
 - Avoid sending PHI to external APIs
 
 **GDPR/Privacy:**
+
 - No personal data sent to LLMs by default
 - User consent required for LLM features
 - Data processing agreements with providers
 - Right to erasure (clear conversation history)
 
 **Financial Services:**
+
 - Review your organization's AI policies
 - Consider on-premises deployment
 - Implement access controls
@@ -211,7 +246,10 @@ Before deploying to production:
 
 ## Updates
 
-This security policy is reviewed and updated quarterly. Last update: 2026-01-06
+This security policy is reviewed and updated quarterly.
+
+**Last update**: 2026-01-09  
+**Changes**: Added password hashing details for cloud backend API
 
 ---
 

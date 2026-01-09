@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import base64
 import hmac
+import logging
 import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -16,6 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 import secrets
 import hashlib
+
+logger = logging.getLogger(__name__)
 
 # Note: In production, use proper password hashing (bcrypt, argon2)
 # and database (PostgreSQL with SQLAlchemy)
@@ -143,17 +146,36 @@ def create_api_key(user_id: int) -> str:
 
 
 # Security Constants
+# NIST recommends minimum 100,000 iterations for PBKDF2-HMAC-SHA256
+# Default to 210,000 for additional security margin
 PBKDF2_ITERATIONS = 210000
+PBKDF2_MIN_ITERATIONS = 100000
 
 def hash_password(password: str) -> str:
-    """Hash password using PBKDF2 with per-user salt."""
-    # Use environment variable if set, otherwise default to constant
-    try:
-        iterations = int(os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS", str(PBKDF2_ITERATIONS)))
-        if iterations <= 0:
-            iterations = PBKDF2_ITERATIONS
-    except (TypeError, ValueError):
-        iterations = PBKDF2_ITERATIONS
+    """Hash password using PBKDF2 with per-user salt.
+    
+    Iteration count can be configured via FEEDBACK_LOOP_PASSWORD_ITERATIONS
+    environment variable, but will default to PBKDF2_ITERATIONS if not set
+    or if the value is below the NIST-recommended minimum.
+    """
+    # Get iterations from env var, with validation
+    iterations = PBKDF2_ITERATIONS
+    env_iterations = os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS")
+    if env_iterations:
+        try:
+            iterations = int(env_iterations)
+            # Enforce minimum security standard
+            if iterations < PBKDF2_MIN_ITERATIONS:
+                logger.warning(
+                    f"FEEDBACK_LOOP_PASSWORD_ITERATIONS ({iterations}) below minimum "
+                    f"({PBKDF2_MIN_ITERATIONS}), using default ({PBKDF2_ITERATIONS})"
+                )
+                iterations = PBKDF2_ITERATIONS
+        except (TypeError, ValueError):
+            logger.warning(
+                f"Invalid FEEDBACK_LOOP_PASSWORD_ITERATIONS value, using default ({PBKDF2_ITERATIONS})"
+            )
+    
     salt = secrets.token_bytes(16)
     digest = hashlib.pbkdf2_hmac(
         "sha256",

@@ -73,6 +73,13 @@ class MetricsPlugin:
                 logger.warning("Could not import MetricsCollector, metrics disabled")
                 self.enable_metrics = False
 
+    # NOTE: Auto-analysis feature
+    # When metrics collection is enabled (via --enable-metrics or --metrics-output),
+    # the plugin automatically analyzes test results after each pytest session.
+    # This provides immediate feedback on pattern violations and effectiveness.
+    # To disable auto-analysis while keeping metrics collection, set the
+    # environment variable: FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS=1
+
     @pytest.hookimpl(tryfirst=True, hookwrapper=True)
     def pytest_runtest_makereport(self, item, call):
         """Hook to capture test execution results.
@@ -217,7 +224,12 @@ class MetricsPlugin:
                 logger.info(f"Metrics saved to {self.metrics_output}")
                 logger.info(f"Test failures logged: {summary['test_failures']}")
 
-                # Automatic Analysis
+                # Automatic Analysis (can be skipped via environment variable)
+                if os.getenv("FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS"):
+                    logger.info("Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)")
+                    print("\n✓ Metrics saved. Auto-analysis skipped.")
+                    return
+
                 try:
                     from metrics.integrate import MetricsIntegration
                     print("\n🔄 Feedback Loop: Analyzing results...")
