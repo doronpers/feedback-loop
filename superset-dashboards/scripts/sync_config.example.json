@@ -1,0 +1,12 @@
+{
+  "db_uri": "sqlite:///metrics.db",
+  "metrics_path": "metrics_data.json",
+  "log_path": "sync_log.json",
+  "description": "Example configuration for metrics sync",
+  "notes": [
+    "For SQLite (development): Use sqlite:///path/to/metrics.db",
+    "For PostgreSQL (production): Use postgresql://user:pass@host:5432/dbname",
+    "Set METRICS_DB_URI environment variable to override db_uri",
+    "Set METRICS_PATH environment variable to override metrics_path"
+  ]
+}

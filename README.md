@@ -77,6 +77,7 @@ feedback-loop generate "Create a safe file handler"
 - **[Quick Reference](docs/QUICK_REFERENCE.md)**
 - **[AI Patterns Guide](docs/AI_PATTERNS_GUIDE.md)**
 - **[Metrics Guide](docs/METRICS_GUIDE.md)**
+- **[Superset Analytics Integration](docs/SUPERSET_INTEGRATION.md)** ⭐ NEW
 - **[LLM Integration Guide](docs/LLM_GUIDE.md)**
 - **[Cloud Sync](docs/CLOUD_SYNC.md)**
 - **[API Reference](metrics/README.md)**
@@ -120,7 +121,23 @@ Use **[Quick Reference](docs/QUICK_REFERENCE.md)** for the full catalog and exam
 │     AI + Code Review         │
 │   (pattern-aware outputs)    │
 └─────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│   Apache Superset Dashboards│
+│     (analytics/insights)     │
+└─────────────────────────────┘
 ```
+
+## Analytics & Visualization
+
+feedback-loop integrates with **Apache Superset** to provide powerful analytics dashboards:
+
+📊 **Code Quality Dashboard** - Track bugs, test failures, and code review issues  
+📈 **Pattern Analysis Dashboard** - Visualize pattern frequency and effectiveness  
+🚀 **Development Trends Dashboard** - Monitor AI-assisted development metrics  
+
+See **[Superset Integration Guide](docs/SUPERSET_INTEGRATION.md)** for setup instructions.
 
 ## Project status
 

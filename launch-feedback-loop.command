@@ -77,10 +77,11 @@ while true; do
     echo "  3) 🩺 Doctor     - Diagnose and fix common issues"
     echo "  4) ⚙️ Setup      - Configure feedback-loop for your project"
     echo "  5) 🎬 Demo              - See patterns in action"
-    echo "  6) 📚 Open Documentation"
-    echo "  7) 🚪 Exit"
+    echo "  6) 📊 Superset Setup   - Set up analytics dashboards"
+    echo "  7) 📚 Open Documentation"
+    echo "  8) 🚪 Exit"
     echo ""
-    echo -n "Enter your choice (1-7): "
+    echo -n "Enter your choice (1-8): "
     read -r choice
     echo ""
 
@@ -176,6 +177,24 @@ while true; do
             echo ""
             ;;
         6)
+            echo "🚀 Launching Superset Quickstart..."
+            echo "════════════════════════════════════════════════════════════════════"
+            echo ""
+            python3 superset-dashboards/quickstart_superset.py
+            STATUS=$?
+            echo ""
+            echo "════════════════════════════════════════════════════════════════════"
+            if [ $STATUS -eq 0 ]; then
+                echo "✓ Superset setup completed successfully"
+            else
+                echo "⚠️  Superset setup exited with code: $STATUS"
+            fi
+            echo ""
+            echo "Press any key to return to menu..."
+            read -n 1 -s
+            echo ""
+            ;;
+        7)
             echo "📚 Opening documentation..."
             if command -v open &> /dev/null; then
                 open "https://github.com/doronpers/feedback-loop"
@@ -187,13 +206,13 @@ while true; do
             read -n 1 -s
             echo ""
             ;;
-        7)
+        8)
             echo "👋 Goodbye!"
             echo ""
             exit 0
             ;;
         *)
-            echo "❌ Invalid choice. Please enter a number between 1 and 7."
+            echo "❌ Invalid choice. Please enter a number between 1 and 8."
             echo ""
             echo "Press any key to continue..."
             read -n 1 -s

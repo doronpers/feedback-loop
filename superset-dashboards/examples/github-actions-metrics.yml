@@ -1,0 +1,84 @@
+# Example GitHub Actions Workflow for Metrics Collection and Export
+# 
+# This workflow demonstrates how to integrate feedback-loop metrics
+# with Apache Superset dashboards in a CI/CD pipeline.
+
+name: Metrics Collection and Export
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  collect-and-export-metrics:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install -e .[test]
+          pip install sqlalchemy psycopg2-binary
+      
+      - name: Run tests with metrics collection
+        run: |
+          pytest --enable-metrics --cov=. --cov-report=xml
+        continue-on-error: true
+      
+      - name: Analyze metrics
+        run: |
+          feedback-loop analyze
+      
+      - name: Export metrics to database
+        if: github.ref == 'refs/heads/main'
+        env:
+          METRICS_DB_URI: ${{ secrets.METRICS_DB_URI }}
+        run: |
+          python superset-dashboards/scripts/export_to_db.py \
+            --format postgresql \
+            --db-uri "$METRICS_DB_URI"
+      
+      - name: Upload metrics artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: metrics-data
+          path: |
+            metrics_data.json
+            patterns.json
+          retention-days: 30
+      
+      - name: Generate metrics report
+        run: |
+          feedback-loop report --format markdown --output metrics_report.md
+      
+      - name: Upload metrics report
+        uses: actions/upload-artifact@v3
+        with:
+          name: metrics-report
+          path: metrics_report.md
+          retention-days: 30
+
+  # Optional: Notify on metrics anomalies
+  notify-on-anomalies:
+    needs: collect-and-export-metrics
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Check for high bug rate
+        run: |
+          # Add custom logic to check metrics
+          # Send notifications via Slack, email, etc.
+          echo "Metrics exported successfully"

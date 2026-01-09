@@ -84,10 +84,11 @@ echo   2) 📊 Dashboard  - View metrics and pattern insights
 echo   3) 🩺 Doctor     - Diagnose and fix common issues
 echo   4) ⚙️ Setup      - Configure feedback-loop for your project
 echo   5) 🎬 Demo              - See patterns in action
-echo   6) 📚 Open Documentation
-echo   7) 🚪 Exit
+echo   6) 📊 Superset Setup   - Set up analytics dashboards
+echo   7) 📚 Open Documentation
+echo   8) 🚪 Exit
 echo.
-set /p CHOICE="Enter your choice (1-7): "
+set /p CHOICE="Enter your choice (1-8): "
 echo.
 
 if "%CHOICE%"=="1" goto CHAT
@@ -95,8 +96,9 @@ if "%CHOICE%"=="2" goto DASHBOARD
 if "%CHOICE%"=="3" goto DOCTOR
 if "%CHOICE%"=="4" goto SETUP
 if "%CHOICE%"=="5" goto DEMO
-if "%CHOICE%"=="6" goto DOCS
-if "%CHOICE%"=="7" goto EXIT
+if "%CHOICE%"=="6" goto SUPERSET
+if "%CHOICE%"=="7" goto DOCS
+if "%CHOICE%"=="8" goto EXIT
 goto INVALID
 
 :CHAT
@@ -194,6 +196,25 @@ pause >nul
 echo.
 goto START
 
+:SUPERSET
+echo 🚀 Launching Superset Quickstart...
+echo ════════════════════════════════════════════════════════════════════
+echo.
+python superset-dashboards\quickstart_superset.py
+set STATUS=%ERRORLEVEL%
+echo.
+echo ════════════════════════════════════════════════════════════════════
+if %STATUS%==0 (
+    echo ✓ Superset setup completed successfully
+) else (
+    echo ⚠️  Superset setup exited with code: %STATUS%
+)
+echo.
+echo Press any key to return to menu...
+pause >nul
+echo.
+goto START
+
 :DOCS
 echo 📚 Opening documentation...
 start https://github.com/doronpers/feedback-loop
@@ -204,7 +225,7 @@ echo.
 goto START
 
 :INVALID
-echo ❌ Invalid choice. Please enter a number between 1 and 7.
+echo ❌ Invalid choice. Please enter a number between 1 and 8.
 echo.
 echo Press any key to continue...
 pause >nul
