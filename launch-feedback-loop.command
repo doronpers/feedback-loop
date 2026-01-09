@@ -10,16 +10,6 @@
 # Change to the directory where this script is located
 cd "$(dirname "$0")" || exit 1
 
-# Activate virtual environment if it exists
-VENV_ACTIVATED=""
-if [ -d ".venv" ]; then
-    source .venv/bin/activate
-    VENV_ACTIVATED=".venv"
-elif [ -d "venv" ]; then
-    source venv/bin/activate
-    VENV_ACTIVATED="venv"
-fi
-
 # Clear the screen for a clean start
 clear
 
@@ -28,18 +18,11 @@ echo "║                    Feedback Loop Launcher                         ║"
 echo "╚════════════════════════════════════════════════════════════════════╝"
 echo ""
 echo "📍 Current directory: $(pwd)"
-if [ -n "$VENV_ACTIVATED" ]; then
-    echo "🐍 Virtual environment: $VENV_ACTIVATED"
-fi
 echo ""
 
-# Determine which Python to use (prefer venv's Python if activated)
-if command -v python &> /dev/null; then
-    PYTHON_CMD=python
-elif command -v python3 &> /dev/null; then
-    PYTHON_CMD=python3
-else
-    echo "❌ Error: Python is not installed or not in PATH"
+# Check if Python 3 is available
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: Python 3 is not installed or not in PATH"
     echo ""
     echo "Please install Python 3.8 or later:"
     echo "  • Download from: https://www.python.org/downloads/"
@@ -50,15 +33,13 @@ else
     exit 1
 fi
 
-# Display Python version and location
-PYTHON_VERSION=$($PYTHON_CMD --version 2>&1)
-PYTHON_PATH=$(which $PYTHON_CMD)
+# Display Python version
+PYTHON_VERSION=$(python3 --version 2>&1)
 echo "✓ Found: $PYTHON_VERSION"
-echo "✓ Python path: $PYTHON_PATH"
 echo ""
 
 # Check if feedback-loop is installed
-if ! $PYTHON_CMD -c "import metrics" &> /dev/null; then
+if ! python3 -c "import metrics" &> /dev/null; then
     echo "⚠️  Feedback Loop not installed in current environment"
     echo ""
     echo "Would you like to install it now? (y/n)"
@@ -66,7 +47,7 @@ if ! $PYTHON_CMD -c "import metrics" &> /dev/null; then
     if [[ "$response" =~ ^[Yy]$ ]]; then
         echo ""
         echo "Installing feedback-loop..."
-        $PYTHON_CMD -m pip install -e . || {
+        python3 -m pip install -e . || {
             echo ""
             echo "❌ Installation failed"
             echo "Press any key to exit..."
@@ -110,7 +91,7 @@ while true; do
             echo "🚀 Launching Chat..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD bin/fl-chat
+            python3 bin/fl-chat
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -128,7 +109,7 @@ while true; do
             echo "🚀 Launching Dashboard..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD bin/fl-dashboard
+            python3 bin/fl-dashboard
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -146,7 +127,7 @@ while true; do
             echo "🚀 Launching Doctor..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD bin/fl-doctor
+            python3 bin/fl-doctor
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -164,7 +145,7 @@ while true; do
             echo "🚀 Launching Setup..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD bin/fl-setup
+            python3 bin/fl-setup
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -182,7 +163,7 @@ while true; do
             echo "🚀 Launching Synthesize..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD bin/fl-synthesize
+            python3 bin/fl-synthesize
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -200,7 +181,7 @@ while true; do
             echo "🚀 Running Demo..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD demo.py
+            python3 demo.py
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
@@ -218,7 +199,7 @@ while true; do
             echo "🚀 Launching Superset Quickstart..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
-            $PYTHON_CMD superset-dashboards/quickstart_superset.py
+            python3 superset-dashboards/quickstart_superset.py
             STATUS=$?
             echo ""
             echo "════════════════════════════════════════════════════════════════════"
