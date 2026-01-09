@@ -482,7 +482,7 @@ class MetricsIntegration:
                             "suggestion": pattern_info["suggestion"]
                         })
             except Exception as e:
-                logger.debug(f"Could not analyze {file}: {e}")
+                logger.warning(f"Could not analyze {file}: {e}", exc_info=True)
 
         return violations
 
