@@ -213,7 +213,8 @@ class MetricsCollector:
         valid_severities = ["low", "medium", "high", "critical"]
         if severity not in valid_severities:
             logger.warning(
-                f"Invalid severity level: {severity}. Must be one of {valid_severities}. Defaulting to 'medium'"
+                f"Invalid severity level: {severity}. "
+                f"Must be one of {valid_severities}. Defaulting to 'medium'"
             )
             severity = "medium"
 

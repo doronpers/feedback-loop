@@ -73,18 +73,18 @@ feedback-loop generate "Create a safe file handler"
 
 ## Documentation
 
-- **[Getting Started](Documentation/GETTING_STARTED.md)**
-- **[Quick Reference](Documentation/QUICK_REFERENCE.md)**
-- **[AI Patterns Guide](Documentation/AI_PATTERNS_GUIDE.md)**
-- **[Metrics Guide](Documentation/METRICS_GUIDE.md)**
-- **[Memory Integration](Documentation/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
-- **[Superset Analytics Integration](Documentation/SUPERSET_INTEGRATION.md)** ⭐ NEW
-- **[LLM Integration Guide](Documentation/LLM_GUIDE.md)**
-- **[Cloud Sync](Documentation/CLOUD_SYNC.md)**
+- **[Getting Started](documentation/GETTING_STARTED.md)**
+- **[Quick Reference](documentation/QUICK_REFERENCE.md)**
+- **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)**
+- **[Metrics Guide](documentation/METRICS_GUIDE.md)**
+- **[Memory Integration](documentation/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
+- **[Superset Analytics Integration](documentation/SUPERSET_INTEGRATION.md)** ⭐ NEW
+- **[LLM Integration Guide](documentation/LLM_GUIDE.md)**
+- **[Cloud Sync](documentation/CLOUD_SYNC.md)**
 - **[API Reference](metrics/README.md)**
 - **[Contributing](CONTRIBUTING.md)**
-- **[Security](Documentation/Status/SECURITY.md)**
-- **[Results](Documentation/Status/RESULTS.md)**
+- **[Security](documentation/Status/SECURITY.md)**
+- **[Results](documentation/Status/RESULTS.md)**
 
 ## Memory-Enhanced Patterns (Optional)
 
@@ -117,7 +117,7 @@ feedback-loop memory recommend --context "Building FastAPI file upload endpoint"
 
 **Note:** Memory integration is **opt-in** and backward compatible. All existing functionality works without MemU.
 
-See **[Memory Integration Guide](Documentation/MEMORY_INTEGRATION.md)** for detailed documentation.
+See **[Memory Integration Guide](documentation/MEMORY_INTEGRATION.md)** for detailed documentation.
 
 ## Core patterns (short list)
 
@@ -133,7 +133,7 @@ The framework ships with 9 production-tested patterns, including:
 - FastAPI streaming uploads
 - Metadata-driven logic
 
-Use **[Quick Reference](Documentation/QUICK_REFERENCE.md)** for the full catalog and examples.
+Use **[Quick Reference](documentation/QUICK_REFERENCE.md)** for the full catalog and examples.
 
 ## Architecture (high-level)
 
@@ -174,11 +174,11 @@ feedback-loop integrates with **Apache Superset** to provide powerful analytics 
 📈 **Pattern Analysis Dashboard** - Visualize pattern frequency and effectiveness  
 🚀 **Development Trends Dashboard** - Monitor AI-assisted development metrics  
 
-See **[Superset Integration Guide](Documentation/SUPERSET_INTEGRATION.md)** for setup instructions.
+See **[Superset Integration Guide](documentation/SUPERSET_INTEGRATION.md)** for setup instructions.
 
 ## Project status
 
-See **[RESULTS.md](RESULTS.md)** for test coverage and verification details.
+See **[documentation/Status/RESULTS.md](documentation/Status/RESULTS.md)** for test coverage and verification details.
 
 ## Agent Instructions
-This repository follows [Agent Behavioral Standards](Documentation/Governance/AGENT_BEHAVIORAL_STANDARDS.md). All AI agents MUST read these before performing any tasks.
+This repository follows [Agent Behavioral Standards](documentation/governance/AGENT_BEHAVIORAL_STANDARDS.md). All AI agents MUST read these before performing any tasks.

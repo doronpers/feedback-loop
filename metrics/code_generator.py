@@ -6,15 +6,12 @@ Uses real LLM (Anthropic Claude) for intelligent code generation.
 """
 
 import ast
-import json
 import logging
-import os
-import sys
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from metrics.llm_providers import LLMManager, get_llm_manager
+from metrics.llm_providers import get_llm_manager
 
 logger = logging.getLogger(__name__)
 
@@ -308,7 +305,6 @@ class PatternAwareGenerator:
         }
 
         for match in matched_patterns:
-            pattern = match["pattern"]
             confidence = match["confidence"]
             severity = match["severity"]
 

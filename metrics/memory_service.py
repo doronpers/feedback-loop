@@ -49,7 +49,7 @@ class FeedbackLoopMemory:
 
         # Try to import MemU
         try:
-            import memu
+            import memu  # noqa: F401
 
             self._memu_available = True
             logger.info("MemU library loaded successfully")
@@ -192,7 +192,7 @@ class FeedbackLoopMemory:
             }
 
             response = await self._memory.memorize(resource)
-            logger.debug(f"Stored development session in MemU")
+            logger.debug("Stored development session in MemU")
             return response
 
         except Exception as e:
@@ -234,7 +234,7 @@ class FeedbackLoopMemory:
             }
 
             response = await self._memory.memorize(resource)
-            logger.debug(f"Stored code review in MemU")
+            logger.debug("Stored code review in MemU")
             return response
 
         except Exception as e:

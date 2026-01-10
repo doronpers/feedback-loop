@@ -26,4 +26,4 @@ A concise map of the documentation set. Start with the shortest path to value, t
 
 ## Archive
 
-Historical or exploratory docs live in **[Documentation/archive](archive/README.md)**.
+Historical or exploratory docs live in **[documentation/archive](archive/README.md)**.
