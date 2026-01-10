@@ -257,9 +257,11 @@ class MetricsPlugin:
                     return
 
                 # Check if auto-analysis should run based on config
+                # Cache ConfigManager instance to avoid redundant singleton lookups
                 failure_count = summary.get('test_failures', 0)
                 should_analyze = True
                 is_quiet = False
+                config_manager = None
                 
                 try:
                     from metrics.config_manager import ConfigManager
@@ -285,15 +287,14 @@ class MetricsPlugin:
                     )
                     integration.analyze_metrics(update_patterns=True)
                     
-                    # Show dashboard if configured
-                    try:
-                        from metrics.config_manager import ConfigManager
-                        config_manager = ConfigManager.get_instance()
-                        if config_manager.should_show_dashboard():
-                            from bin.fl_dashboard import main as dashboard_main
-                            dashboard_main()
-                    except (ImportError, Exception):
-                        pass
+                    # Show dashboard if configured (reuse cached config_manager)
+                    if config_manager:
+                        try:
+                            if config_manager.should_show_dashboard():
+                                from bin.fl_dashboard import main as dashboard_main
+                                dashboard_main()
+                        except Exception:
+                            pass
                 except Exception as e:
                     logger.error(f"Analysis failed: {e}")
                     if not is_quiet:
@@ -301,12 +302,22 @@ class MetricsPlugin:
             except Exception as e:
                 logger.error(f"Failed to save metrics: {e}")
     
-    def _is_quiet(self) -> bool:
-        """Check if output should be quiet."""
+    def _is_quiet(self, config_manager=None) -> bool:
+        """Check if output should be quiet.
+        
+        Args:
+            config_manager: Optional cached ConfigManager instance
+        """
+        if config_manager:
+            try:
+                return config_manager.is_quiet()
+            except Exception as e:
+                logger.error(f"Failed to check quiet mode: {e}")
+                return False
+        
         try:
             from metrics.config_manager import ConfigManager
-            config_manager = ConfigManager.get_instance()
-            return config_manager.is_quiet()
+            return ConfigManager.get_instance().is_quiet()
         except ImportError:
             return False
         except Exception as e:

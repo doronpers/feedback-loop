@@ -436,7 +436,6 @@ class MetricsCollector:
             return False
         
         try:
-            from datetime import datetime
             import uuid
             
             session_data = {

@@ -8,6 +8,7 @@ Handles authentication, pattern sync, team management, and analytics.
 from datetime import datetime, timedelta
 from typing import Optional, List
 import base64
+import binascii
 import hmac
 import logging
 import os
@@ -205,7 +206,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     try:
         salt = base64.b64decode(salt_b64)
         expected_digest = base64.b64decode(digest_b64)
-    except (ValueError, Exception):
+    except (ValueError, binascii.Error):
         # Handle malformed base64 data
         return False
 

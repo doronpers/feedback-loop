@@ -54,7 +54,7 @@ class PlanParser:
         return {
             "goal": self._extract_goal(content),
             "phases": self._extract_phases(content),
-            "patterns": self._extract_pattern_references(content),
+            "patterns": self.extract_pattern_references(content),
             "current_phase": self._extract_current_phase(content),
             "metadata": {
                 "plan_path": str(plan_file.resolve()),
@@ -93,13 +93,47 @@ class PlanParser:
     def extract_pattern_references(self, content: str) -> List[str]:
         """Find pattern names mentioned in plan content.
         
+        Looks for "## Patterns to Apply" section with checkboxes.
+        
         Args:
             content: Markdown content of the plan file
             
         Returns:
             List of pattern names found in the content
         """
-        return self._extract_pattern_references(content)
+        patterns = []
+        in_patterns_section = False
+        found_patterns_section = False
+        
+        for line in content.splitlines():
+            stripped = line.strip()
+            
+            # Check for patterns section
+            if stripped.startswith("##"):
+                heading = stripped[2:].strip().lower()
+                if "pattern" in heading and "apply" in heading:
+                    in_patterns_section = True
+                    found_patterns_section = True
+                    continue
+                elif found_patterns_section:
+                    # Next section, stop
+                    break
+                else:
+                    in_patterns_section = False
+            
+            if not in_patterns_section:
+                continue
+            
+            # Match checkbox pattern: - [ ] pattern_name or - [x] pattern_name
+            match = re.match(r"-\s*\[([ xX])\]\s*([^\s(]+)", stripped)
+            if match:
+                pattern_name = match.group(2).strip()
+                # Remove trailing annotations like "(from feedback-loop)"
+                pattern_name = pattern_name.split("(")[0].strip()
+                if pattern_name:
+                    patterns.append(pattern_name)
+        
+        return patterns
     
     def _extract_goal(self, content: str) -> str:
         """Extract task goal from plan file.
@@ -205,50 +239,6 @@ class PlanParser:
         
         return None
     
-    def _extract_pattern_references(self, content: str) -> List[str]:
-        """Extract pattern references from plan file.
-        
-        Looks for "## Patterns to Apply" section with checkboxes.
-        
-        Args:
-            content: Markdown content
-            
-        Returns:
-            List of pattern names
-        """
-        patterns = []
-        in_patterns_section = False
-        found_patterns_section = False
-        
-        for line in content.splitlines():
-            stripped = line.strip()
-            
-            # Check for patterns section
-            if stripped.startswith("##"):
-                heading = stripped[2:].strip().lower()
-                if "pattern" in heading and "apply" in heading:
-                    in_patterns_section = True
-                    found_patterns_section = True
-                    continue
-                elif found_patterns_section:
-                    # Next section, stop
-                    break
-                else:
-                    in_patterns_section = False
-            
-            if not in_patterns_section:
-                continue
-            
-            # Match checkbox pattern: - [ ] pattern_name or - [x] pattern_name
-            match = re.match(r"-\s*\[([ xX])\]\s*([^\s(]+)", stripped)
-            if match:
-                pattern_name = match.group(2).strip()
-                # Remove trailing annotations like "(from feedback-loop)"
-                pattern_name = pattern_name.split("(")[0].strip()
-                if pattern_name:
-                    patterns.append(pattern_name)
-        
-        return patterns
     
     def _extract_deliverables(self, phases: List[Dict[str, Any]]) -> List[str]:
         """Extract deliverables from phases.
