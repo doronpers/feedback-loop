@@ -32,6 +32,23 @@ pip install -e .
 pip install -e .[test]
 ```
 
+### 🎯 Cursor Integration (Recommended)
+
+**For Cursor IDE users:** feedback-loop provides seamless AI-powered development:
+
+```bash
+# 1. Install feedback-loop (see above)
+# 2. Open this repository in Cursor
+# 3. Cursor automatically reads .cursorrules file
+# 4. Start coding with pattern-aware AI assistance!
+```
+
+See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
+- Complete setup instructions
+- Pattern-aware code generation with Cursor Composer
+- Interactive workflows and tasks
+- Language server integration
+
 ### Desktop Launchers (Easy Mode!)
 
 **Mac:** Double-click `launch-feedback-loop.command`  
@@ -73,6 +90,7 @@ feedback-loop generate "Create a safe file handler"
 
 ## Documentation
 
+- **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** ⭐ NEW - Complete Cursor IDE setup
 - **[Getting Started](documentation/GETTING_STARTED.md)**
 - **[Quick Reference](documentation/QUICK_REFERENCE.md)**
 - **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)**
@@ -81,6 +99,7 @@ feedback-loop generate "Create a safe file handler"
 - **[Superset Analytics Integration](documentation/SUPERSET_INTEGRATION.md)** ⭐ NEW
 - **[LLM Integration Guide](documentation/LLM_GUIDE.md)**
 - **[Cloud Sync](documentation/CLOUD_SYNC.md)**
+- **[Desktop Launchers](DESKTOP_LAUNCHERS.md)**
 - **[API Reference](metrics/README.md)**
 - **[Contributing](CONTRIBUTING.md)**
 - **[Security](documentation/Status/SECURITY.md)**

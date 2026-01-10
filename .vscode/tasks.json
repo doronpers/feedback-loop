@@ -1,0 +1,145 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Feedback Loop: Chat Assistant",
+      "type": "shell",
+      "command": "${workspaceFolder}/bin/fl-chat",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true,
+        "echo": true
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "none"
+      }
+    },
+    {
+      "label": "Feedback Loop: Dashboard",
+      "type": "shell",
+      "command": "${workspaceFolder}/bin/fl-dashboard",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Setup Wizard",
+      "type": "shell",
+      "command": "${workspaceFolder}/bin/fl-setup",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Doctor (Diagnostics)",
+      "type": "shell",
+      "command": "${workspaceFolder}/bin/fl-doctor",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Run Tests with Metrics",
+      "type": "shell",
+      "command": "pytest",
+      "args": ["--enable-metrics", "-v"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Feedback Loop: Run All Tests",
+      "type": "shell",
+      "command": "pytest",
+      "args": ["tests/", "-v"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Analyze Patterns",
+      "type": "shell",
+      "command": "python",
+      "args": ["-m", "metrics.integrate", "analyze"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Generate Report (Markdown)",
+      "type": "shell",
+      "command": "python",
+      "args": ["-m", "metrics.integrate", "report", "--format", "markdown"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Run Demo",
+      "type": "shell",
+      "command": "python",
+      "args": ["demo.py"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Run Metrics Demo",
+      "type": "shell",
+      "command": "python",
+      "args": ["demo_metrics.py"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Feedback Loop: Start Language Server",
+      "type": "shell",
+      "command": "python",
+      "args": ["bin/feedback_loop_lsp.py"],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$",
+          "file": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*"
+        }
+      }
+    }
+  ]
+}
