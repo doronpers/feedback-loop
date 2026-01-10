@@ -165,7 +165,16 @@ from metrics.code_reviewer import CodeReviewer
 
 reviewer = CodeReviewer(llm_provider="openai")
 
-code =
+code = """
+def process_data(data):
+    # Your code here
+    pass
+"""
+
+result = reviewer.review_code(code)
+print(result["review"])
+```
+
 ## Security Considerations
 
 ### API Key Management

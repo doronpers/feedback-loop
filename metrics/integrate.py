@@ -16,14 +16,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # Load .env file from project root
-try:
-    from dotenv import load_dotenv
-    project_root = Path(__file__).parent.parent
-    env_file = project_root / ".env"
-    if env_file.exists():
-        load_dotenv(env_file)
-except ImportError:
-    pass  # python-dotenv not installed, skip
+project_root = Path(__file__).parent.parent
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
 
 from metrics.analyzer import MetricsAnalyzer
 from metrics.code_generator import PatternAwareGenerator
