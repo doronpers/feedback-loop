@@ -21,7 +21,7 @@ def _ensure_venv():
     # Check for venv in project root
     project_root = Path(__file__).parent.parent
     venv_python = project_root / "venv" / "bin" / "python3"
-    
+
     if venv_python.exists() and os.access(venv_python, os.X_OK):
         # Re-execute with venv python
         try:
@@ -30,6 +30,17 @@ def _ensure_venv():
             pass
 
 _ensure_venv()
+
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    pass  # python-dotenv not installed, skip
+
 from typing import Any, Dict, List
 
 

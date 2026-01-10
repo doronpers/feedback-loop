@@ -16,6 +16,19 @@ cd feedback-loop
 pip install -r requirements.txt
 ```
 
+### Optional: Set Up API Keys
+
+If you want to use AI features (chat assistant, code generation), create a `.env` file in the project root:
+
+```bash
+# Create .env file (already in .gitignore)
+ANTHROPIC_API_KEY=your-key-here      # For Claude
+OPENAI_API_KEY=your-key-here         # For GPT-4
+GEMINI_API_KEY=your-key-here         # For Gemini
+```
+
+The `.env` file is automatically loaded by all feedback-loop tools. See [LLM Guide](LLM_GUIDE.md) for more details.
+
 ## Step 1: See the Patterns (2 minutes)
 
 Run the demo to see all 9 patterns in action:
@@ -25,6 +38,7 @@ python demo.py
 ```
 
 This shows you:
+
 - ✅ Good patterns (what to do)
 - ❌ Bad patterns (what to avoid)
 - Real code examples for each
@@ -40,6 +54,7 @@ pytest tests/ -v
 ```
 
 You'll see **119 tests** covering all patterns. Every pattern has:
+
 - Tests showing correct usage
 - Tests catching incorrect usage
 - Edge case handling
@@ -53,6 +68,7 @@ python demo_metrics.py
 ```
 
 This interactive demo shows:
+
 1. How test failures are automatically tracked
 2. How patterns emerge from common errors
 3. How AI generates code using learned patterns
@@ -61,11 +77,8 @@ This interactive demo shows:
 
 ## What's Next?
 
-### Learn the Patterns
-- [Quick Reference](QUICK_REFERENCE.md) - Pattern cheat sheet
-- [AI Patterns Guide](AI_PATTERNS_GUIDE.md) - Complete workflow guide
-
 ### Use in Your Project
+
 ```bash
 # Copy the patterns module
 cp -r examples/ your-project/
@@ -75,12 +88,12 @@ pytest --enable-metrics
 ```
 
 ### Integrate with CI/CD
+
 See [Metrics Guide](METRICS_GUIDE.md) for GitHub Actions integration.
 
 ## Need Help?
 
-- **Quick questions:** See [Quick Reference](QUICK_REFERENCE.md)
-- **Deep dive:** Read [AI Patterns Guide](AI_PATTERNS_GUIDE.md)
+- **Documentation:** See [Documentation Index](INDEX.md) for all guides
 - **Issues:** [GitHub Issues](https://github.com/doronpers/feedback-loop/issues)
 
 ## The Big Picture

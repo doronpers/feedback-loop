@@ -20,7 +20,7 @@ def _ensure_venv():
     # Check for venv in project root
     project_root = Path(__file__).parent.parent
     venv_python = project_root / "venv" / "bin" / "python3"
-    
+
     if venv_python.exists() and os.access(venv_python, os.X_OK):
         # Re-execute with venv python
         try:
@@ -32,6 +32,16 @@ _ensure_venv()
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    pass  # python-dotenv not installed, skip
 
 import subprocess
 from typing import Optional
@@ -58,25 +68,25 @@ class SetupWizard:
     def check_environment(self):
         """Check current environment setup."""
         print("📋 Checking your environment...\n")
-        
+
         checks = {
             "Python version": self._check_python(),
             "Git repository": self._check_git(),
             "pytest": self._check_pytest(),
             "Claude API key": os.environ.get("ANTHROPIC_API_KEY") is not None,
             "OpenAI API key": os.environ.get("OPENAI_API_KEY") is not None,
-            "Gemini API key": os.environ.get("GOOGLE_API_KEY") is not None,
+            "Gemini API key": os.environ.get("GEMINI_API_KEY") is not None or os.environ.get("GOOGLE_API_KEY") is not None,
         }
-        
+
         for name, status in checks.items():
             icon = "✓" if status else "✗"
             print(f"  {icon} {name}")
-        
+
         print()
-        
+
         # Check if at least one API key is set
         has_api_key = checks["Claude API key"] or checks["OpenAI API key"] or checks["Gemini API key"]
-        
+
         return checks, has_api_key
 
     def _check_python(self) -> bool:
@@ -100,7 +110,7 @@ class SetupWizard:
         if has_api_key:
             print("✓ At least one LLM provider is configured!\n")
             return True
-        
+
         print("⚠️  No LLM API keys detected")
         print()
         print("To get the most out of feedback-loop, set up an LLM provider:")
@@ -118,9 +128,9 @@ class SetupWizard:
         print("Option 3: Google Gemini")
         print("  1. Get API key: https://makersuite.google.com/app/apikey")
         print("  2. Set environment variable:")
-        print("     export GOOGLE_API_KEY='your-key-here'")
+        print("     export GEMINI_API_KEY='your-key-here'")
         print()
-        
+
         response = input("Have you set up an API key? (y/n): ").strip().lower()
         if response == 'y':
             print("\n✓ Great! Continuing with setup...\n")
@@ -134,7 +144,7 @@ class SetupWizard:
     def install_dependencies(self):
         """Guide through dependency installation."""
         print("📦 Installing dependencies...\n")
-        
+
         response = input("Install feedback-loop package? (y/n): ").strip().lower()
         if response == 'y':
             try:
@@ -146,19 +156,19 @@ class SetupWizard:
             except subprocess.CalledProcessError as e:
                 print(f"\n✗ Installation failed: {e}\n")
                 return False
-        
+
         return True
 
     def setup_project(self):
         """Setup feedback-loop in the project."""
         print("⚙️  Setting up feedback-loop in your project...\n")
-        
+
         if not self._check_git():
             print("⚠️  Not in a git repository")
             response = input("Continue anyway? (y/n): ").strip().lower()
             if response != 'y':
                 return False
-        
+
         # Copy conftest.py if needed
         if not Path("conftest.py").exists():
             response = input("Install pytest plugin (conftest.py)? (y/n): ").strip().lower()
@@ -176,7 +186,7 @@ class SetupWizard:
                     print(f"  ✗ Failed: {e}\n")
         else:
             print("  • conftest.py already exists\n")
-        
+
         # Setup pytest.ini
         if not Path("pytest.ini").exists() and not Path("pyproject.toml").exists():
             response = input("Create pytest.ini with metrics enabled? (y/n): ").strip().lower()
@@ -186,13 +196,13 @@ class SetupWizard:
                 if not tests_dir.exists():
                     tests_dir.mkdir()
                     print("  ✓ Created tests/ directory")
-                
+
                 with open("pytest.ini", "w") as f:
                     f.write("[pytest]\n")
                     f.write("addopts = --enable-metrics -v\n")
                     f.write("testpaths = tests\n")
                 print("  ✓ pytest.ini created\n")
-        
+
         return True
 
     def show_next_steps(self):
@@ -226,25 +236,25 @@ class SetupWizard:
     def run(self):
         """Run the setup wizard."""
         self.print_banner()
-        
+
         # Check environment
         checks, has_api_key = self.check_environment()
-        
+
         # Setup LLM
         if not self.setup_llm(has_api_key):
             print("\n❌ Setup cancelled.\n")
             return
-        
+
         # Install dependencies
         if not self.install_dependencies():
             print("\n❌ Setup failed.\n")
             return
-        
+
         # Setup project
         if not self.setup_project():
             print("\n❌ Setup cancelled.\n")
             return
-        
+
         # Show next steps
         self.show_next_steps()
 
@@ -252,7 +262,7 @@ class SetupWizard:
 def main():
     """Main entry point."""
     wizard = SetupWizard()
-    
+
     try:
         wizard.run()
     except KeyboardInterrupt:

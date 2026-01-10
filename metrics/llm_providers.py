@@ -214,10 +214,12 @@ class GeminiProvider(LLMProvider):
         """Initialize Gemini provider.
 
         Args:
-            api_key: Google API key (uses GOOGLE_API_KEY env var if not provided)
+            api_key: Google API key (uses GEMINI_API_KEY env var if not provided, falls back to GOOGLE_API_KEY for backward compatibility)
             model: Gemini model to use
         """
-        super().__init__(api_key or os.environ.get("GOOGLE_API_KEY"), model)
+        # Check GEMINI_API_KEY first, then fall back to GOOGLE_API_KEY for backward compatibility
+        env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        super().__init__(api_key or env_key, model)
         self._using_new_api = False
 
         if self.is_available():

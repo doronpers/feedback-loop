@@ -11,6 +11,16 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    pass  # python-dotenv not installed, skip
+
 from metrics.integrate import MetricsIntegration
 
 
@@ -20,27 +30,27 @@ def main():
     print("Interactive Code Synthesizer")
     print("=" * 60)
     print("\nThis tool helps you synthesize multiple code versions into one optimal solution.\n")
-    
+
     # Get prompt
     prompt = input("What problem are these code snippets solving? ")
     if not prompt.strip():
         prompt = "Synthesize the best version from the provided code"
-    
+
     # Ask for number of snippets
     try:
         num_snippets = int(input("\nHow many code snippets will you provide? (2-5): ") or "2")
         num_snippets = max(2, min(5, num_snippets))
     except ValueError:
         num_snippets = 2
-    
+
     print(f"\n{num_snippets} snippets selected.")
     print("\nInstructions:")
     print("  1. Paste each code snippet when prompted")
     print("  2. Type 'END' on a new line when done with each snippet")
     print("  3. The tool will synthesize the best version\n")
-    
+
     input("Press Enter to begin...")
-    
+
     # Collect snippets
     snippets = []
     for i in range(num_snippets):
@@ -56,16 +66,16 @@ def main():
                 lines.append(line)
             except EOFError:
                 break
-        
+
         code = "\n".join(lines).strip()
         if code:
             snippets.append(code)
             print(f"✓ Snippet {i+1} captured ({len(code)} chars)")
-    
+
     if len(snippets) < 2:
         print("\n❌ Need at least 2 snippets to synthesize. Exiting.")
         return 1
-    
+
     # Save snippets to temp files
     import tempfile
     temp_files = []
@@ -74,7 +84,7 @@ def main():
         f.write(snippet)
         f.close()
         temp_files.append(f.name)
-    
+
     # Run synthesis
     try:
         integration = MetricsIntegration()
@@ -91,7 +101,7 @@ def main():
                 os.unlink(f)
             except:
                 pass
-    
+
     return 0
 
 

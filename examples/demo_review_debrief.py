@@ -7,7 +7,7 @@ This demonstrates the new debrief functionality that provides:
 2. Difficulty rating (1-10 scale) for implementing the improvements
 
 Run with: python demo_review_debrief.py
-Requires: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY environment variable
+Requires: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY environment variable
 """
 
 import sys
@@ -38,7 +38,7 @@ def demo_simple_code():
     if not reviewer.llm_manager.is_any_available():
         print("⚠️  No LLM providers available!")
         print(
-            "Set one of these API keys: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY"
+            "Set one of these API keys: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY"
         )
         return False
 
@@ -130,7 +130,7 @@ def main():
         print("Please set one of these environment variables:")
         print("  • ANTHROPIC_API_KEY")
         print("  • OPENAI_API_KEY")
-        print("  • GOOGLE_API_KEY")
+        print("  • GEMINI_API_KEY")
         print()
         return 1
 

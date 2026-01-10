@@ -11,6 +11,7 @@ httpx>=0.24.0
 uvicorn>=0.23.0
 pygls>=1.0.0
 memu-py>=0.1.0  # Agentic memory framework
+python-dotenv>=1.0.0  # Load .env files automatically
 
 # Development / Testing
 pytest>=7.0.0

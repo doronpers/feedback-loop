@@ -132,7 +132,7 @@ async def run_review_demo():
     reviewer = CodeReviewer()
     if not reviewer.llm_manager.is_any_available():
         print(
-            "\033[91m  Error: No LLM API key found (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY)\033[0m"
+            "\033[91m  Error: No LLM API key found (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY)\033[0m"
         )
         return
 

@@ -74,7 +74,7 @@ class CodeReviewer:
                 "suggestions": [],
                 "debrief": {
                     "strategies": [
-                        "Set up API keys for ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY."
+                        "Set up API keys for ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY."
                     ],
                     "difficulty": 2,
                     "explanation": "Cannot generate review or debrief without LLM access.",
@@ -440,7 +440,7 @@ def interactive_review():
         print("Set one of these API keys:")
         print("  • ANTHROPIC_API_KEY")
         print("  • OPENAI_API_KEY")
-        print("  • GOOGLE_API_KEY")
+        print("  • GEMINI_API_KEY")
         print()
         return
 

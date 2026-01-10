@@ -18,7 +18,7 @@
    ```bash
    export ANTHROPIC_API_KEY='your-key'
    export OPENAI_API_KEY='your-key'
-   export GOOGLE_API_KEY='your-key'
+   export GEMINI_API_KEY='your-key'
    ```
 
 2. **Secure storage**
@@ -141,7 +141,7 @@ env:
 # Limit permissions
 permissions:
   contents: read
-  
+
 # Review third-party actions
 uses: actions/checkout@v4  # Use specific versions
 ```
@@ -248,7 +248,7 @@ Before deploying to production:
 
 This security policy is reviewed and updated quarterly.
 
-**Last update**: 2026-01-09  
+**Last update**: 2026-01-09
 **Changes**: Added password hashing details for cloud backend API
 
 ---

@@ -83,9 +83,10 @@ python demo_review_debrief.py
 ```
 
 Make sure you have an API key set:
+
 - `ANTHROPIC_API_KEY`
 - `OPENAI_API_KEY`
-- `GOOGLE_API_KEY`
+- `GEMINI_API_KEY`
 
 ## Example Output
 
@@ -122,12 +123,14 @@ Make sure you have an API key set:
 Generate a debrief with improvement strategies and difficulty rating.
 
 **Parameters:**
+
 - `code` (str): The code that was reviewed
 - `review` (str): The review feedback provided
 - `context` (str, optional): Additional context about the code
 
 **Returns:**
 Dictionary with:
+
 - `strategies` (List[str]): List of improvement strategies
 - `difficulty` (int): Difficulty rating 1-10
 - `explanation` (str): Explanation of the difficulty rating
@@ -138,11 +141,13 @@ Dictionary with:
 Review code and automatically generate debrief.
 
 **Parameters:**
+
 - `code` (str): Code to review
 - `context` (str, optional): Optional context about the code
 
 **Returns:**
 Dictionary with:
+
 - `review` (str): The review feedback
 - `provider` (str): LLM provider used
 - `model` (str): Model used

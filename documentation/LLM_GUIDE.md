@@ -11,20 +11,23 @@ feedback-loop now supports multiple LLM providers for smarter, more engaging cod
 Choose one (or more) providers:
 
 **Option A: Anthropic Claude (Recommended)**
+
 ```bash
 export ANTHROPIC_API_KEY='your-key-here'
 # Get your key at: https://console.anthropic.com/
 ```
 
 **Option B: OpenAI GPT-4**
+
 ```bash
 export OPENAI_API_KEY='your-key-here'
 # Get your key at: https://platform.openai.com/api-keys
 ```
 
 **Option C: Google Gemini**
+
 ```bash
-export GOOGLE_API_KEY='your-key-here'
+export GEMINI_API_KEY='your-key-here'
 # Get your key at: https://makersuite.google.com/app/apikey
 ```
 
@@ -43,12 +46,14 @@ python bin/fl-chat
 ```
 
 **Features:**
+
 - Ask questions about patterns in natural language
 - Get pattern explanations with examples
 - Generate code interactively
 - Conversational, context-aware assistance
 
 **Example conversation:**
+
 ```
 You: How do I handle NumPy arrays in JSON?
 Assistant: You should use the numpy_json_serialization pattern! Here's how...
@@ -84,11 +89,31 @@ Assistant: You should use the numpy_json_serialization pattern! Here's how...
 
 ### Environment Variables
 
+You can set API keys in two ways:
+
+**Option 1: Using a `.env` file (Recommended for local development)**
+
+Create a `.env` file in the project root:
+
+```bash
+# LLM Provider (required for AI features - choose at least one)
+ANTHROPIC_API_KEY=your-key-here      # For Claude
+OPENAI_API_KEY=your-key-here         # For GPT-4
+GEMINI_API_KEY=your-key-here         # For Gemini
+
+# Optional: Set preferred provider
+FL_LLM_PROVIDER=claude               # claude|openai|gemini
+```
+
+The `.env` file is automatically loaded by all feedback-loop tools. **Make sure `.env` is in your `.gitignore`** (it already is by default).
+
+**Option 2: Export environment variables**
+
 ```bash
 # LLM Provider (required for AI features - choose at least one)
 export ANTHROPIC_API_KEY='your-key'      # For Claude
-export OPENAI_API_KEY='your-key'         # For GPT-4  
-export GOOGLE_API_KEY='your-key'         # For Gemini
+export OPENAI_API_KEY='your-key'         # For GPT-4
+export GEMINI_API_KEY='your-key'         # For Gemini
 
 # Optional: Set preferred provider
 export FL_LLM_PROVIDER='claude'          # claude|openai|gemini
@@ -140,7 +165,7 @@ from metrics.code_reviewer import CodeReviewer
 
 reviewer = CodeReviewer(llm_provider="openai")
 
-code = 
+code =
 ## Security Considerations
 
 ### API Key Management

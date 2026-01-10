@@ -20,7 +20,7 @@ def _ensure_venv():
     # Check for venv in project root
     project_root = Path(__file__).parent.parent
     venv_python = project_root / "venv" / "bin" / "python3"
-    
+
     if venv_python.exists() and os.access(venv_python, os.X_OK):
         # Re-execute with venv python
         try:
@@ -32,6 +32,16 @@ _ensure_venv()
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    pass  # python-dotenv not installed, skip
 
 import logging
 from typing import List, Optional
@@ -53,7 +63,7 @@ class ChatAssistant:
         self.pattern_manager = PatternManager()
         self.patterns = self.pattern_manager.get_all_patterns()
         self.conversation_history: List[str] = []
-        
+
         # System prompt for the assistant
         self.system_context = self._build_system_context()
 
@@ -90,55 +100,55 @@ Be conversational, friendly, and practical. Use examples from the pattern librar
 
     def chat(self, user_message: str) -> str:
         """Process user message and return response.
-        
+
         Args:
             user_message: User's message
-            
+
         Returns:
             Assistant's response
         """
         # Input validation
         if not user_message or not user_message.strip():
             return "Please provide a message."
-        
+
         if len(user_message) > 5000:
             return "Message too long. Please keep messages under 5000 characters."
-        
+
         # Build full prompt with context
         full_prompt = f"{self.system_context}\n\n"
-        
+
         # Add conversation history (last 3 exchanges)
         if self.conversation_history:
             full_prompt += "## Recent Conversation:\n"
             for msg in self.conversation_history[-6:]:  # Last 3 exchanges (6 messages)
                 full_prompt += f"{msg}\n"
             full_prompt += "\n"
-        
+
         full_prompt += f"User: {user_message}\n\nAssistant:"
-        
+
         try:
             # Generate response
             response = self.llm_manager.generate(
                 full_prompt,
                 max_tokens=2048
             )
-            
+
             # Store in history
             self.conversation_history.append(f"User: {user_message}")
             self.conversation_history.append(f"Assistant: {response.text}")
-            
+
             return response.text
-            
+
         except Exception as e:
             logger.error(f"Chat error: {e}")
-            return f"Sorry, I encountered an error: {e}\n\nMake sure you have an API key set (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY)."
+            return f"Sorry, I encountered an error: {e}\n\nMake sure you have an API key set (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY)."
 
     def explain_pattern(self, pattern_name: str) -> str:
         """Explain a specific pattern in detail.
-        
+
         Args:
             pattern_name: Name of pattern to explain
-            
+
         Returns:
             Detailed explanation
         """
@@ -175,7 +185,7 @@ Keep it conversational and practical."""
         print()
         print("I'm here to help you learn patterns and write better code!")
         print()
-        
+
         # Check if LLM is available
         if not self.llm_manager.is_any_available():
             print("⚠️  No LLM providers available!")
@@ -183,12 +193,12 @@ Keep it conversational and practical."""
             print("To use the chat assistant, set one of these API keys:")
             print("  • ANTHROPIC_API_KEY - for Claude")
             print("  • OPENAI_API_KEY - for GPT-4")
-            print("  • GOOGLE_API_KEY - for Gemini")
+            print("  • GEMINI_API_KEY - for Gemini")
             print()
             print("Example: export ANTHROPIC_API_KEY='your-key-here'")
             print()
             return
-        
+
         providers = self.llm_manager.list_available_providers()
         print(f"✓ Using LLM: {', '.join(providers)}")
         print()
@@ -207,10 +217,10 @@ Keep it conversational and practical."""
             try:
                 # Get user input
                 user_input = input("You: ").strip()
-                
+
                 if not user_input:
                     continue
-                
+
                 # Check for commands
                 if user_input.startswith("/"):
                     if user_input == "/quit" or user_input == "/exit":
@@ -243,13 +253,13 @@ Keep it conversational and practical."""
                     elif user_input.startswith("/generate "):
                         description = user_input[10:].strip()
                         print("\n🤖 Generating code...\n")
-                        
+
                         # Use code generator
                         generator = PatternAwareGenerator(
                             self.patterns,
                             use_llm=True
                         )
-                        
+
                         try:
                             result = generator.generate(description)
                             print("```python")
@@ -267,13 +277,13 @@ Keep it conversational and practical."""
                         print(f"\nUnknown command: {user_input}")
                         print("Type /help for available commands\n")
                         continue
-                
+
                 # Regular chat message
                 print()
                 response = self.chat(user_input)
                 print(f"Assistant: {response}")
                 print()
-                
+
             except KeyboardInterrupt:
                 print("\n\nGoodbye! Happy coding! 👋\n")
                 break

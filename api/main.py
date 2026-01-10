@@ -13,7 +13,18 @@ import logging
 import os
 import secrets
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import List, Optional
+
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    pass  # python-dotenv not installed, skip
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
