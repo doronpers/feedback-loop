@@ -5,16 +5,19 @@ This directory contains Apache Superset dashboard configurations and integration
 ## 📚 Documentation Index
 
 **Start Here:**
+
 - **[SUPERSET_ANALYSIS_SUMMARY.md](SUPERSET_ANALYSIS_SUMMARY.md)** - Executive summary and quick start guide
 - **[DASHBOARD_DESIGN_RECOMMENDATIONS.md](DASHBOARD_DESIGN_RECOMMENDATIONS.md)** - Detailed dashboard designs with SQL queries
 - **[DATABASE_CONFIGURATION.md](DATABASE_CONFIGURATION.md)** - Complete database schema and connection guide
 
 **Also See:**
-- **[SUPERSET_INTEGRATION.md](../docs/SUPERSET_INTEGRATION.md)** - General integration guide
+
+- **[SUPERSET_INTEGRATION.md](../Documentation/SUPERSET_INTEGRATION.md)** - General integration guide
 
 ## Overview
 
 Apache Superset is used to provide powerful analytics and visualization capabilities for:
+
 - **Code Quality Metrics**: Track complexity, coverage, and lint scores over time
 - **Pattern Analysis**: Visualize pattern frequency and effectiveness
 - **Development Trends**: Monitor AI-assisted development metrics and improvement patterns
@@ -46,6 +49,7 @@ superset-dashboards/
 ### 1. Install Apache Superset
 
 For local development with Docker:
+
 ```bash
 git clone https://github.com/apache/superset.git
 cd superset
@@ -53,13 +57,15 @@ docker-compose -f docker-compose-non-dev.yml up
 ```
 
 Or use your fork:
+
 ```bash
 git clone https://github.com/doronpers/superset.git
 cd superset
 docker-compose -f docker-compose-non-dev.yml up
 ```
 
-Access Superset at: http://localhost:8088
+Access Superset at: <http://localhost:8088>
+
 - Default credentials: admin/admin
 
 ### 2. Install Additional Python Dependencies
@@ -87,17 +93,19 @@ python superset-dashboards/scripts/export_to_db.py --format postgresql --db-uri 
 
 ### Step 2: Configure Superset Database Connection
 
-1. Log into Superset (http://localhost:8088)
+1. Log into Superset (<http://localhost:8088>)
 2. Go to **Data** → **Databases** → **+ Database**
 3. Choose your database type (SQLite or PostgreSQL)
 4. Configure connection:
 
 **For SQLite:**
+
 ```
 SQLAlchemy URI: sqlite:////path/to/feedback-loop/metrics.db
 ```
 
 **For PostgreSQL:**
+
 ```
 SQLAlchemy URI: postgresql://user:password@localhost:5432/feedback_loop
 ```
@@ -109,6 +117,7 @@ python superset-dashboards/scripts/import_dashboards.py
 ```
 
 This will import the following dashboards:
+
 - **Code Quality Dashboard**: Visualizes bugs, test failures, and code review issues
 - **Pattern Analysis Dashboard**: Shows pattern frequency and effectiveness
 - **Development Trends Dashboard**: Tracks development metrics over time
@@ -127,12 +136,14 @@ For continuous dashboard updates, set up a cron job or scheduled task:
 ### Code Quality Dashboard
 
 Visualizes:
+
 - **Bug Trends**: Line chart showing bug counts by pattern over time
 - **Test Failure Analysis**: Bar chart of test failures by pattern
 - **Code Review Issues**: Severity breakdown (high, medium, low)
 - **Top Problem Patterns**: Table showing most frequent issues
 
 **Key Metrics:**
+
 - Total bugs by pattern
 - Test failure rate
 - Code review issue distribution
@@ -141,12 +152,14 @@ Visualizes:
 ### Pattern Analysis Dashboard
 
 Visualizes:
+
 - **Pattern Effectiveness**: Heatmap showing pattern success rates
 - **Pattern Frequency**: Bar chart of pattern usage
 - **New vs Known Patterns**: Pie chart showing pattern discovery
 - **Pattern Lifecycle**: Timeline showing pattern adoption
 
 **Key Metrics:**
+
 - Pattern application count
 - Pattern effectiveness score
 - Pattern discovery rate
@@ -155,12 +168,14 @@ Visualizes:
 ### Development Trends Dashboard
 
 Visualizes:
+
 - **AI-Assisted Development**: Line chart showing generation success rate
 - **Code Generation Metrics**: Bar chart of patterns applied per generation
 - **Deployment Issues**: Timeline of production issues
 - **Performance Metrics**: Scatter plot of execution time vs file size
 
 **Key Metrics:**
+
 - Code generation success rate
 - Average patterns applied per generation
 - Deployment issue frequency
@@ -217,6 +232,7 @@ python superset-dashboards/scripts/export_to_db.py --format sqlite
 Apache Superset is licensed under Apache License 2.0, which is compatible with this project's MIT license.
 
 **Required Attribution:**
+
 - Include Apache License 2.0 notice when distributing
 - Acknowledge use of Apache Superset in documentation
 
@@ -227,7 +243,8 @@ See [LICENSE](../LICENSE) for more details.
 ### Database Connection Issues
 
 **Problem**: Cannot connect to database from Superset
-**Solution**: 
+**Solution**:
+
 - Verify database is running
 - Check SQLAlchemy URI format
 - Ensure database user has required permissions
@@ -236,6 +253,7 @@ See [LICENSE](../LICENSE) for more details.
 
 **Problem**: Dashboard import returns errors
 **Solution**:
+
 - Ensure database connection is configured first
 - Verify all required tables exist
 - Check Superset version compatibility
@@ -244,6 +262,7 @@ See [LICENSE](../LICENSE) for more details.
 
 **Problem**: Dashboards show no data
 **Solution**:
+
 - Run `export_to_db.py` to populate database
 - Verify metrics were collected (check metrics_data.json)
 - Refresh dashboard in Superset
@@ -280,9 +299,10 @@ To aggregate metrics from multiple repositories:
 ## Support
 
 For issues or questions:
-- feedback-loop issues: https://github.com/doronpers/feedback-loop/issues
-- Apache Superset docs: https://superset.apache.org/docs/intro
-- Superset issues: https://github.com/apache/superset/issues
+
+- feedback-loop issues: <https://github.com/doronpers/feedback-loop/issues>
+- Apache Superset docs: <https://superset.apache.org/docs/intro>
+- Superset issues: <https://github.com/apache/superset/issues>
 
 ## License
 

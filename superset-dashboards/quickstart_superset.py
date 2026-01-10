@@ -163,11 +163,11 @@ def print_next_steps():
     print("\n6. For production use:")
     print("   - Switch to PostgreSQL database")
     print("   - Set up automated sync with cron or CI/CD")
-    print("   - See docs/SUPERSET_INTEGRATION.md for details")
+    print("   - See Documentation/SUPERSET_INTEGRATION.md for details")
     
     print("\n📚 Documentation:")
     print("   - Quick Start: superset-dashboards/README.md")
-    print("   - Full Guide: docs/SUPERSET_INTEGRATION.md")
+    print("   - Full Guide: Documentation/SUPERSET_INTEGRATION.md")
     print("   - Examples: superset-dashboards/examples/")
     
     print("\n✨ Sample files created:")

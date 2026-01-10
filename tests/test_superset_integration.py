@@ -127,7 +127,7 @@ class TestIntegrationDocumentation:
     
     def test_superset_integration_doc_exists(self):
         """Test that Superset integration documentation exists."""
-        doc_path = Path(__file__).parent.parent / 'docs' / 'SUPERSET_INTEGRATION.md'
+        doc_path = Path(__file__).parent.parent / 'Documentation' / 'SUPERSET_INTEGRATION.md'
         assert doc_path.exists(), "SUPERSET_INTEGRATION.md not found"
         
         # Check documentation contains key sections

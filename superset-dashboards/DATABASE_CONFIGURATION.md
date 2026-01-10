@@ -24,6 +24,7 @@ The feedback-loop system uses **two primary databases** that can be connected to
 2. **API Database** - User management, pattern library, teams, and audit logs
 
 Both databases support:
+
 - **SQLite** for local development and testing
 - **PostgreSQL** for production deployments
 - **Cloud database providers** (AWS RDS, Google Cloud SQL, Azure Database, Heroku)
@@ -55,6 +56,7 @@ Both databases support:
 ### Purpose
 
 Stores time-series metrics data collected from:
+
 - Test execution (pytest with `--enable-metrics`)
 - Code generation events
 - Bug detection
@@ -82,6 +84,7 @@ Located in: `superset-dashboards/database/models.py`
 #### Detailed Table Schemas
 
 ##### 1. metrics_bugs
+
 ```sql
 CREATE TABLE metrics_bugs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,12 +104,14 @@ CREATE INDEX idx_bug_file_path ON metrics_bugs(file_path);
 ```
 
 **Key Analytics:**
+
 - Bug trends by pattern over time
 - Most affected files/modules
 - Bug recurrence analysis
 - Pattern correlation with bugs
 
 ##### 2. metrics_test_failures
+
 ```sql
 CREATE TABLE metrics_test_failures (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,12 +127,14 @@ CREATE INDEX idx_test_pattern_timestamp ON metrics_test_failures(pattern_violate
 ```
 
 **Key Analytics:**
+
 - Test failure rates over time
 - Most fragile tests
 - Pattern violation frequency
 - Failure reason categorization
 
 ##### 3. metrics_code_reviews
+
 ```sql
 CREATE TABLE metrics_code_reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -146,12 +153,14 @@ CREATE INDEX idx_review_timestamp ON metrics_code_reviews(timestamp);
 ```
 
 **Key Analytics:**
+
 - Code quality trends
 - High-severity issue tracking
 - Pattern-based issue distribution
 - Reviewer effectiveness
 
 ##### 4. metrics_performance
+
 ```sql
 CREATE TABLE metrics_performance (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -171,12 +180,14 @@ CREATE INDEX idx_perf_type_timestamp ON metrics_performance(metric_type, timesta
 ```
 
 **Key Analytics:**
+
 - Performance bottleneck identification
 - Execution time trends
 - Memory usage patterns
 - Function-level performance
 
 ##### 5. metrics_deployment
+
 ```sql
 CREATE TABLE metrics_deployment (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -194,12 +205,14 @@ CREATE INDEX idx_deploy_pattern ON metrics_deployment(pattern);
 ```
 
 **Key Analytics:**
+
 - Deployment success rate by environment
 - Mean time to recovery (MTTR)
 - Issue type distribution
 - Pattern correlation with deployments
 
 ##### 6. metrics_code_generation (The "Fusion Engine")
+
 ```sql
 CREATE TABLE metrics_code_generation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -220,6 +233,7 @@ CREATE INDEX idx_generation_confidence ON metrics_code_generation(confidence);
 ```
 
 **Key Analytics (Fusion Engine):**
+
 - Code generation success rate over time
 - Average confidence scores (sensor confidence)
 - Pattern fusion analysis (which patterns work together)
@@ -227,6 +241,7 @@ CREATE INDEX idx_generation_confidence ON metrics_code_generation(confidence);
 - Code complexity metrics
 
 ##### 7. pattern_effectiveness
+
 ```sql
 CREATE TABLE pattern_effectiveness (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -244,12 +259,14 @@ CREATE INDEX idx_pattern_eff_name_period ON pattern_effectiveness(pattern_name, 
 ```
 
 **Key Analytics:**
+
 - Pattern ROI calculation
 - Effectiveness trends over time
 - Success/failure ratio by pattern
 - Pattern lifecycle analysis
 
 ##### 8. metrics_summary
+
 ```sql
 CREATE TABLE metrics_summary (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -276,6 +293,7 @@ CREATE INDEX idx_summary_type_date ON metrics_summary(metric_type, summary_date)
 ```
 
 **Key Analytics:**
+
 - Weekly/monthly trend analysis
 - Top pattern identification
 - Aggregated KPIs
@@ -288,11 +306,13 @@ CREATE INDEX idx_summary_type_date ON metrics_summary(metric_type, summary_date)
 **File Location:** `sample_metrics.db` (in repository root)
 
 **SQLAlchemy URI:**
+
 ```
 sqlite:////absolute/path/to/feedback-loop/sample_metrics.db
 ```
 
 **Example:**
+
 ```python
 from sqlalchemy import create_engine
 
@@ -301,6 +321,7 @@ engine = create_engine(f'sqlite:///{db_path}')
 ```
 
 **Superset Configuration:**
+
 1. Go to **Settings → Database Connections → + Database**
 2. Select **SQLite**
 3. Enter URI: `sqlite:////home/user/feedback-loop/sample_metrics.db`
@@ -312,11 +333,13 @@ engine = create_engine(f'sqlite:///{db_path}')
 **Default Database Name:** `feedback_loop`
 
 **SQLAlchemy URI:**
+
 ```
 postgresql://username:password@hostname:5432/feedback_loop
 ```
 
 **Docker Setup:**
+
 ```bash
 docker run -d \
   --name feedback-postgres \
@@ -328,11 +351,13 @@ docker run -d \
 ```
 
 **Connection URI:**
+
 ```
 postgresql://feedback_user:secure_password@localhost:5432/feedback_loop
 ```
 
 **Superset Configuration:**
+
 1. Go to **Settings → Database Connections → + Database**
 2. Select **PostgreSQL**
 3. Enter connection details:
@@ -349,6 +374,7 @@ postgresql://feedback_user:secure_password@localhost:5432/feedback_loop
 **Script:** `superset-dashboards/scripts/export_to_db.py`
 
 **Usage:**
+
 ```bash
 # Export to SQLite
 python superset-dashboards/scripts/export_to_db.py \
@@ -363,6 +389,7 @@ python superset-dashboards/scripts/export_to_db.py \
 ```
 
 **Automated Sync:**
+
 ```bash
 # Configure sync
 cp superset-dashboards/scripts/sync_config.example.json sync_config.json
@@ -381,6 +408,7 @@ python superset-dashboards/scripts/sync_metrics.py --config sync_config.json
 **Contains:** Pre-populated sample data for testing dashboards
 
 **Tables populated:**
+
 - ✅ metrics_bugs (sample bug records)
 - ✅ metrics_test_failures (sample test failures)
 - ✅ metrics_code_reviews (sample review issues)
@@ -397,6 +425,7 @@ python superset-dashboards/scripts/sync_metrics.py --config sync_config.json
 ### Purpose
 
 Stores operational data for the feedback-loop platform:
+
 - User accounts and authentication
 - Organizations and teams (multi-tenancy)
 - Pattern library with versioning
@@ -423,6 +452,7 @@ Located in: `api/models.py`
 #### Detailed Table Schemas
 
 ##### 1. organizations
+
 ```sql
 CREATE TABLE organizations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -436,11 +466,13 @@ CREATE TABLE organizations (
 ```
 
 **Key Analytics:**
+
 - Organization count by subscription tier
 - Usage patterns by tier
 - Growth metrics
 
 ##### 2. teams
+
 ```sql
 CREATE TABLE teams (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -456,11 +488,13 @@ CREATE TABLE teams (
 ```
 
 **Key Analytics:**
+
 - Team size distribution
 - Team activity levels
 - Cross-team collaboration
 
 ##### 3. users
+
 ```sql
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -484,12 +518,14 @@ CREATE TABLE users (
 ```
 
 **Key Analytics:**
+
 - User activity (last_login)
 - Role distribution
 - SSO adoption rate
 - User growth over time
 
 ##### 4. patterns
+
 ```sql
 CREATE TABLE patterns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -521,6 +557,7 @@ CREATE TABLE patterns (
 ```
 
 **Key Analytics:**
+
 - Pattern library growth
 - Most effective patterns by category
 - Pattern adoption rate
@@ -528,6 +565,7 @@ CREATE TABLE patterns (
 - Author contribution metrics
 
 ##### 5. audit_logs
+
 ```sql
 CREATE TABLE audit_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -550,6 +588,7 @@ CREATE INDEX idx_audit_timestamp ON audit_logs(created_at);
 ```
 
 **Key Analytics (SAR-equivalent):**
+
 - Complete audit trail for compliance
 - User action history
 - Change tracking (before/after)
@@ -557,6 +596,7 @@ CREATE INDEX idx_audit_timestamp ON audit_logs(created_at);
 - Compliance reporting
 
 ##### 6. metrics (User/Team Metrics)
+
 ```sql
 CREATE TABLE metrics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -580,6 +620,7 @@ CREATE INDEX idx_metrics_timestamp ON metrics(created_at);
 ```
 
 **Key Analytics:**
+
 - ROI per user/team/pattern
 - Time saved calculations
 - Pattern usage by user
@@ -590,20 +631,24 @@ CREATE INDEX idx_metrics_timestamp ON metrics(created_at);
 The API database is configured similarly to the Metrics database:
 
 **Development (SQLite):**
+
 ```
 sqlite:////absolute/path/to/feedback-loop/api.db
 ```
 
 **Production (PostgreSQL):**
+
 ```
 postgresql://username:password@hostname:5432/feedback_loop_api
 ```
 
 **Note:** For production deployments, you may want to use separate databases:
+
 - `feedback_loop_metrics` - For time-series metrics data
 - `feedback_loop_api` - For operational/transactional data
 
 Or use a single database with schema separation:
+
 - `metrics` schema - For metrics tables
 - `api` schema - For API tables
 
@@ -618,12 +663,14 @@ Or use a single database with schema separation:
 **Purpose:** Collect CI/CD metrics from GitHub Actions workflows
 
 **Data Collected:**
+
 - Workflow run duration
 - Test pass/fail rates
 - Build success rates
 - Deployment frequency
 
 **Integration Method:**
+
 ```yaml
 # .github/workflows/metrics.yml
 - name: Collect Metrics
@@ -640,6 +687,7 @@ Or use a single database with schema separation:
 **Default:** `metrics_data.json` (local file)
 
 **Format:**
+
 ```json
 {
   "bugs": [...],
@@ -708,6 +756,7 @@ For each table you want to visualize:
 ```
 
 **Recommended Priority:**
+
 - ✅ metrics_code_generation (Fusion Engine analytics)
 - ✅ pattern_effectiveness (Pattern confidence scores)
 - ✅ metrics_bugs (Detection results)
@@ -720,6 +769,7 @@ For each table you want to visualize:
 Create virtual datasets for complex queries:
 
 **Example: Pattern ROI Analysis**
+
 ```sql
 SELECT 
   p.name as pattern_name,
@@ -754,6 +804,7 @@ GROUP BY p.id, p.name, p.category, p.times_applied
 ### When to Use Which
 
 **Use Metrics Database for:**
+
 - ✅ Time-series visualizations
 - ✅ Trend analysis
 - ✅ KPI monitoring
@@ -762,6 +813,7 @@ GROUP BY p.id, p.name, p.category, p.times_applied
 - ✅ Bug/test failure trends (Detection results)
 
 **Use API Database for:**
+
 - ✅ User/team dashboards
 - ✅ Pattern library exploration
 - ✅ Audit trail reporting (SAR-equivalent)
@@ -770,6 +822,7 @@ GROUP BY p.id, p.name, p.category, p.times_applied
 - ✅ Compliance reporting
 
 **Join Both for:**
+
 - ✅ Comprehensive pattern ROI (pattern library + time saved metrics)
 - ✅ User productivity analysis (users + their metrics)
 - ✅ Team effectiveness (teams + their generated metrics)
@@ -783,11 +836,13 @@ GROUP BY p.id, p.name, p.category, p.times_applied
 #### 1. Connection Security
 
 **Use SSL/TLS for PostgreSQL:**
+
 ```
 postgresql://user:pass@host:5432/db?sslmode=require
 ```
 
 **For Production:**
+
 - Always use `sslmode=require`
 - Use certificate verification when possible
 - Never commit connection strings to git
@@ -796,6 +851,7 @@ postgresql://user:pass@host:5432/db?sslmode=require
 #### 2. User Permissions
 
 **Superset Database User (Read-Only):**
+
 ```sql
 -- Create read-only user for Superset
 CREATE USER superset_viewer WITH PASSWORD 'secure_password';
@@ -827,6 +883,7 @@ CREATE POLICY org_isolation ON patterns
 #### 4. Environment Variables
 
 **Example `.env` file (DO NOT commit):**
+
 ```bash
 # Metrics Database
 METRICS_DB_URI=postgresql://metrics_user:pass123@db.example.com:5432/feedback_loop
@@ -849,6 +906,7 @@ SUPERSET_PASSWORD=admin_pass
 **Already Implemented Indexes:**
 
 Metrics Database:
+
 ```sql
 -- metrics_bugs
 idx_bug_pattern_timestamp (pattern, timestamp)
@@ -865,6 +923,7 @@ idx_pattern_eff_name_period (pattern_name, period_start)
 ```
 
 **Additional Indexes for Heavy Queries:**
+
 ```sql
 -- If querying by date range frequently
 CREATE INDEX idx_metrics_bugs_timestamp ON metrics_bugs(timestamp DESC);
@@ -918,6 +977,7 @@ REFRESH MATERIALIZED VIEW daily_pattern_stats;
 ```
 
 **Refresh Schedule (pg_cron):**
+
 ```sql
 SELECT cron.schedule(
   'refresh-daily-stats',
@@ -929,6 +989,7 @@ SELECT cron.schedule(
 ### 4. Query Optimization Tips
 
 **Use EXPLAIN ANALYZE:**
+
 ```sql
 EXPLAIN ANALYZE
 SELECT pattern, COUNT(*) 
@@ -938,6 +999,7 @@ GROUP BY pattern;
 ```
 
 **Limit Large Datasets:**
+
 ```python
 # In Superset chart config
 {
@@ -947,6 +1009,7 @@ GROUP BY pattern;
 ```
 
 **Use Result Caching:**
+
 ```python
 # Superset dashboard settings
 {
@@ -958,6 +1021,7 @@ GROUP BY pattern;
 ### 5. Connection Pooling
 
 **Production Configuration:**
+
 ```python
 from sqlalchemy import create_engine
 from sqlalchemy.pool import QueuePool
@@ -993,11 +1057,13 @@ engine = create_engine(
 ### Connection URIs
 
 **SQLite (Development):**
+
 ```
 sqlite:////absolute/path/to/feedback-loop/sample_metrics.db
 ```
 
 **PostgreSQL (Production):**
+
 ```
 postgresql://username:password@hostname:5432/feedback_loop
 ```
@@ -1027,5 +1093,5 @@ postgresql://username:password@hostname:5432/feedback_loop
 - [Connection Examples](database/connection_examples.md)
 - [Export Script](scripts/export_to_db.py)
 - [Sync Script](scripts/sync_metrics.py)
-- [Superset Integration Guide](../docs/SUPERSET_INTEGRATION.md)
+- [Superset Integration Guide](../Documentation/SUPERSET_INTEGRATION.md)
 - [Dashboard Design Recommendations](DASHBOARD_DESIGN_RECOMMENDATIONS.md)

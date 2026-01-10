@@ -16,23 +16,28 @@ logger = logging.getLogger(__name__)
 
 def pytest_configure(config):
     """Register the metrics plugin."""
-    config.pluginmanager.register(MetricsPlugin(config), "metrics_plugin")
+    if not config.pluginmanager.hasplugin("metrics_plugin"):
+        config.pluginmanager.register(MetricsPlugin(config), "metrics_plugin")
 
 
 def pytest_addoption(parser):
     """Add command-line options for metrics collection."""
-    parser.addoption(
-        "--metrics-output",
-        action="store",
-        default=None,
-        help="Output file for collected metrics"
-    )
-    parser.addoption(
-        "--enable-metrics",
-        action="store_true",
-        default=False,
-        help="Enable automatic metrics collection"
-    )
+    try:
+        parser.addoption(
+            "--metrics-output",
+            action="store",
+            default=None,
+            help="Output file for collected metrics"
+        )
+        parser.addoption(
+            "--enable-metrics",
+            action="store_true",
+            default=False,
+            help="Enable automatic metrics collection"
+        )
+    except ValueError:
+        # Options already added
+        pass
 
 
 class MetricsPlugin:

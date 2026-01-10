@@ -128,7 +128,7 @@ class ConfigResponse(BaseModel):
 
 # TODO: PRODUCTION - Replace with PostgreSQL database
 # In-memory dictionaries lose data on restart and don't support concurrent access
-# See docs/PRODUCTION_CHECKLIST.md for migration plan
+# See Documentation/PRODUCTION_CHECKLIST.md for migration plan
 USERS_DB = {}
 SESSIONS_DB = {}
 PATTERNS_DB = {}

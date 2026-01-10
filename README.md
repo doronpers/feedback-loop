@@ -73,16 +73,16 @@ feedback-loop generate "Create a safe file handler"
 
 ## Documentation
 
-- **[Getting Started](docs/GETTING_STARTED.md)**
-- **[Quick Reference](docs/QUICK_REFERENCE.md)**
-- **[AI Patterns Guide](docs/AI_PATTERNS_GUIDE.md)**
-- **[Metrics Guide](docs/METRICS_GUIDE.md)**
-- **[Memory Integration](docs/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
-- **[Superset Analytics Integration](docs/SUPERSET_INTEGRATION.md)** ⭐ NEW
-- **[LLM Integration Guide](docs/LLM_GUIDE.md)**
-- **[Cloud Sync](docs/CLOUD_SYNC.md)**
+- **[Getting Started](Documentation/GETTING_STARTED.md)**
+- **[Quick Reference](Documentation/QUICK_REFERENCE.md)**
+- **[AI Patterns Guide](Documentation/AI_PATTERNS_GUIDE.md)**
+- **[Metrics Guide](Documentation/METRICS_GUIDE.md)**
+- **[Memory Integration](Documentation/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
+- **[Superset Analytics Integration](Documentation/SUPERSET_INTEGRATION.md)** ⭐ NEW
+- **[LLM Integration Guide](Documentation/LLM_GUIDE.md)**
+- **[Cloud Sync](Documentation/CLOUD_SYNC.md)**
 - **[API Reference](metrics/README.md)**
-- **[Contributing](docs/CONTRIBUTING.md)**
+- **[Contributing](CONTRIBUTING.md)**
 
 ## Memory-Enhanced Patterns (Optional)
 
@@ -115,7 +115,7 @@ feedback-loop memory recommend --context "Building FastAPI file upload endpoint"
 
 **Note:** Memory integration is **opt-in** and backward compatible. All existing functionality works without MemU.
 
-See **[Memory Integration Guide](docs/MEMORY_INTEGRATION.md)** for detailed documentation.
+See **[Memory Integration Guide](Documentation/MEMORY_INTEGRATION.md)** for detailed documentation.
 
 ## Core patterns (short list)
 
@@ -131,7 +131,7 @@ The framework ships with 9 production-tested patterns, including:
 - FastAPI streaming uploads
 - Metadata-driven logic
 
-Use **[Quick Reference](docs/QUICK_REFERENCE.md)** for the full catalog and examples.
+Use **[Quick Reference](Documentation/QUICK_REFERENCE.md)** for the full catalog and examples.
 
 ## Architecture (high-level)
 
@@ -172,7 +172,7 @@ feedback-loop integrates with **Apache Superset** to provide powerful analytics 
 📈 **Pattern Analysis Dashboard** - Visualize pattern frequency and effectiveness  
 🚀 **Development Trends Dashboard** - Monitor AI-assisted development metrics  
 
-See **[Superset Integration Guide](docs/SUPERSET_INTEGRATION.md)** for setup instructions.
+See **[Superset Integration Guide](Documentation/SUPERSET_INTEGRATION.md)** for setup instructions.
 
 ## Project status
 

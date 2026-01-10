@@ -1,7 +1,7 @@
 [
   {
     "file": "conftest.py",
-    "line": 230,
+    "line": 256,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -9,7 +9,7 @@
   },
   {
     "file": "conftest.py",
-    "line": 235,
+    "line": 275,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -17,18 +17,18 @@
   },
   {
     "file": "conftest.py",
-    "line": 243,
+    "line": 281,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "tests/test_auto_analysis.py",
-    "line": 13,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
+    "file": "conftest.py",
+    "line": 300,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
   }
 ]

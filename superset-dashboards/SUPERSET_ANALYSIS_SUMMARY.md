@@ -16,6 +16,7 @@ This document provides an executive summary of the Superset dashboard design ana
 The feedback-loop system maintains **two primary databases** with **16 total tables** that can be visualized in Apache Superset:
 
 #### Metrics Database (8 tables)
+
 - **Purpose:** Time-series analytics for code quality and AI-assisted development
 - **Key Tables:**
   - `metrics_code_generation` - AI code generation events
@@ -25,6 +26,7 @@ The feedback-loop system maintains **two primary databases** with **16 total tab
   - `metrics_performance`, `metrics_deployment` - Operational metrics
 
 #### API Database (8 tables)
+
 - **Purpose:** Operational data for multi-tenant pattern management
 - **Key Tables:**
   - `patterns` - Pattern library with versioning
@@ -35,11 +37,13 @@ The feedback-loop system maintains **two primary databases** with **16 total tab
 ### 2. Database Configuration
 
 **Currently Configured:**
+
 - ✅ **SQLite** - Development database (`sample_metrics.db`, 156KB with sample data)
 - ✅ **PostgreSQL** - Production support with connection pooling
 - ✅ **Cloud Providers** - AWS RDS, Google Cloud SQL, Azure Database, Heroku
 
 **Connection Examples:**
+
 ```
 SQLite:     sqlite:////absolute/path/to/feedback-loop/sample_metrics.db
 PostgreSQL: postgresql://username:password@hostname:5432/feedback_loop
@@ -48,11 +52,13 @@ PostgreSQL: postgresql://username:password@hostname:5432/feedback_loop
 ### 4. External Data Integrations
 
 **Currently Available:**
+
 - ✅ **GitHub Actions** - CI/CD metrics collection
 - ✅ **JSON Export** - Intermediate data format
 - ✅ **Automated Sync** - Scheduled database updates
 
 **Potential Future Integrations:**
+
 - ⚠️ Jira, Slack, Datadog, Sentry (not currently implemented)
 
 ---
@@ -62,9 +68,11 @@ PostgreSQL: postgresql://username:password@hostname:5432/feedback_loop
 We recommend **4 primary dashboards** based on the data models:
 
 ### Dashboard 1: Code Generation Analytics
+
 **Purpose:** Monitor AI-powered code generation system
 
 **Key Charts:**
+
 1. **Generation Success Rate** (Big Number with Trend)
    - Metric: `AVG(success)` from `metrics_code_generation`
    - Target KPI: ≥85% success rate
@@ -86,6 +94,7 @@ We recommend **4 primary dashboards** based on the data models:
    - Shows confidence when failures occur
 
 **SQL Example:**
+
 ```sql
 SELECT 
   DATE_TRUNC('day', timestamp) as date,
@@ -101,9 +110,11 @@ ORDER BY date DESC;
 ---
 
 ### Dashboard 2: Pattern Effectiveness & Confidence
+
 **Purpose:** Track pattern reliability and ROI
 
 **Key Charts:**
+
 1. **Confidence vs Success Scatter Plot**
    - X-axis: Confidence score
    - Y-axis: Actual success
@@ -127,6 +138,7 @@ ORDER BY date DESC;
    - Validates confidence scoring
 
 **SQL Example:**
+
 ```sql
 -- Pattern ROI calculation
 SELECT 
@@ -146,9 +158,11 @@ ORDER BY hours_saved DESC;
 ---
 
 ### Dashboard 3: Issue Detection & Tracking
+
 **Purpose:** Comprehensive view of detected issues
 
 **Key Charts:**
+
 1. **Detection Summary Cards** (Big Numbers)
    - Total bugs, test failures, review issues, deployment issues
 
@@ -169,6 +183,7 @@ ORDER BY hours_saved DESC;
    - Code review issues over time
 
 **SQL Example:**
+
 ```sql
 -- Combined detection timeline
 WITH all_detections AS (
@@ -191,9 +206,11 @@ ORDER BY day, type;
 ---
 
 ### Dashboard 4: Pattern Analysis & Audit Trail
+
 **Purpose:** Pattern analysis and compliance reporting (SAR-equivalent)
 
 **Key Charts:**
+
 1. **Pattern Catalog Overview** (Card View)
    - Total patterns, active patterns, categories
    - Average applications per pattern
@@ -222,6 +239,7 @@ ORDER BY day, type;
    - Identifies performance bottlenecks
 
 **SQL Example:**
+
 ```sql
 -- Comprehensive Pattern Analysis (SAR-style)
 SELECT 
@@ -253,6 +271,7 @@ ORDER BY p.times_applied DESC;
 ## Implementation Roadmap
 
 ### Phase 1: Quick Start (1-2 hours)
+
 1. ✅ Review existing documentation
    - [DASHBOARD_DESIGN_RECOMMENDATIONS.md](DASHBOARD_DESIGN_RECOMMENDATIONS.md)
    - [DATABASE_CONFIGURATION.md](DATABASE_CONFIGURATION.md)
@@ -261,29 +280,38 @@ ORDER BY p.times_applied DESC;
 4. ✅ Explore sample data
 
 ### Phase 2: Development Setup (1 day)
+
 1. ✅ Run `pytest --enable-metrics` to collect real metrics
 2. ✅ Export metrics to database:
+
    ```bash
    python superset-dashboards/scripts/export_to_db.py --format sqlite
    ```
+
 3. ✅ Configure Superset datasets for all tables
 4. ✅ Customize dashboards based on team needs
 
 ### Phase 3: Production Deployment (2-3 days)
+
 1. ✅ Set up PostgreSQL database
 2. ✅ Configure environment variables:
+
    ```bash
    export METRICS_DB_URI="postgresql://user:pass@host:5432/feedback_loop"
    ```
+
 3. ✅ Set up automated sync:
+
    ```bash
    # Cron job
    0 * * * * cd /path/to/feedback-loop && python superset-dashboards/scripts/sync_metrics.py
    ```
+
 4. ✅ Configure alerts for critical metrics
 5. ✅ Set up user access controls
 
 ### Phase 4: Advanced Analytics (Ongoing)
+
 1. ✅ Create materialized views for complex queries
 2. ✅ Set up custom SQL datasets for cross-database queries
 3. ✅ Implement row-level security for multi-tenant access
@@ -295,6 +323,7 @@ ORDER BY p.times_applied DESC;
 ## Key Performance Indicators (KPIs)
 
 ### Code Generation Metrics
+
 | KPI | Target | Source |
 |-----|--------|--------|
 | Success Rate | ≥85% | `metrics_code_generation.success` |
@@ -303,6 +332,7 @@ ORDER BY p.times_applied DESC;
 | Compilation Error Rate | <15% | `COUNT(compilation_error IS NOT NULL)` |
 
 ### Pattern Effectiveness Metrics
+
 | KPI | Target | Source |
 |-----|--------|--------|
 | Effectiveness Score | ≥0.80 | `pattern_effectiveness.effectiveness_score` |
@@ -311,6 +341,7 @@ ORDER BY p.times_applied DESC;
 | Pattern Success Rate | ≥70% | `success_count / application_count` |
 
 ### Issue Detection Metrics
+
 | KPI | Target | Source |
 |-----|--------|--------|
 | Bug Detection Trend | Decreasing | `COUNT(*) FROM metrics_bugs` |
@@ -319,6 +350,7 @@ ORDER BY p.times_applied DESC;
 | Pattern Coverage | 100% | All patterns have test coverage |
 
 ### Audit & Compliance Metrics
+
 | KPI | Target | Source |
 |-----|--------|--------|
 | Pattern Versioning | 100% | `patterns.version > 1` |
@@ -333,11 +365,13 @@ ORDER BY p.times_applied DESC;
 ### Database Requirements
 
 **Minimum (Development):**
+
 - SQLite 3.x
 - 50MB disk space
 - No concurrent access required
 
 **Recommended (Production):**
+
 - PostgreSQL 12+
 - 10GB disk space (with 1 year retention)
 - 10-30 concurrent connections
@@ -346,12 +380,14 @@ ORDER BY p.times_applied DESC;
 ### Superset Requirements
 
 **Minimum:**
+
 - Apache Superset 2.0+
 - Python 3.8+
 - 4GB RAM
 - Docker (recommended)
 
 **Recommended:**
+
 - Apache Superset 3.0+
 - Python 3.10+
 - 8GB RAM
@@ -360,6 +396,7 @@ ORDER BY p.times_applied DESC;
 ### Performance Benchmarks
 
 Based on sample data:
+
 - **Query Performance:** <100ms for most charts (with indexes)
 - **Dashboard Load Time:** <2 seconds (with caching)
 - **Data Export Speed:** ~1000 records/second
@@ -403,17 +440,20 @@ Based on sample data:
 ## Cost Analysis
 
 ### Development (SQLite)
+
 - **Infrastructure:** $0
 - **Maintenance:** Minimal
 - **Limitations:** Single user, local only
 
 ### Production (Self-hosted PostgreSQL)
+
 - **Infrastructure:** $20-100/month (depending on provider)
 - **Superset:** $0 (self-hosted) or $200-1000/month (managed)
 - **Maintenance:** 2-4 hours/month
 - **Scalability:** Up to 100s of users
 
 ### Production (Cloud-managed)
+
 - **Database:** $50-500/month (RDS/Cloud SQL)
 - **Superset:** $500-2000/month (managed services)
 - **Maintenance:** <1 hour/month
@@ -424,12 +464,14 @@ Based on sample data:
 ## Success Metrics
 
 ### Adoption Metrics
+
 - **Week 1:** Superset configured, sample dashboards imported
 - **Week 2:** Team using dashboards daily
 - **Month 1:** Custom dashboards created, alerts configured
 - **Month 3:** Data-driven decisions based on dashboard insights
 
 ### Value Realization
+
 - **Immediate:** Visibility into code generation success rates
 - **1 Month:** Pattern effectiveness optimization
 - **3 Months:** 20% improvement in code quality metrics
@@ -466,18 +508,21 @@ The feedback-loop repository has a well-structured data model that supports comp
 ## References
 
 ### Documentation
+
 - [DASHBOARD_DESIGN_RECOMMENDATIONS.md](DASHBOARD_DESIGN_RECOMMENDATIONS.md) - Detailed dashboard designs with SQL queries
 - [DATABASE_CONFIGURATION.md](DATABASE_CONFIGURATION.md) - Complete database schema and connection guide
-- [../docs/SUPERSET_INTEGRATION.md](../docs/SUPERSET_INTEGRATION.md) - General Superset integration guide
+- [../Documentation/SUPERSET_INTEGRATION.md](../Documentation/SUPERSET_INTEGRATION.md) - General Superset integration guide
 - [README.md](README.md) - Superset dashboards overview
 
 ### Code
+
 - [database/models.py](database/models.py) - Metrics database schema
 - [../api/models.py](../api/models.py) - API database schema
 - [scripts/export_to_db.py](scripts/export_to_db.py) - Database export script
 - [scripts/sync_metrics.py](scripts/sync_metrics.py) - Automated sync script
 
 ### Sample Files
+
 - `sample_metrics.db` - Pre-populated SQLite database (156KB)
 - `sample_metrics_data.json` - Sample metrics in JSON format
 - [dashboards/](dashboards/) - Pre-configured dashboard JSON files
