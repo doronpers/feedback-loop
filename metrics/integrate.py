@@ -9,6 +9,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -371,7 +372,6 @@ class MetricsIntegration:
             head_sha: Head commit SHA
             output_file: Optional file to save analysis results
         """
-        import re
         import subprocess
 
         logger.debug(f"Analyzing commit diff: {base_sha}..{head_sha}")
