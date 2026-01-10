@@ -4,7 +4,7 @@
 
 **Status:** ✅ All systems validated
 
-- **119 tests** passing (100%)
+- **214 tests** passing (100%)
 - **91% code coverage** across core modules
 - **0 security vulnerabilities** (CodeQL scan)
 - **Production-ready** implementations
@@ -15,15 +15,15 @@ All 9 patterns tested with edge cases:
 
 | Pattern | Tests | Status |
 |---------|-------|--------|
-| NumPy Type Conversion | 5 | ✅ Pass |
-| Bounds Checking | 4 | ✅ Pass |
+| NumPy Type Conversion | 8 | ✅ Pass |
+| Bounds Checking | 6 | ✅ Pass |
 | Specific Exceptions | 4 | ✅ Pass |
 | Structured Logging | 3 | ✅ Pass |
 | Metadata-Based Logic | 6 | ✅ Pass |
-| Temp File Handling | 4 | ✅ Pass |
-| Large File Processing | 4 | ✅ Pass |
-| FastAPI Streaming | 25 | ✅ Pass |
-| NaN/Inf Handling | 5 | ✅ Pass |
+| Temp File Handling | 6 | ✅ Pass |
+| Large File Processing | 5 | ✅ Pass |
+| FastAPI Streaming | 45 | ✅ Pass |
+| NaN/Inf Handling | 4 | ✅ Pass |
 
 ## What Changed
 
