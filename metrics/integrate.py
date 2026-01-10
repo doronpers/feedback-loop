@@ -19,7 +19,7 @@ from metrics.analyzer import MetricsAnalyzer
 from metrics.code_generator import PatternAwareGenerator
 from metrics.collector import MetricsCollector
 from metrics.pattern_manager import PatternManager
-from metrics.sync_client import LocalSyncClient, SyncClient, create_sync_client
+from metrics.sync_client import LocalSyncClient, SyncClient
 from metrics.synthesizer import CodeSynthesizer
 
 logger = logging.getLogger(__name__)
