@@ -1,3 +1,28 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "feedback-loop.enable": true,
+    "feedback-loop.serverPath": "${workspaceFolder}/bin/feedback_loop_lsp.py",
+    "feedback-loop.llmProvider": "claude",
+    "feedback-loop.enableLLM": true,
+    "feedback-loop.analysisDelay": 500,
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=88", "--config=.flake8"],
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "88"],
+    "python.analysis.typeCheckingMode": "basic",
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "tests/",
+        "-v"
+    ],
+    "editor.formatOnSave": true,
+    "editor.rulers": [88],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.associations": {
+        ".cursorrules": "markdown",
+        ".flake8": "ini"
+    }
 }

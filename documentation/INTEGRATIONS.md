@@ -17,5 +17,37 @@ This page summarizes how to connect feedback-loop with common developer workflow
 
 ## VS Code / Cursor (LSP)
 
-- The VS Code extension POC and language server setup are described in `../vscode-extension/README.md`.
-- Cursor is VS Code–based, so the same setup applies there.
+### Quick Start
+
+feedback-loop integrates seamlessly with both VS Code and Cursor through:
+1. **`.cursorrules` file** - Automatically teaches Cursor AI about feedback-loop patterns
+2. **Language Server Protocol (LSP)** - Real-time pattern detection and quick fixes
+3. **VS Code Tasks** - Quick access to all feedback-loop tools
+4. **Settings Integration** - Pre-configured for optimal experience
+
+### For Cursor Users
+
+Cursor is VS Code-based with enhanced AI capabilities. See the **[Cursor Integration Guide](../CURSOR_INTEGRATION.md)** for:
+- Complete setup instructions
+- Cursor Composer integration
+- Pattern-aware code generation
+- Interactive workflows
+- Troubleshooting
+
+**Quick setup:**
+```bash
+cd feedback-loop
+pip install -e .
+# Cursor automatically reads .cursorrules file
+# Use Cmd/Ctrl + Shift + P → "Tasks: Run Task" to access tools
+```
+
+### For VS Code Users
+
+The VS Code extension POC and language server setup are described in `../vscode-extension/README.md`.
+
+**Features:**
+- Real-time diagnostics
+- Quick fixes for pattern violations  
+- Hover documentation
+- Task integration

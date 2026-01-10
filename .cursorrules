@@ -1,0 +1,439 @@
+# Feedback Loop - Cursor AI Rules
+# 
+# This file teaches Cursor about the feedback-loop patterns and best practices.
+# Cursor automatically reads this file and applies these rules to all AI interactions.
+
+## Project Overview
+
+This is the feedback-loop repository - a framework for AI-assisted development that learns from test failures and builds reusable patterns.
+
+**Core Philosophy:**
+- Learn from failures, not just successes
+- Build living pattern libraries
+- Pattern-aware code generation
+- Continuous improvement through metrics
+
+## The 9 Core Patterns (ALWAYS APPLY)
+
+### 1. NumPy Type Conversion
+**Problem:** NumPy types (np.int64, np.float64, etc.) are not JSON serializable
+**Solution:** Convert to Python native types using .item() or .tolist()
+
+```python
+# ❌ BAD - Will crash on JSON serialization
+import numpy as np
+result = {"mean": np.mean(data), "values": data}
+json.dumps(result)  # TypeError!
+
+# ✅ GOOD - Convert NumPy types to Python types
+result = {
+    "mean": float(np.mean(data)),
+    "values": data.tolist() if isinstance(data, np.ndarray) else data
+}
+json.dumps(result)  # Works!
+```
+
+**When to apply:**
+- ANY time you use NumPy operations
+- Before JSON serialization
+- When returning API responses
+- When storing in databases
+
+### 2. Bounds Checking
+**Problem:** Accessing list/array indices without checking length causes IndexError
+**Solution:** Always validate bounds before accessing
+
+```python
+# ❌ BAD - Crashes on empty list
+def get_first(items):
+    return items[0]
+
+# ✅ GOOD - Check bounds first
+def get_first(items):
+    if not items:
+        return None
+    return items[0]
+
+# ✅ ALSO GOOD - Use guard clause
+def get_first(items):
+    return items[0] if items else None
+```
+
+**When to apply:**
+- Accessing list/array elements by index
+- Slicing operations
+- Getting first/last elements
+- Any direct index access
+
+### 3. Specific Exception Handling
+**Problem:** Bare except: catches everything, including KeyboardInterrupt and SystemExit
+**Solution:** Catch specific exceptions only
+
+```python
+# ❌ BAD - Catches too much
+try:
+    data = json.loads(text)
+except:
+    return None
+
+# ✅ GOOD - Catch specific exceptions
+try:
+    data = json.loads(text)
+except json.JSONDecodeError as e:
+    logger.debug(f"Invalid JSON: {e}")
+    return None
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise
+```
+
+**When to apply:**
+- ALL try/except blocks
+- Error handling in API endpoints
+- File operations
+- Network requests
+- Any exception handling
+
+### 4. Structured Logging
+**Problem:** print() statements don't work in production/tests and clutter output
+**Solution:** Use proper logging with appropriate levels
+
+```python
+# ❌ BAD - Won't be captured in logs
+print(f"Processing file: {filename}")
+print(f"Error occurred: {error}")
+
+# ✅ GOOD - Use structured logging
+import logging
+logger = logging.getLogger(__name__)
+
+logger.debug(f"Processing file: {filename}")
+logger.error(f"Error occurred: {error}", exc_info=True)
+```
+
+**When to apply:**
+- ALL debug output
+- Error messages
+- Status updates
+- Performance metrics
+- Instead of ANY print() statement
+
+### 5. Metadata-Based Logic
+**Problem:** String matching and pattern detection is fragile
+**Solution:** Use explicit metadata and configuration
+
+```python
+# ❌ BAD - Fragile string matching
+if "urgent" in filename.lower() or "priority" in filename.lower():
+    priority = "high"
+
+# ✅ GOOD - Use explicit metadata
+priority = file_metadata.get("priority_level", "normal")
+if priority == "high":
+    process_urgently(file)
+```
+
+**When to apply:**
+- Business logic decisions
+- Routing/dispatching
+- Feature flags
+- Configuration-based behavior
+
+### 6. Temp File Handling
+**Problem:** Temp files not cleaned up, file descriptor leaks
+**Solution:** Always use proper cleanup with context managers
+
+```python
+# ❌ BAD - No cleanup, descriptor leak
+path = tempfile.mktemp()
+with open(path, 'wb') as f:
+    f.write(data)
+# File never deleted!
+
+# ✅ GOOD - Proper cleanup
+import os
+import tempfile
+
+fd, path = tempfile.mkstemp(suffix='.dat')
+try:
+    with os.fdopen(fd, 'wb') as f:
+        f.write(data)
+        # Process file...
+finally:
+    os.unlink(path)
+
+# ✅ EVEN BETTER - Use context manager
+with tempfile.NamedTemporaryFile(mode='wb', delete=False) as tmp:
+    tmp.write(data)
+    tmp_path = tmp.name
+try:
+    # Process file...
+    pass
+finally:
+    os.unlink(tmp_path)
+```
+
+**When to apply:**
+- ANY temp file creation
+- File processing pipelines
+- Upload handling
+- Testing with files
+
+### 7. Large File Processing
+**Problem:** Loading entire files into memory causes OOM errors
+**Solution:** Stream/chunk large files
+
+```python
+# ❌ BAD - Loads entire file into memory
+def process_file(path):
+    with open(path, 'rb') as f:
+        data = f.read()  # OOM for large files!
+    return analyze(data)
+
+# ✅ GOOD - Process in chunks
+def process_file(path, chunk_size=1024*1024):
+    with open(path, 'rb') as f:
+        while chunk := f.read(chunk_size):
+            yield process_chunk(chunk)
+```
+
+**When to apply:**
+- Files > 100MB
+- User uploads
+- Video/audio processing
+- Log file analysis
+- Any file of unknown size
+
+### 8. FastAPI Streaming Uploads
+**Problem:** Loading entire upload into memory before processing
+**Solution:** Stream directly to disk or processing
+
+```python
+# ❌ BAD - Loads entire upload into memory
+@app.post("/upload")
+async def upload(file: UploadFile):
+    content = await file.read()  # OOM risk!
+    return process(content)
+
+# ✅ GOOD - Stream to disk/processing
+@app.post("/upload")
+async def upload(file: UploadFile):
+    fd, tmp_path = tempfile.mkstemp()
+    try:
+        with os.fdopen(fd, 'wb') as tmp_file:
+            while chunk := await file.read(1024 * 1024):
+                tmp_file.write(chunk)
+        return process_file(tmp_path)
+    finally:
+        os.unlink(tmp_path)
+```
+
+**When to apply:**
+- FastAPI file uploads
+- Any async file handling
+- API endpoints receiving files
+- Uploads > 10MB
+
+### 9. NumPy NaN/Inf Handling
+**Problem:** NaN and Inf are not valid in JSON and cause silent errors
+**Solution:** Explicitly check and handle NaN/Inf
+
+```python
+# ❌ BAD - NaN/Inf causes invalid JSON
+import numpy as np
+result = {
+    "value": np.sqrt(-1),  # NaN
+    "ratio": 1.0 / 0.0     # Inf
+}
+json.dumps(result)  # Creates invalid JSON!
+
+# ✅ GOOD - Check and handle NaN/Inf
+def safe_float(value):
+    if np.isnan(value) or np.isinf(value):
+        return None
+    return float(value)
+
+result = {
+    "value": safe_float(np.sqrt(-1)),
+    "ratio": safe_float(1.0 / np.float64(data))
+}
+```
+
+**When to apply:**
+- ANY NumPy calculations
+- Division operations
+- Mathematical functions (sqrt, log, etc.)
+- Statistical calculations
+- Before JSON serialization
+
+## Code Style & Standards
+
+### Python
+- **Line length:** 88 characters (Black formatter)
+- **Imports:** Group stdlib, third-party, local (isort)
+- **Type hints:** Required for all function parameters and returns
+- **Docstrings:** Google style for public functions
+- **Testing:** pytest with fixtures, 80%+ coverage target
+
+### Documentation
+- **Comments:** Explain WHY, not WHAT
+- **TODOs:** Include ticket number or @username
+- **Examples:** Always include working examples
+- **Updates:** Keep docstrings in sync with code
+
+### Error Handling
+- **Always log errors** with context
+- **Include error types** in except clauses
+- **Preserve stack traces** with exc_info=True
+- **Return meaningful error messages** to users
+- **Don't swallow exceptions** without logging
+
+## Testing Requirements
+
+### Every function must have tests for:
+1. **Happy path** - Normal operation
+2. **Edge cases** - Empty inputs, boundaries, None
+3. **Error cases** - Invalid inputs, exceptions
+4. **Type validation** - Especially with NumPy types
+
+### Test Structure
+```python
+def test_function_name_scenario():
+    """Test function_name with specific scenario."""
+    # Arrange - Setup
+    data = setup_test_data()
+    
+    # Act - Execute
+    result = function_name(data)
+    
+    # Assert - Verify
+    assert result is not None
+    assert isinstance(result, expected_type)
+```
+
+### Test Patterns
+- Use fixtures for reusable setup
+- Mock external dependencies
+- Test with metrics: `pytest --enable-metrics`
+- Parametrize for multiple scenarios
+
+## Common Pitfalls to Avoid
+
+### 1. NumPy Type Issues
+- ❌ Returning np.int64, np.float64 directly
+- ❌ JSON serializing NumPy arrays without .tolist()
+- ❌ Not handling NaN/Inf in calculations
+
+### 2. File Handling
+- ❌ Not cleaning up temp files
+- ❌ Loading large files entirely into memory
+- ❌ Using tempfile.mktemp() instead of mkstemp()
+
+### 3. Error Handling
+- ❌ Bare except: clauses
+- ❌ Not logging errors
+- ❌ Swallowing exceptions silently
+
+### 4. Production Issues
+- ❌ Using print() instead of logging
+- ❌ Hardcoded paths or configuration
+- ❌ Missing input validation
+
+### 5. API Development
+- ❌ Not streaming large uploads
+- ❌ Missing proper error responses
+- ❌ Not validating content types/sizes
+
+## When Generating Code
+
+### Always Include:
+1. **Type hints** - For parameters and returns
+2. **Error handling** - Specific exceptions
+3. **Logging** - Not print statements
+4. **Input validation** - Check bounds, None, types
+5. **Docstrings** - Google style
+6. **Tests** - At least happy path and error cases
+
+### For API Endpoints:
+1. **Request validation** - Pydantic models
+2. **Error responses** - Proper HTTP status codes
+3. **Streaming** - For file uploads/downloads
+4. **Logging** - Request/response context
+5. **Documentation** - OpenAPI annotations
+
+### For Data Processing:
+1. **NumPy type conversion** - Before serialization
+2. **NaN/Inf handling** - Explicit checks
+3. **Chunked processing** - For large data
+4. **Memory efficiency** - Generators where possible
+5. **Bounds checking** - Array/list access
+
+## Integration with Tools
+
+### Cursor Commands
+When user asks for code generation, ALWAYS:
+1. Apply relevant patterns from above
+2. Include proper error handling
+3. Add type hints
+4. Use logging not print
+5. Include basic tests
+
+### Code Review
+When reviewing code, check for:
+1. All 9 patterns applied where relevant
+2. No bare except clauses
+3. No print() statements
+4. Proper type hints
+5. Test coverage
+
+### Refactoring
+When refactoring, ensure:
+1. Patterns are not broken
+2. Tests still pass
+3. No regression in error handling
+4. Type safety maintained
+5. Documentation updated
+
+## Questions to Ask
+
+Before generating code, consider:
+- **Will this handle NumPy types?** → Apply pattern #1 and #9
+- **Could this access an empty list?** → Apply pattern #2
+- **Could this fail?** → Apply pattern #3 (specific exceptions)
+- **Should this be logged?** → Apply pattern #4
+- **Is this a large file?** → Apply pattern #7
+- **Is this an upload?** → Apply pattern #8
+- **Does this create temp files?** → Apply pattern #6
+
+## Learning Resources
+
+- **Quick Reference:** `/documentation/QUICK_REFERENCE.md`
+- **AI Patterns Guide:** `/documentation/AI_PATTERNS_GUIDE.md`
+- **Getting Started:** `/documentation/GETTING_STARTED.md`
+- **Examples:** `/examples/` directory
+- **Tests:** `/tests/` directory
+
+## Repository Structure
+
+```
+feedback-loop/
+├── bin/                    # CLI tools (fl-chat, fl-setup, etc.)
+├── documentation/          # User guides
+├── examples/              # Code examples
+├── metrics/               # Core metrics & patterns
+├── tests/                 # Test suite
+├── .cursorrules          # This file
+└── CURSOR_INTEGRATION.md # Cursor setup guide
+```
+
+## Final Notes
+
+**Remember:** These patterns exist because they've prevented real bugs in production. Apply them consistently, and the feedback loop will continue learning and improving.
+
+**When in doubt:** Check existing code in `/examples/` or `/tests/` for pattern application examples.
+
+**For new patterns:** Follow the workflow in the AI Patterns Guide - observe, identify, codify, apply, verify, share.
+
+---
+
+See CURSOR_INTEGRATION.md for detailed setup and workflow instructions.
