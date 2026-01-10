@@ -82,12 +82,14 @@ class PatternSuggester:
         for pattern_info in patterns:
             pattern_name = pattern_info["name"]
             confidence = pattern_info["confidence"]
-            description = pattern_info.get("description", "")
             severity = pattern_info.get("severity", "medium")
 
             # Format: - [ ] pattern_name (confidence: 0.85, from feedback-loop)
             confidence_pct = f"{confidence:.0%}"
-            line = f"- [ ] {pattern_name} (confidence: {confidence_pct}, from feedback-loop)"
+            line = (
+                f"- [ ] {pattern_name} "
+                f"(confidence: {confidence_pct}, from feedback-loop)"
+            )
 
             # Add severity indicator for high/critical patterns
             if severity in ["high", "critical"]:

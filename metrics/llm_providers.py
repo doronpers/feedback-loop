@@ -123,7 +123,7 @@ class ClaudeProvider(LLMProvider):
     def is_available(self) -> bool:
         """Check if Claude is available."""
         try:
-            import anthropic
+            import anthropic  # noqa: F401
 
             return self.api_key is not None
         except ImportError:
@@ -190,7 +190,7 @@ class OpenAIProvider(LLMProvider):
     def is_available(self) -> bool:
         """Check if OpenAI is available."""
         try:
-            import openai
+            import openai  # noqa: F401
 
             return self.api_key is not None
         except ImportError:
@@ -283,12 +283,12 @@ class GeminiProvider(LLMProvider):
         try:
             # Try new package first
             try:
-                import google.genai
+                import google.genai  # noqa: F401
 
                 return True
             except ImportError:
                 # Fallback to deprecated package
-                import google.generativeai
+                import google.generativeai  # noqa: F401
 
                 return True
         except ImportError:

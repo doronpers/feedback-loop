@@ -6,7 +6,7 @@ Provides LLM-powered code review with pattern suggestions and best practices.
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from metrics.config_manager import ConfigManager
 from metrics.llm_providers import get_llm_manager
@@ -258,10 +258,13 @@ Keep suggestions practical and pattern-aware."""
                 "explanation": "Cannot generate debrief without LLM access.",
             }
 
-        prompt = f"""Based on the code review provided, generate a debrief that includes:
+        prompt = """Based on the code review provided, generate a debrief that includes:
 
-1. **Improvement Strategies**: 3-5 specific, actionable strategies the developer can use to improve their code quality and avoid similar issues in future submissions.
-2. **Difficulty Rating**: Rate the difficulty of executing these improvements on a scale of 1-10, where:
+1. **Improvement Strategies**: 3-5 specific, actionable strategies the
+   developer can use to improve their code quality and avoid similar issues in
+   future submissions.
+2. **Difficulty Rating**: Rate the difficulty of executing these improvements
+   on a scale of 1-10, where:
    - 1-3: Easy (simple changes, no architectural impact)
    - 4-6: Moderate (requires refactoring or new patterns)
    - 7-9: Hard (significant architectural changes or deep understanding needed)
@@ -292,7 +295,8 @@ Provide your response in the following format:
 **Difficulty Rating:** [1-10]
 
 **Explanation:**
-[Brief explanation of why this difficulty rating was assigned and what makes these improvements more or less challenging]
+[Brief explanation of why this difficulty rating was assigned and what makes
+these improvements more or less challenging]
 """
 
         try:

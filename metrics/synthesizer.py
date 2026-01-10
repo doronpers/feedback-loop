@@ -89,7 +89,7 @@ class CodeSynthesizer:
         self, file_paths: List[str]
     ) -> List[GenerationResult]:
         """Load code from files and create GenerationResult objects."""
-        from metrics.code_generator import GenerationResult, ValidationResult
+        from metrics.code_generator import GenerationResult
 
         candidates = []
         for i, file_path in enumerate(file_paths):

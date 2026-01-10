@@ -19,8 +19,7 @@ from metrics.analyzer import MetricsAnalyzer
 from metrics.code_generator import PatternAwareGenerator
 from metrics.collector import MetricsCollector
 from metrics.pattern_manager import PatternManager
-from metrics.sync_client import (CloudSyncClient, LocalSyncClient, SyncClient,
-                                 create_sync_client)
+from metrics.sync_client import LocalSyncClient, SyncClient, create_sync_client
 from metrics.synthesizer import CodeSynthesizer
 
 logger = logging.getLogger(__name__)
@@ -141,15 +140,18 @@ class MetricsIntegration:
 
         # Calculate effectiveness
         effectiveness = analyzer.calculate_effectiveness()
-        print(f"\n✓ Pattern Effectiveness:")
+        print("\n✓ Pattern Effectiveness:")
         for pattern, metrics in list(effectiveness.items())[:5]:
             print(f"  - {pattern}: {metrics['score']:.2%} ({metrics['trend']})")
 
         # Rank by severity
         ranked = analyzer.rank_patterns_by_severity()
-        print(f"\n✓ Patterns Ranked by Severity:")
+        print("\n✓ Patterns Ranked by Severity:")
         for item in ranked[:5]:
-            print(f"  - {item['pattern']}: {item['severity']} (count: {item['count']})")
+            print(
+                f"  - {item['pattern']}: {item['severity']} "
+                f"(count: {item['count']})"
+            )
 
         # Update patterns if requested
         if update_patterns:
@@ -628,7 +630,7 @@ def _handle_login(api_url: str) -> None:
                     indent=2,
                 )
 
-            print(f"\n✓ Login successful!")
+            print("\n✓ Login successful!")
             print(f"  Username: {data['username']}")
             print(f"  Role: {data['role']}")
             print(f"  Organization ID: {data['organization_id']}")
@@ -1019,9 +1021,7 @@ def main() -> int:
     )
 
     # memory stats - Show memory statistics
-    memory_stats_parser = memory_subparsers.add_parser(
-        "stats", help="Show memory statistics"
-    )
+    memory_subparsers.add_parser("stats", help="Show memory statistics")
 
     # Login command (for cloud sync)
     login_parser = subparsers.add_parser(
