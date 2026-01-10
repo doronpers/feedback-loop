@@ -16,44 +16,52 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 def find_tools() -> List[Dict[str, str]]:
     """Find all available tools in bin/ directory."""
     tools = []
     bin_dir = Path("bin")
-    
+
     if not bin_dir.exists():
         return tools
-    
+
     for script in sorted(bin_dir.glob("fl-*")):
         if script.is_file() and os.access(script, os.X_OK):
             # Read first few lines to get description
             try:
-                with open(script, 'r') as f:
+                with open(script, "r") as f:
                     lines = f.readlines()
                     description = "Tool"
                     for idx, line in enumerate(lines[:15]):
                         # Check for docstring start (both quote styles)
                         if '"""' in line or "'''" in line:
                             # Found docstring, try to extract description
-                            for next_line in lines[idx+1:min(idx+10, len(lines))]:
+                            for next_line in lines[idx + 1 : min(idx + 10, len(lines))]:
                                 # Skip lines that are part of the docstring delimiter or empty
                                 stripped = next_line.strip()
-                                if stripped and not stripped.startswith('"""') and not stripped.startswith("'''"):
+                                if (
+                                    stripped
+                                    and not stripped.startswith('"""')
+                                    and not stripped.startswith("'''")
+                                ):
                                     description = stripped
                                     break
                             break
-                    
-                    tools.append({
-                        "name": script.stem.replace("fl-", "").replace("-", " ").title(),
-                        "script": str(script),
-                        "description": description
-                    })
+
+                    tools.append(
+                        {
+                            "name": script.stem.replace("fl-", "")
+                            .replace("-", " ")
+                            .title(),
+                            "script": str(script),
+                            "description": description,
+                        }
+                    )
             except Exception as e:
                 print(f"Warning: Could not read {script}: {e}", file=sys.stderr)
-    
+
     return tools
 
 
@@ -74,17 +82,19 @@ def find_superset_quickstart() -> str:
     return None
 
 
-def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superset_script: str = None) -> str:
+def generate_mac_launcher(
+    tools: List[Dict[str, str]], demos: List[str], superset_script: str = None
+) -> str:
     """Generate Mac launcher script content."""
-    
+
     # Calculate max tool name width for alignment
     max_name_width = max((len(tool["name"]) for tool in tools), default=10)
     max_name_width = max(max_name_width, 10)  # At least 10 characters
-    
+
     # Build menu items
     menu_items = []
     case_items = []
-    
+
     # Map of known tools to their emoji and description
     tool_map = {
         "Chat": ("💬", "Interactive AI-powered chat for coding help"),
@@ -92,15 +102,18 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superse
         "Dashboard": ("📊", "View metrics and pattern insights"),
         "Doctor": ("🩺", "Diagnose and fix common issues"),
     }
-    
+
     item_num = 1
     for tool in tools:
         tool_key = tool["name"].split()[0]  # Get first word
         emoji, desc = tool_map.get(tool_key, ("🔧", tool.get("description", "Tool")))
-        
-        menu_items.append(f'    echo "  {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}"')
-        
-        case_items.append(f"""        {item_num})
+
+        menu_items.append(
+            f'    echo "  {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}"'
+        )
+
+        case_items.append(
+            f"""        {item_num})
             echo "🚀 Launching {tool['name']}..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
@@ -117,13 +130,17 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superse
             echo "Press any key to return to menu..."
             read -n 1 -s
             echo ""
-            ;;""")
+            ;;"""
+        )
         item_num += 1
-    
+
     # Add demo if available
     if demos:
-        menu_items.append(f'    echo "  {item_num}) 🎬 Demo              - See patterns in action"')
-        case_items.append(f"""        {item_num})
+        menu_items.append(
+            f'    echo "  {item_num}) 🎬 Demo              - See patterns in action"'
+        )
+        case_items.append(
+            f"""        {item_num})
             echo "🚀 Running Demo..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
@@ -140,13 +157,17 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superse
             echo "Press any key to return to menu..."
             read -n 1 -s
             echo ""
-            ;;""")
+            ;;"""
+        )
         item_num += 1
-    
+
     # Add Superset quickstart if available
     if superset_script:
-        menu_items.append(f'    echo "  {item_num}) 📊 Superset Setup   - Set up analytics dashboards"')
-        case_items.append(f"""        {item_num})
+        menu_items.append(
+            f'    echo "  {item_num}) 📊 Superset Setup   - Set up analytics dashboards"'
+        )
+        case_items.append(
+            f"""        {item_num})
             echo "🚀 Launching Superset Quickstart..."
             echo "════════════════════════════════════════════════════════════════════"
             echo ""
@@ -163,17 +184,19 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superse
             echo "Press any key to return to menu..."
             read -n 1 -s
             echo ""
-            ;;""")
+            ;;"""
+        )
         item_num += 1
-    
+
     # Add docs and exit
     menu_items.append(f'    echo "  {item_num}) 📚 Open Documentation"')
     docs_num = item_num
     item_num += 1
     menu_items.append(f'    echo "  {item_num}) 🚪 Exit"')
     exit_num = item_num
-    
-    case_items.append(f"""        {docs_num})
+
+    case_items.append(
+        f"""        {docs_num})
             echo "📚 Opening documentation..."
             if command -v open &> /dev/null; then
                 open "https://github.com/doronpers/feedback-loop"
@@ -184,26 +207,31 @@ def generate_mac_launcher(tools: List[Dict[str, str]], demos: List[str], superse
             echo "Press any key to return to menu..."
             read -n 1 -s
             echo ""
-            ;;""")
-    
-    case_items.append(f"""        {exit_num})
+            ;;"""
+    )
+
+    case_items.append(
+        f"""        {exit_num})
             echo "👋 Goodbye!"
             echo ""
             exit 0
-            ;;""")
-    
-    case_items.append(f"""        *)
+            ;;"""
+    )
+
+    case_items.append(
+        f"""        *)
             echo "❌ Invalid choice. Please enter a number between 1 and {exit_num}."
             echo ""
             echo "Press any key to continue..."
             read -n 1 -s
             echo ""
-            ;;""")
-    
+            ;;"""
+    )
+
     menu_text = "\n".join(menu_items)
     case_text = "\n".join(case_items)
-    
-    return f'''#!/bin/bash
+
+    return f"""#!/bin/bash
 ###############################################################################
 # Feedback Loop - Mac Desktop Launcher
 ###############################################################################
@@ -287,21 +315,23 @@ while true; do
 {case_text}
     esac
 done
-'''
+"""
 
 
-def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str], superset_script: str = None) -> str:
+def generate_windows_launcher(
+    tools: List[Dict[str, str]], demos: List[str], superset_script: str = None
+) -> str:
     """Generate Windows batch file content."""
-    
+
     # Calculate max tool name width for alignment
     max_name_width = max((len(tool["name"]) for tool in tools), default=10)
     max_name_width = max(max_name_width, 10)  # At least 10 characters
-    
+
     # Build menu items
     menu_items = []
     goto_checks = []
     sections = []
-    
+
     # Map of known tools to their emoji and description
     tool_map = {
         "Chat": ("💬", "Interactive AI-powered chat for coding help"),
@@ -309,18 +339,21 @@ def generate_windows_launcher(tools: List[Dict[str, str]], demos: List[str], sup
         "Dashboard": ("📊", "View metrics and pattern insights"),
         "Doctor": ("🩺", "Diagnose and fix common issues"),
     }
-    
+
     item_num = 1
     for tool in tools:
         tool_key = tool["name"].split()[0]
         emoji, desc = tool_map.get(tool_key, ("🔧", tool.get("description", "Tool")))
         label = tool_key.upper()
-        
-        menu_items.append(f'echo   {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}')
+
+        menu_items.append(
+            f'echo   {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}'
+        )
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto {label}')
-        
-        script_path = tool['script'].replace('/', '\\')
-        sections.append(f''':{label}
+
+        script_path = tool["script"].replace("/", "\\")
+        sections.append(
+            f""":{label}
 echo 🚀 Launching {tool['name']}...
 echo ════════════════════════════════════════════════════════════════════
 echo.
@@ -337,14 +370,18 @@ echo.
 echo Press any key to return to menu...
 pause >nul
 echo.
-goto START''')
+goto START"""
+        )
         item_num += 1
-    
+
     # Add demo
     if demos:
-        menu_items.append(f'echo   {item_num}) 🎬 Demo              - See patterns in action')
+        menu_items.append(
+            f"echo   {item_num}) 🎬 Demo              - See patterns in action"
+        )
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto DEMO')
-        sections.append(f''':DEMO
+        sections.append(
+            f""":DEMO
 echo 🚀 Running Demo...
 echo ════════════════════════════════════════════════════════════════════
 echo.
@@ -361,15 +398,19 @@ echo.
 echo Press any key to return to menu...
 pause >nul
 echo.
-goto START''')
+goto START"""
+        )
         item_num += 1
-    
+
     # Add Superset quickstart
     if superset_script:
-        script_path = superset_script.replace('/', '\\')
-        menu_items.append(f'echo   {item_num}) 📊 Superset Setup   - Set up analytics dashboards')
+        script_path = superset_script.replace("/", "\\")
+        menu_items.append(
+            f"echo   {item_num}) 📊 Superset Setup   - Set up analytics dashboards"
+        )
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto SUPERSET')
-        sections.append(f''':SUPERSET
+        sections.append(
+            f""":SUPERSET
 echo 🚀 Launching Superset Quickstart...
 echo ════════════════════════════════════════════════════════════════════
 echo.
@@ -386,33 +427,36 @@ echo.
 echo Press any key to return to menu...
 pause >nul
 echo.
-goto START''')
+goto START"""
+        )
         item_num += 1
-    
+
     # Add docs and exit
-    menu_items.append(f'echo   {item_num}) 📚 Open Documentation')
+    menu_items.append(f"echo   {item_num}) 📚 Open Documentation")
     goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto DOCS')
     docs_num = item_num
     item_num += 1
-    
-    menu_items.append(f'echo   {item_num}) 🚪 Exit')
+
+    menu_items.append(f"echo   {item_num}) 🚪 Exit")
     goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto EXIT')
     exit_num = item_num
-    
-    sections.append(f''':DOCS
+
+    sections.append(
+        f""":DOCS
 echo 📚 Opening documentation...
 start https://github.com/doronpers/feedback-loop
 echo.
 echo Press any key to return to menu...
 pause >nul
 echo.
-goto START''')
-    
+goto START"""
+    )
+
     menu_text = "\n".join(menu_items)
     goto_text = "\n".join(goto_checks)
     sections_text = "\n\n".join(sections)
-    
-    return f'''@echo off
+
+    return f"""@echo off
 REM ###########################################################################
 REM Feedback Loop - Windows Desktop Launcher
 REM ###########################################################################
@@ -517,67 +561,68 @@ echo 👋 Goodbye!
 echo.
 timeout /t 2 /nobreak >nul
 exit /b 0
-'''
+"""
 
 
 def main():
     parser = argparse.ArgumentParser(description="Update desktop launcher scripts")
-    parser.add_argument("--check-only", action="store_true",
-                        help="Only check if updates are needed")
+    parser.add_argument(
+        "--check-only", action="store_true", help="Only check if updates are needed"
+    )
     args = parser.parse_args()
-    
+
     # Find tools and demos
     tools = find_tools()
     demos = find_demos()
     superset_script = find_superset_quickstart()
-    
+
     print(f"Found {len(tools)} tools and {len(demos)} demos")
     for tool in tools:
         print(f"  - {tool['name']}: {tool['script']}")
-    
+
     if superset_script:
         print(f"Found Superset quickstart: {superset_script}")
-    
+
     if not tools:
         print("Warning: No tools found in bin/ directory", file=sys.stderr)
         return 1
-    
+
     # Generate launchers
     mac_content = generate_mac_launcher(tools, demos, superset_script)
     win_content = generate_windows_launcher(tools, demos, superset_script)
-    
+
     # Check if updates are needed
     mac_file = Path("launch-feedback-loop.command")
     win_file = Path("launch-feedback-loop.bat")
-    
+
     needs_update = False
-    
+
     if not mac_file.exists() or mac_file.read_text() != mac_content:
         print("Mac launcher needs update")
         needs_update = True
-    
+
     if not win_file.exists() or win_file.read_text() != win_content:
         print("Windows launcher needs update")
         needs_update = True
-    
+
     if not needs_update:
         print("✓ Launchers are up to date")
         return 0
-    
+
     if args.check_only:
         print("Updates needed (use without --check-only to apply)")
         return 1
-    
+
     # Write updated files
     print("Updating launchers...")
-    
+
     mac_file.write_text(mac_content)
     mac_file.chmod(0o755)
     print(f"✓ Updated {mac_file}")
-    
+
     win_file.write_text(win_content)
     print(f"✓ Updated {win_file}")
-    
+
     print("✓ Launcher scripts updated successfully")
     return 0
 

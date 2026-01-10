@@ -6,6 +6,7 @@ This module demonstrates antipatterns that should be avoided in production code.
 import json
 import os
 import tempfile
+
 import numpy as np
 
 
@@ -15,7 +16,7 @@ def process_data_bad(data_array):
     result = {
         "mean": np.mean(data_array),
         "std": np.std(data_array),
-        "max": np.max(data_array)
+        "max": np.max(data_array),
     }
     # This will fail with: TypeError: Object of type float64 is not JSON serializable
     return json.dumps(result)
@@ -43,7 +44,7 @@ def debug_processing_bad(data):
     # BAD: Using print() for debugging instead of proper logging
     print(f"Processing data: {data}")
     print(f"Data type: {type(data)}")
-    
+
     result = len(data) if hasattr(data, "__len__") else 0
     print(f"Result: {result}")
     return result
@@ -64,7 +65,7 @@ def categorize_by_name_bad(item_name):
 
 class DataProcessor:
     """Example class with bad patterns."""
-    
+
     def __init__(self, config):
         # BAD: Multiple antipatterns
         try:
@@ -74,17 +75,14 @@ class DataProcessor:
             print("Config error")
             self.host = "localhost"
             self.port = 5432
-    
+
     def process(self, items):
         # BAD: No bounds checking
         first = items[0]
         print(f"Processing first item: {first}")
-        
+
         # BAD: NumPy type not converted
-        metrics = {
-            "count": np.int64(len(items)),
-            "first_value": first
-        }
+        metrics = {"count": np.int64(len(items)), "first_value": first}
         return json.dumps(metrics)
 
 
@@ -92,11 +90,11 @@ def write_temp_file_bad(data):
     """Write data to a temporary file without proper handling."""
     # BAD: Using None for fd - this is a common AI mistake
     path = tempfile.mktemp()  # Deprecated and insecure
-    
+
     # BAD: No error handling, no cleanup on failure
-    with open(path, 'wb') as f:
+    with open(path, "wb") as f:
         f.write(data)
-    
+
     # BAD: File is not cleaned up - left on disk
     return path
 
@@ -105,11 +103,8 @@ def process_large_file_bad(file_path):
     """Process large files without proper memory management."""
     # BAD: Reading entire file into memory at once
     # This will crash for 800MB files
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         data = f.read()  # Could cause MemoryError
-    
+
     # BAD: No file size validation
-    return {
-        "size": len(data),
-        "path": file_path
-    }
+    return {"size": len(data), "path": file_path}

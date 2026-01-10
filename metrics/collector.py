@@ -21,33 +21,36 @@ logger = logging.getLogger(__name__)
 #   (?P<pattern>[^\s(#\n]+  -> first token of the pattern name (no spaces/(#))
 #   (?:\s+[^\s(#\n]+)*      -> optional additional tokens separated by spaces
 CHECKLIST_PATTERN = re.compile(
-    r"-\s*\[[ xX]\]\s*(?P<pattern>"
-    r"[^\s(#\n]+"
-    r"(?:\s+[^\s(#\n]+)*"
-    r")"
+    r"-\s*\[[ xX]\]\s*(?P<pattern>" r"[^\s(#\n]+" r"(?:\s+[^\s(#\n]+)*" r")"
 )
 
 
 class MetricsCollector:
     """Collects and stores various types of usage metrics."""
-    
+
     # Expected metric categories
-    METRIC_CATEGORIES = ["bugs", "test_failures", "code_reviews",
-                        "performance_metrics", "deployment_issues", "code_generation"]
-    
+    METRIC_CATEGORIES = [
+        "bugs",
+        "test_failures",
+        "code_reviews",
+        "performance_metrics",
+        "deployment_issues",
+        "code_generation",
+    ]
+
     # Allowed plan file roots for path traversal protection
     # - Current working directory: normal workspace files
     # - /tmp: standard Unix temp directory
     # - /private/var: macOS redirects /tmp to /private/var/folders/... internally
     ALLOWED_PLAN_ROOTS = [
-        Path.cwd().resolve(), 
+        Path.cwd().resolve(),
         Path("/tmp").resolve(),
-        Path("/private/var").resolve()
+        Path("/private/var").resolve(),
     ]
-    
+
     def __init__(self, memory_service=None):
         """Initialize the metrics collector.
-        
+
         Args:
             memory_service: Optional FeedbackLoopMemory instance for memory integration
         """
@@ -55,16 +58,16 @@ class MetricsCollector:
             category: [] for category in self.METRIC_CATEGORIES
         }
         self.memory_service = memory_service
-    
+
     @classmethod
     def get_metric_categories(cls) -> List[str]:
         """Get the list of metric categories.
-        
+
         Returns:
             List of metric category names
         """
         return cls.METRIC_CATEGORIES.copy()
-    
+
     def log_bug(
         self,
         pattern: str,
@@ -72,10 +75,10 @@ class MetricsCollector:
         code: str,
         file_path: str,
         line: int,
-        stack_trace: Optional[str] = None
+        stack_trace: Optional[str] = None,
     ) -> None:
         """Log a bug occurrence.
-        
+
         Args:
             pattern: Pattern type (e.g., "numpy_json_serialization")
             error: Error message
@@ -92,9 +95,9 @@ class MetricsCollector:
             "line": line,
             "stack_trace": stack_trace,
             "timestamp": datetime.now().isoformat(),
-            "count": 1
+            "count": 1,
         }
-        
+
         # Check if this bug already exists and increment count
         existing = self._find_similar_bug(bug_entry)
         if existing:
@@ -102,34 +105,36 @@ class MetricsCollector:
             existing["timestamp"] = bug_entry["timestamp"]
         else:
             self.data["bugs"].append(bug_entry)
-        
+
         logger.debug(f"Logged bug for pattern: {pattern}")
-    
+
     def _find_similar_bug(self, bug: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find a similar bug entry to merge counts.
-        
+
         Args:
             bug: Bug entry to find similar match for
-            
+
         Returns:
             Existing bug entry or None
         """
         for existing_bug in self.data["bugs"]:
-            if (existing_bug["pattern"] == bug["pattern"] and
-                existing_bug["error"] == bug["error"] and
-                existing_bug["file_path"] == bug["file_path"]):
+            if (
+                existing_bug["pattern"] == bug["pattern"]
+                and existing_bug["error"] == bug["error"]
+                and existing_bug["file_path"] == bug["file_path"]
+            ):
                 return existing_bug
         return None
-    
+
     def log_test_failure(
         self,
         test_name: str,
         failure_reason: str,
         pattern_violated: Optional[str] = None,
-        code_snippet: Optional[str] = None
+        code_snippet: Optional[str] = None,
     ) -> None:
         """Log a test failure.
-        
+
         Args:
             test_name: Name of the failed test
             failure_reason: Reason for failure
@@ -142,9 +147,9 @@ class MetricsCollector:
             "pattern_violated": pattern_violated,
             "code_snippet": code_snippet,
             "timestamp": datetime.now().isoformat(),
-            "count": 1
+            "count": 1,
         }
-        
+
         # Check for existing failure
         existing = self._find_similar_test_failure(failure_entry)
         if existing:
@@ -152,24 +157,28 @@ class MetricsCollector:
             existing["timestamp"] = failure_entry["timestamp"]
         else:
             self.data["test_failures"].append(failure_entry)
-        
+
         logger.debug(f"Logged test failure: {test_name}")
-    
-    def _find_similar_test_failure(self, failure: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+
+    def _find_similar_test_failure(
+        self, failure: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """Find a similar test failure entry.
-        
+
         Args:
             failure: Test failure entry to find similar match for
-            
+
         Returns:
             Existing test failure entry or None
         """
         for existing_failure in self.data["test_failures"]:
-            if (existing_failure["test_name"] == failure["test_name"] and
-                existing_failure["failure_reason"] == failure["failure_reason"]):
+            if (
+                existing_failure["test_name"] == failure["test_name"]
+                and existing_failure["failure_reason"] == failure["failure_reason"]
+            ):
                 return existing_failure
         return None
-    
+
     def log_code_review_issue(
         self,
         issue_type: str,
@@ -177,7 +186,7 @@ class MetricsCollector:
         severity: str,
         file_path: str,
         line: Optional[int] = None,
-        suggestion: Optional[str] = None
+        suggestion: Optional[str] = None,
     ) -> None:
         """Log a code review issue.
 
@@ -203,7 +212,9 @@ class MetricsCollector:
         # Validate severity (defensive: warn and correct instead of raising)
         valid_severities = ["low", "medium", "high", "critical"]
         if severity not in valid_severities:
-            logger.warning(f"Invalid severity level: {severity}. Must be one of {valid_severities}. Defaulting to 'medium'")
+            logger.warning(
+                f"Invalid severity level: {severity}. Must be one of {valid_severities}. Defaulting to 'medium'"
+            )
             severity = "medium"
 
         review_entry = {
@@ -213,19 +224,15 @@ class MetricsCollector:
             "file_path": file_path,
             "line": line,
             "suggestion": suggestion,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         self.data["code_reviews"].append(review_entry)
         logger.debug(f"Logged code review issue: {issue_type}")
-    
-    def log_performance_metric(
-        self,
-        metric_type: str,
-        details: Dict[str, Any]
-    ) -> None:
+
+    def log_performance_metric(self, metric_type: str, details: Dict[str, Any]) -> None:
         """Log a performance metric.
-        
+
         Args:
             metric_type: Type of metric (e.g., "memory_error", "execution_time")
             details: Details about the metric (varies by type)
@@ -233,22 +240,22 @@ class MetricsCollector:
         metric_entry = {
             "metric_type": metric_type,
             "details": details,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         self.data["performance_metrics"].append(metric_entry)
         logger.debug(f"Logged performance metric: {metric_type}")
-    
+
     def log_deployment_issue(
         self,
         issue_type: str,
         pattern: str,
         environment: str,
         root_cause: Optional[str] = None,
-        resolution_time_minutes: Optional[int] = None
+        resolution_time_minutes: Optional[int] = None,
     ) -> None:
         """Log a deployment issue.
-        
+
         Args:
             issue_type: Type of deployment issue
             pattern: Pattern related to the issue
@@ -262,9 +269,9 @@ class MetricsCollector:
             "environment": environment,
             "root_cause": root_cause,
             "resolution_time_minutes": resolution_time_minutes,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         self.data["deployment_issues"].append(deployment_entry)
         logger.debug(f"Logged deployment issue: {issue_type}")
 
@@ -276,7 +283,7 @@ class MetricsCollector:
         success: bool,
         code_length: Optional[int] = None,
         compilation_error: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Log a code generation event.
 
@@ -297,16 +304,16 @@ class MetricsCollector:
             "code_length": code_length,
             "compilation_error": compilation_error,
             "metadata": metadata or {},
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
         self.data["code_generation"].append(generation_entry)
-        logger.debug(f"Logged code generation: {len(patterns_applied)} patterns applied")
+        logger.debug(
+            f"Logged code generation: {len(patterns_applied)} patterns applied"
+        )
 
     def log_from_plan_file(
-        self,
-        plan_file: str,
-        section_heading: str = "Patterns to Apply"
+        self, plan_file: str, section_heading: str = "Patterns to Apply"
     ) -> List[str]:
         """Parse a Planning-with-Files style plan and log its pattern checklist.
 
@@ -331,8 +338,12 @@ class MetricsCollector:
 
         plan_path = plan_path.resolve()
 
-        if not any(self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS):
-            raise ValueError(f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}")
+        if not any(
+            self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS
+        ):
+            raise ValueError(
+                f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}"
+            )
 
         if not plan_path.exists():
             raise FileNotFoundError(f"Plan file not found: {plan_path}")
@@ -348,8 +359,8 @@ class MetricsCollector:
             metadata={
                 "source": "plan_file",
                 "section_heading": section_heading,
-                "plan_path": str(plan_path)
-            }
+                "plan_path": str(plan_path),
+            },
         )
 
         return patterns
@@ -363,7 +374,9 @@ class MetricsCollector:
         except ValueError:
             return False
 
-    def _extract_patterns_from_plan(self, content: str, section_heading: str) -> List[str]:
+    def _extract_patterns_from_plan(
+        self, content: str, section_heading: str
+    ) -> List[str]:
         """Extract patterns from a Planning-with-Files style checklist section."""
         patterns: List[str] = []
         in_section = False
@@ -400,20 +413,20 @@ class MetricsCollector:
 
     def export_json(self) -> str:
         """Export all collected metrics as JSON.
-        
+
         Returns:
             JSON string of all metrics
         """
         return json.dumps(self.data, indent=2)
-    
+
     def export_dict(self) -> Dict[str, List[Dict[str, Any]]]:
         """Export all collected metrics as dictionary.
-        
+
         Returns:
             Dictionary of all metrics
         """
         return self.data.copy()
-    
+
     def get_summary(self) -> Dict[str, int]:
         """Get a summary count of all metrics.
 
@@ -427,52 +440,54 @@ class MetricsCollector:
             "performance_metrics": len(self.data["performance_metrics"]),
             "deployment_issues": len(self.data["deployment_issues"]),
             "code_generation": len(self.data["code_generation"]),
-            "total": sum(len(v) for v in self.data.values())
+            "total": sum(len(v) for v in self.data.values()),
         }
-    
+
     def clear(self) -> None:
         """Clear all collected metrics."""
         self.data = {category: [] for category in self.METRIC_CATEGORIES}
         logger.debug("Cleared all metrics")
-    
+
     async def store_session_to_memory(self, session_id: Optional[str] = None) -> bool:
         """Store current session metrics to MemU memory.
-        
+
         Args:
             session_id: Optional session identifier (auto-generated if not provided)
-        
+
         Returns:
             True if stored successfully, False otherwise
         """
         if not self.memory_service:
             logger.debug("Memory service not available")
             return False
-        
+
         try:
             import uuid
-            
+
             session_data = {
                 "session_id": session_id or str(uuid.uuid4()),
                 "timestamp": datetime.now().isoformat(),
                 "patterns_applied": self._extract_patterns_from_generation(),
                 "bugs": self.data.get("bugs", []),
                 "test_failures": self.data.get("test_failures", []),
-                "metrics": self.get_summary()
+                "metrics": self.get_summary(),
             }
-            
-            result = await self.memory_service.memorize_development_session(session_data)
+
+            result = await self.memory_service.memorize_development_session(
+                session_data
+            )
             if result:
                 logger.debug(f"Stored session to memory: {session_data['session_id']}")
                 return True
             return False
-            
+
         except Exception as e:
             logger.error(f"Failed to store session to memory: {e}")
             return False
-    
+
     def _extract_patterns_from_generation(self) -> List[str]:
         """Extract pattern names from code generation events.
-        
+
         Returns:
             List of pattern names
         """
@@ -483,7 +498,7 @@ class MetricsCollector:
 
     def load_from_json(self, json_str: str) -> None:
         """Load metrics from a JSON string and normalize their structure.
-        
+
         This method parses the given JSON, normalizes the payload to ensure
         that all expected metric categories are present, and updates the
         internal metrics state.
@@ -523,7 +538,9 @@ class MetricsCollector:
         self.data = normalized_data
         logger.info("Loaded metrics from JSON")
 
-    def _normalize_loaded_data(self, loaded_data: Any) -> Dict[str, List[Dict[str, Any]]]:
+    def _normalize_loaded_data(
+        self, loaded_data: Any
+    ) -> Dict[str, List[Dict[str, Any]]]:
         """Normalize loaded JSON data to ensure expected structure.
 
         Args:
@@ -536,12 +553,16 @@ class MetricsCollector:
             ValueError: If the payload cannot be normalized into the expected structure.
         """
         if not isinstance(loaded_data, dict):
-            raise ValueError("Metrics payload must be a JSON object containing metric categories.")
+            raise ValueError(
+                "Metrics payload must be a JSON object containing metric categories."
+            )
 
         normalized: Dict[str, List[Dict[str, Any]]] = {}
         for category in self.METRIC_CATEGORIES:
             if category not in loaded_data or loaded_data[category] is None:
-                logger.debug(f"Category '{category}' missing or null in payload; defaulting to empty list")
+                logger.debug(
+                    f"Category '{category}' missing or null in payload; defaulting to empty list"
+                )
                 normalized[category] = []
                 continue
 
@@ -558,7 +579,9 @@ class MetricsCollector:
                 )
 
             if not all(isinstance(item, dict) for item in value):
-                raise ValueError(f"All items in category '{category}' must be dictionaries.")
+                raise ValueError(
+                    f"All items in category '{category}' must be dictionaries."
+                )
 
             normalized[category] = value
 

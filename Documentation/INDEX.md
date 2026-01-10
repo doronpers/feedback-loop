@@ -19,9 +19,10 @@ A concise map of the documentation set. Start with the shortest path to value, t
 
 - **[Metrics API Reference](../metrics/README.md)**
 - **[Implementation Details](IMPLEMENTATION_DETAILS.md)**
-- **[Results & Testing](../RESULTS.md)**
+- **[Results & Testing](Status/RESULTS.md)**
+- **[Security](Status/SECURITY.md)**
 - **[Changelog](../CHANGELOG.md)**
-- **[Contributing](CONTRIBUTING.md)**
+- **[Contributing](../CONTRIBUTING.md)**
 
 ## Archive
 

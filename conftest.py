@@ -27,13 +27,13 @@ def pytest_addoption(parser):
             "--metrics-output",
             action="store",
             default=None,
-            help="Output file for collected metrics"
+            help="Output file for collected metrics",
         )
         parser.addoption(
             "--enable-metrics",
             action="store_true",
             default=False,
-            help="Enable automatic metrics collection"
+            help="Enable automatic metrics collection",
         )
     except ValueError:
         # Options already added
@@ -61,17 +61,21 @@ class MetricsPlugin:
         if not self.enable_metrics:
             try:
                 from metrics.config_manager import ConfigManager
+
                 config_manager = ConfigManager.get_instance()
                 if config_manager.should_auto_enable_metrics():
                     self.enable_metrics = True
-                    logger.info("Auto-enabled metrics collection (config or history detected)")
+                    logger.info(
+                        "Auto-enabled metrics collection (config or history detected)"
+                    )
             except ImportError:
                 # Config manager not available, check environment variable
                 import os
+
                 if os.getenv("FEEDBACK_LOOP_AUTO_METRICS") == "1":
                     self.enable_metrics = True
-                # Also check if metrics_data.json exists
-                elif Path("metrics_data.json").exists():
+                # Also check if data/metrics_data.json exists
+                elif Path("data/metrics_data.json").exists():
                     self.enable_metrics = True
                 # Check for .feedback-loop/auto-metrics marker
                 elif Path(".feedback-loop/auto-metrics").exists():
@@ -81,21 +85,26 @@ class MetricsPlugin:
         if self.enable_metrics and not self.metrics_output:
             try:
                 from metrics.config_manager import ConfigManager
+
                 config_manager = ConfigManager.get_instance()
-                self.metrics_output = config_manager.get("auto_metrics.output_file", "metrics_data.json")
+                self.metrics_output = config_manager.get(
+                    "auto_metrics.output_file", "data/metrics_data.json"
+                )
             except ImportError:
-                self.metrics_output = "metrics_data.json"
+                self.metrics_output = "data/metrics_data.json"
 
         self.collector = None
         if self.enable_metrics:
             try:
                 from metrics.collector import MetricsCollector
+
                 self.collector = MetricsCollector()
 
                 # Load existing metrics if output file exists
                 if self.metrics_output and Path(self.metrics_output).exists():
-                    with open(self.metrics_output, 'r') as f:
+                    with open(self.metrics_output, "r") as f:
                         import json
+
                         self.collector.data = json.load(f)
 
                 logger.info("Metrics collection enabled")
@@ -159,7 +168,7 @@ class MetricsPlugin:
                 test_name=test_name,
                 failure_reason=failure_reason[:500],  # Limit length
                 pattern_violated=pattern_violated,
-                code_snippet=code_snippet
+                code_snippet=code_snippet,
             )
             logger.debug(f"Logged test failure: {test_name}")
         except Exception as e:
@@ -179,7 +188,11 @@ class MetricsPlugin:
 
         # Pattern detection heuristics
         if "typeerror" in failure_lower and "json" in failure_lower:
-            if "float64" in failure_lower or "int64" in failure_lower or "numpy" in failure_lower:
+            if (
+                "float64" in failure_lower
+                or "int64" in failure_lower
+                or "numpy" in failure_lower
+            ):
                 return "numpy_json_serialization"
 
         if "indexerror" in failure_lower or "list index out of range" in failure_lower:
@@ -193,18 +206,26 @@ class MetricsPlugin:
         if "print" in failure_lower and "logger" in failure_lower:
             return "logger_debug"
 
-        if "file" in failure_lower and ("not closed" in failure_lower or "leak" in failure_lower):
+        if "file" in failure_lower and (
+            "not closed" in failure_lower or "leak" in failure_lower
+        ):
             return "temp_file_handling"
 
         if "memory" in failure_lower or "memoryerror" in failure_lower:
             return "large_file_processing"
 
         # Try to extract pattern from test docstring
-        if hasattr(report, 'location'):
+        if hasattr(report, "location"):
             # Pattern might be in test name
             test_name = str(report.location[2]) if len(report.location) > 2 else ""
-            for pattern in ["numpy_json", "bounds_checking", "specific_exceptions",
-                           "logger_debug", "temp_file", "large_file"]:
+            for pattern in [
+                "numpy_json",
+                "bounds_checking",
+                "specific_exceptions",
+                "logger_debug",
+                "temp_file",
+                "large_file",
+            ]:
                 if pattern in test_name.lower():
                     return pattern.replace("_", "_")
 
@@ -222,12 +243,16 @@ class MetricsPlugin:
         """
         try:
             # Try to extract from traceback
-            if hasattr(report, 'longreprtext'):
-                lines = report.longreprtext.split('\n')
+            if hasattr(report, "longreprtext"):
+                lines = report.longreprtext.split("\n")
                 # Find lines with code (usually indented)
-                code_lines = [line for line in lines if line.startswith('    ') or line.startswith('>   ')]
+                code_lines = [
+                    line
+                    for line in lines
+                    if line.startswith("    ") or line.startswith(">   ")
+                ]
                 if code_lines:
-                    return '\n'.join(code_lines[:10])  # Limit to 10 lines
+                    return "\n".join(code_lines[:10])  # Limit to 10 lines
         except Exception:
             pass
 
@@ -247,7 +272,8 @@ class MetricsPlugin:
         if self.metrics_output:
             try:
                 import json
-                with open(self.metrics_output, 'w') as f:
+
+                with open(self.metrics_output, "w") as f:
                     f.write(self.collector.export_json())
 
                 summary = self.collector.get_summary()
@@ -256,20 +282,23 @@ class MetricsPlugin:
 
                 # Automatic Analysis (can be skipped via environment variable)
                 if os.getenv("FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS"):
-                    logger.info("Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)")
+                    logger.info(
+                        "Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)"
+                    )
                     if not self._is_quiet():
                         print("\n✓ Metrics saved. Auto-analysis skipped.")
                     return
 
                 # Check if auto-analysis should run based on config
                 # Cache ConfigManager instance to avoid redundant singleton lookups
-                failure_count = summary.get('test_failures', 0)
+                failure_count = summary.get("test_failures", 0)
                 should_analyze = True
                 is_quiet = False
                 config_manager = None
-                
+
                 try:
                     from metrics.config_manager import ConfigManager
+
                     config_manager = ConfigManager.get_instance()
                     should_analyze = config_manager.should_auto_analyze(failure_count)
                     is_quiet = config_manager.is_quiet()
@@ -279,24 +308,29 @@ class MetricsPlugin:
 
                 if not should_analyze:
                     if not is_quiet:
-                        print(f"\n✓ Metrics saved ({failure_count} failures, below threshold)")
+                        print(
+                            f"\n✓ Metrics saved ({failure_count} failures, below threshold)"
+                        )
                     return
 
                 try:
                     from metrics.integrate import MetricsIntegration
+
                     if not is_quiet:
                         print("\n🔄 Feedback Loop: Analyzing results...")
                     integration = MetricsIntegration(
                         metrics_file=self.metrics_output,
-                        patterns_file="patterns.json"
+                        patterns_file="data/patterns.json",
                     )
                     integration.analyze_metrics(update_patterns=True)
-                    
+
                     # Show dashboard if configured (reuse cached config_manager)
                     if config_manager:
                         try:
                             if config_manager.should_show_dashboard():
-                                from bin.fl_dashboard import main as dashboard_main
+                                from bin.fl_dashboard import \
+                                    main as dashboard_main
+
                                 dashboard_main()
                         except Exception:
                             pass
@@ -306,10 +340,10 @@ class MetricsPlugin:
                         print(f"\n❌ Analysis failed: {e}")
             except Exception as e:
                 logger.error(f"Failed to save metrics: {e}")
-    
+
     def _is_quiet(self, config_manager=None) -> bool:
         """Check if output should be quiet.
-        
+
         Args:
             config_manager: Optional cached ConfigManager instance
         """
@@ -319,9 +353,10 @@ class MetricsPlugin:
             except Exception as e:
                 logger.error(f"Failed to check quiet mode: {e}")
                 return False
-        
+
         try:
             from metrics.config_manager import ConfigManager
+
             return ConfigManager.get_instance().is_quiet()
         except ImportError:
             return False

@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from metrics.llm_providers import get_llm_manager, LLMManager
+from metrics.llm_providers import LLMManager, get_llm_manager
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ValidationResult:
     """Result of code validation."""
+
     is_valid: bool
     syntax_valid: bool
     compilation_error: Optional[str]
@@ -31,6 +32,7 @@ class ValidationResult:
 @dataclass
 class GenerationResult:
     """Result of code generation."""
+
     code: str
     patterns_applied: List[Dict[str, Any]]
     patterns_suggested: List[Dict[str, Any]]
@@ -49,7 +51,7 @@ class PatternAwareGenerator:
         pattern_library_version: str = "1.0.0",
         use_llm: bool = True,
         api_key: Optional[str] = None,
-        llm_provider: Optional[str] = None
+        llm_provider: Optional[str] = None,
     ):
         """Initialize the pattern-aware code generator.
 
@@ -71,24 +73,28 @@ class PatternAwareGenerator:
                 self.llm_manager = get_llm_manager()
                 if llm_provider:
                     self.llm_manager.preferred_provider = llm_provider
-                
+
                 if self.llm_manager.is_any_available():
                     providers = self.llm_manager.list_available_providers()
                     logger.info(f"LLM manager initialized with providers: {providers}")
                 else:
-                    logger.warning("No LLM providers available, falling back to template mode")
+                    logger.warning(
+                        "No LLM providers available, falling back to template mode"
+                    )
                     self.use_llm = False
             except Exception as e:
-                logger.warning(f"Could not initialize LLM manager: {e}, falling back to template mode")
+                logger.warning(
+                    f"Could not initialize LLM manager: {e}, falling back to template mode"
+                )
                 self.use_llm = False
-    
+
     def generate(
         self,
         prompt: str,
         metrics_context: Optional[Dict[str, Any]] = None,
         apply_patterns: bool = True,
         min_confidence: float = 0.8,
-        validate: bool = True
+        validate: bool = True,
     ) -> GenerationResult:
         """Generate code with pattern awareness.
 
@@ -110,24 +116,17 @@ class PatternAwareGenerator:
 
         # Apply patterns by severity
         patterns_to_apply, patterns_to_suggest = self._prioritize_patterns(
-            matched_patterns,
-            apply_patterns,
-            min_confidence
+            matched_patterns, apply_patterns, min_confidence
         )
 
         # Generate code with pattern annotations
         if self.use_llm and self.llm_manager:
             code = self._generate_code_with_llm(
-                prompt,
-                patterns_to_apply,
-                patterns_to_suggest,
-                metrics_context
+                prompt, patterns_to_apply, patterns_to_suggest, metrics_context
             )
         else:
             code = self._generate_code_with_templates(
-                prompt,
-                patterns_to_apply,
-                patterns_to_suggest
+                prompt, patterns_to_apply, patterns_to_suggest
             )
 
         # Validate code if requested
@@ -149,7 +148,7 @@ class PatternAwareGenerator:
             "timestamp": datetime.now().isoformat(),
             "confidence": float(confidence),
             "context_indicators": context_indicators,
-            "use_llm": self.use_llm
+            "use_llm": self.use_llm,
         }
 
         # Generate report
@@ -158,7 +157,7 @@ class PatternAwareGenerator:
             patterns_to_suggest,
             context_indicators,
             confidence,
-            validation_result
+            validation_result,
         )
 
         logger.debug(f"Generated code with {len(patterns_to_apply)} patterns applied")
@@ -170,50 +169,67 @@ class PatternAwareGenerator:
             metadata=metadata,
             report=report,
             confidence=confidence,
-            validation=validation_result
+            validation=validation_result,
         )
-    
+
     def _analyze_prompt(self, prompt: str) -> Dict[str, bool]:
         """Analyze prompt for context indicators.
-        
+
         Args:
             prompt: User prompt
-            
+
         Returns:
             Dictionary of context indicators
         """
         prompt_lower = prompt.lower()
-        
+
         indicators = {
-            "numpy": "numpy" in prompt_lower or "np." in prompt_lower or "array" in prompt_lower,
-            "json": "json" in prompt_lower or "api" in prompt_lower or "serialize" in prompt_lower,
-            "list_access": "list" in prompt_lower or "array" in prompt_lower or "first" in prompt_lower,
-            "exception": "exception" in prompt_lower or "error" in prompt_lower or "try" in prompt_lower,
-            "logging": "log" in prompt_lower or "debug" in prompt_lower or "print" in prompt_lower,
-            "file": "file" in prompt_lower or "temp" in prompt_lower or "upload" in prompt_lower,
-            "large_file": "large" in prompt_lower or "audio" in prompt_lower or "upload" in prompt_lower,
-            "categorization": "categorize" in prompt_lower or "classify" in prompt_lower,
-            "fastapi": "fastapi" in prompt_lower or "endpoint" in prompt_lower or "api" in prompt_lower
+            "numpy": "numpy" in prompt_lower
+            or "np." in prompt_lower
+            or "array" in prompt_lower,
+            "json": "json" in prompt_lower
+            or "api" in prompt_lower
+            or "serialize" in prompt_lower,
+            "list_access": "list" in prompt_lower
+            or "array" in prompt_lower
+            or "first" in prompt_lower,
+            "exception": "exception" in prompt_lower
+            or "error" in prompt_lower
+            or "try" in prompt_lower,
+            "logging": "log" in prompt_lower
+            or "debug" in prompt_lower
+            or "print" in prompt_lower,
+            "file": "file" in prompt_lower
+            or "temp" in prompt_lower
+            or "upload" in prompt_lower,
+            "large_file": "large" in prompt_lower
+            or "audio" in prompt_lower
+            or "upload" in prompt_lower,
+            "categorization": "categorize" in prompt_lower
+            or "classify" in prompt_lower,
+            "fastapi": "fastapi" in prompt_lower
+            or "endpoint" in prompt_lower
+            or "api" in prompt_lower,
         }
-        
+
         return indicators
-    
+
     def _match_patterns(
         self,
         context_indicators: Dict[str, bool],
-        metrics_context: Optional[Dict[str, Any]]
+        metrics_context: Optional[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         """Match patterns based on context.
-        
+
         Args:
             context_indicators: Context indicators from prompt analysis
             metrics_context: Metrics context from analyzer
-            
+
         Returns:
             List of matched patterns with confidence scores
         """
         matched = []
-        
+
         # Pattern matching rules
         pattern_rules = {
             "numpy_json_serialization": ["numpy", "json"],
@@ -222,92 +238,96 @@ class PatternAwareGenerator:
             "logger_debug": ["logging"],
             "metadata_categorization": ["categorization"],
             "temp_file_handling": ["file"],
-            "large_file_processing": ["large_file", "file"]
+            "large_file_processing": ["large_file", "file"],
         }
-        
+
         # Check each pattern
         for pattern in self.pattern_library:
             pattern_name = pattern.get("name", "")
             rules = pattern_rules.get(pattern_name, [])
-            
+
             # Calculate match score
             match_score = 0.0
             if rules:
-                matches = sum(1 for rule in rules if context_indicators.get(rule, False))
+                matches = sum(
+                    1 for rule in rules if context_indicators.get(rule, False)
+                )
                 match_score = matches / len(rules)
-            
+
             # Boost score if pattern appears in metrics context
             if metrics_context:
                 high_freq = metrics_context.get("high_frequency_patterns", [])
                 critical = metrics_context.get("critical_patterns", [])
-                
+
                 if pattern_name in critical:
                     match_score = min(1.0, match_score + 0.3)
                 elif pattern_name in high_freq:
                     match_score = min(1.0, match_score + 0.2)
-            
+
             if match_score > 0:
-                matched.append({
-                    "pattern": pattern,
-                    "confidence": float(match_score),
-                    "severity": pattern.get("severity", "medium")
-                })
-        
+                matched.append(
+                    {
+                        "pattern": pattern,
+                        "confidence": float(match_score),
+                        "severity": pattern.get("severity", "medium"),
+                    }
+                )
+
         # Sort by confidence descending
         matched.sort(key=lambda x: x["confidence"], reverse=True)
-        
+
         return matched
-    
+
     def _prioritize_patterns(
         self,
         matched_patterns: List[Dict[str, Any]],
         apply_patterns: bool,
-        min_confidence: float
+        min_confidence: float,
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Prioritize patterns by severity and confidence.
-        
+
         Args:
             matched_patterns: Matched patterns with confidence
             apply_patterns: Whether to apply patterns
             min_confidence: Minimum confidence to apply
-            
+
         Returns:
             Tuple of (patterns_to_apply, patterns_to_suggest)
         """
         to_apply = []
         to_suggest = []
-        
+
         if not apply_patterns:
             return [], matched_patterns
-        
+
         severity_rules = {
             "critical": True,  # Always apply
-            "high": True,      # Apply by default
-            "medium": True,    # Apply with notice
-            "low": False       # Suggest only
+            "high": True,  # Apply by default
+            "medium": True,  # Apply with notice
+            "low": False,  # Suggest only
         }
-        
+
         for match in matched_patterns:
             pattern = match["pattern"]
             confidence = match["confidence"]
             severity = match["severity"]
-            
+
             should_apply = severity_rules.get(severity, False)
             meets_confidence = confidence >= min_confidence
-            
+
             if should_apply and meets_confidence:
                 to_apply.append(match)
             else:
                 to_suggest.append(match)
-        
+
         return to_apply, to_suggest
-    
+
     def _generate_code_with_llm(
         self,
         prompt: str,
         patterns_to_apply: List[Dict[str, Any]],
         patterns_to_suggest: List[Dict[str, Any]],
-        metrics_context: Optional[Dict[str, Any]] = None
+        metrics_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Generate code using LLM with pattern context.
 
@@ -322,18 +342,13 @@ class PatternAwareGenerator:
         """
         # Build enriched prompt with pattern context
         enriched_prompt = self._build_enriched_prompt(
-            prompt,
-            patterns_to_apply,
-            patterns_to_suggest,
-            metrics_context
+            prompt, patterns_to_apply, patterns_to_suggest, metrics_context
         )
 
         try:
             # Use LLM manager for generation
             response = self.llm_manager.generate(
-                enriched_prompt,
-                max_tokens=4096,
-                fallback=True
+                enriched_prompt, max_tokens=4096, fallback=True
             )
 
             # Extract code from response
@@ -344,14 +359,16 @@ class PatternAwareGenerator:
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
             # Fall back to template mode
-            return self._generate_code_with_templates(prompt, patterns_to_apply, patterns_to_suggest)
+            return self._generate_code_with_templates(
+                prompt, patterns_to_apply, patterns_to_suggest
+            )
 
     def _build_enriched_prompt(
         self,
         prompt: str,
         patterns_to_apply: List[Dict[str, Any]],
         patterns_to_suggest: List[Dict[str, Any]],
-        metrics_context: Optional[Dict[str, Any]] = None
+        metrics_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Build enriched prompt with pattern context.
 
@@ -443,69 +460,69 @@ class PatternAwareGenerator:
         self,
         prompt: str,
         patterns_to_apply: List[Dict[str, Any]],
-        patterns_to_suggest: List[Dict[str, Any]]
+        patterns_to_suggest: List[Dict[str, Any]],
     ) -> str:
         """Generate code with pattern annotations.
-        
+
         Args:
             prompt: Original prompt
             patterns_to_apply: Patterns to apply
             patterns_to_suggest: Patterns to suggest
-            
+
         Returns:
             Generated code with annotations
         """
         # Start with header comment
         code_lines = [
             '"""',
-            f'Generated code for: {prompt}',
-            '',
-            'Pattern-aware code generation applied the following patterns:',
+            f"Generated code for: {prompt}",
+            "",
+            "Pattern-aware code generation applied the following patterns:",
         ]
-        
+
         # List applied patterns
         if patterns_to_apply:
             for match in patterns_to_apply:
                 pattern_name = match["pattern"]["name"]
                 confidence = match["confidence"]
-                code_lines.append(f'  - {pattern_name} (confidence: {confidence:.2f})')
+                code_lines.append(f"  - {pattern_name} (confidence: {confidence:.2f})")
         else:
-            code_lines.append('  - None')
-        
+            code_lines.append("  - None")
+
         code_lines.append('"""')
-        code_lines.append('')
-        
+        code_lines.append("")
+
         # Generate imports based on patterns
         imports = self._generate_imports(patterns_to_apply)
         code_lines.extend(imports)
-        code_lines.append('')
-        
+        code_lines.append("")
+
         # Generate main code based on prompt and patterns
         main_code = self._generate_main_code(prompt, patterns_to_apply)
         code_lines.extend(main_code)
-        
+
         # Add suggestions as comments
         if patterns_to_suggest:
-            code_lines.append('')
-            code_lines.append('# SUGGESTED PATTERNS (not auto-applied):')
+            code_lines.append("")
+            code_lines.append("# SUGGESTED PATTERNS (not auto-applied):")
             for match in patterns_to_suggest:
                 pattern_name = match["pattern"]["name"]
                 description = match["pattern"]["description"]
-                code_lines.append(f'# - {pattern_name}: {description[:80]}...')
-        
-        return '\n'.join(code_lines)
-    
+                code_lines.append(f"# - {pattern_name}: {description[:80]}...")
+
+        return "\n".join(code_lines)
+
     def _generate_imports(self, patterns_to_apply: List[Dict[str, Any]]) -> List[str]:
         """Generate import statements based on patterns.
-        
+
         Args:
             patterns_to_apply: Patterns being applied
-            
+
         Returns:
             List of import statement strings
         """
         imports = set()
-        
+
         pattern_imports = {
             "numpy_json_serialization": ["import json", "import numpy as np"],
             "bounds_checking": ["import logging"],
@@ -514,43 +531,42 @@ class PatternAwareGenerator:
             "temp_file_handling": ["import os", "import tempfile", "import logging"],
             "large_file_processing": ["import os", "import logging"],
         }
-        
+
         for match in patterns_to_apply:
             pattern_name = match["pattern"]["name"]
             pattern_imports_list = pattern_imports.get(pattern_name, [])
             imports.update(pattern_imports_list)
-        
+
         return sorted(list(imports))
-    
+
     def _generate_main_code(
-        self,
-        prompt: str,
-        patterns_to_apply: List[Dict[str, Any]]
+        self, prompt: str, patterns_to_apply: List[Dict[str, Any]]
     ) -> List[str]:
         """Generate main code based on prompt and patterns.
-        
+
         Args:
             prompt: Original prompt
             patterns_to_apply: Patterns being applied
-            
+
         Returns:
             List of code lines
         """
         code_lines = []
-        
+
         # Check if logger pattern is applied
         uses_logging = any(
-            p["pattern"]["name"] in ["logger_debug", "bounds_checking", "specific_exceptions"]
+            p["pattern"]["name"]
+            in ["logger_debug", "bounds_checking", "specific_exceptions"]
             for p in patterns_to_apply
         )
-        
+
         if uses_logging:
             code_lines.append("logger = logging.getLogger(__name__)")
             code_lines.append("")
-        
+
         # Generate function based on prompt keywords
         prompt_lower = prompt.lower()
-        
+
         if "numpy" in prompt_lower and "json" in prompt_lower:
             code_lines.extend(self._generate_numpy_json_function())
         elif "list" in prompt_lower or "first" in prompt_lower:
@@ -559,16 +575,22 @@ class PatternAwareGenerator:
             code_lines.extend(self._generate_file_processing_function())
         else:
             # Generic function template
-            code_lines.extend([
-                "def process_data(data):",
-                "    \"\"\"Process data according to requirements.\"\"\"",
-                "    # Pattern-aware template: Customize the logic below for your specific use case",
-                "    logger.debug(f\"Processing data: {data}\")" if uses_logging else "    pass",
-                "    return data"
-            ])
-        
+            code_lines.extend(
+                [
+                    "def process_data(data):",
+                    '    """Process data according to requirements."""',
+                    "    # Pattern-aware template: Customize the logic below for your specific use case",
+                    (
+                        '    logger.debug(f"Processing data: {data}")'
+                        if uses_logging
+                        else "    pass"
+                    ),
+                    "    return data",
+                ]
+            )
+
         return code_lines
-    
+
     def _generate_numpy_json_function(self) -> List[str]:
         """Generate NumPy to JSON function with pattern."""
         return [
@@ -576,13 +598,13 @@ class PatternAwareGenerator:
             '    """Process NumPy array and return JSON-serializable result."""',
             "    # PATTERN: numpy_json_serialization - Convert before JSON serialization",
             "    result = {",
-            "        \"mean\": float(np.mean(data_array)),",
-            "        \"std\": float(np.std(data_array)),",
-            "        \"max\": float(np.max(data_array))",
+            '        "mean": float(np.mean(data_array)),',
+            '        "std": float(np.std(data_array)),',
+            '        "max": float(np.max(data_array))',
             "    }",
-            "    return json.dumps(result)"
+            "    return json.dumps(result)",
         ]
-    
+
     def _generate_list_access_function(self) -> List[str]:
         """Generate list access function with bounds checking."""
         return [
@@ -592,9 +614,9 @@ class PatternAwareGenerator:
             "    if not items:",
             '        logger.debug("List is empty, returning None")',
             "        return None",
-            "    return items[0]"
+            "    return items[0]",
         ]
-    
+
     def _generate_file_processing_function(self) -> List[str]:
         """Generate file processing function with pattern."""
         return [
@@ -614,9 +636,9 @@ class PatternAwareGenerator:
             "        }",
             "    except (FileNotFoundError, IOError, OSError) as e:",
             '        logger.debug(f"Error processing file: {e}")',
-            "        return None"
+            "        return None",
         ]
-    
+
     def _validate_code(self, code: str) -> ValidationResult:
         """Validate generated code.
 
@@ -643,7 +665,9 @@ class PatternAwareGenerator:
         if syntax_valid:
             # Check for common issues
             if "print(" in code:
-                warnings.append("Code contains print() statements - consider using logger.debug()")
+                warnings.append(
+                    "Code contains print() statements - consider using logger.debug()"
+                )
 
             if "except:" in code and "except Exception:" not in code:
                 warnings.append("Code contains bare except: - use specific exceptions")
@@ -658,36 +682,35 @@ class PatternAwareGenerator:
             is_valid=is_valid,
             syntax_valid=syntax_valid,
             compilation_error=compilation_error,
-            warnings=warnings
+            warnings=warnings,
         )
 
     def _calculate_confidence(self, matched_patterns: List[Dict[str, Any]]) -> float:
         """Calculate overall confidence score.
-        
+
         Args:
             matched_patterns: Matched patterns with confidence scores
-            
+
         Returns:
             Overall confidence score
         """
         if not matched_patterns:
             return 0.5
-        
+
         # Average of top 3 confidence scores
-        top_scores = sorted(
-            [m["confidence"] for m in matched_patterns],
-            reverse=True
-        )[:3]
-        
+        top_scores = sorted([m["confidence"] for m in matched_patterns], reverse=True)[
+            :3
+        ]
+
         return sum(top_scores) / len(top_scores) if top_scores else 0.5
-    
+
     def _generate_report(
         self,
         patterns_applied: List[Dict[str, Any]],
         patterns_suggested: List[Dict[str, Any]],
         context_indicators: Dict[str, bool],
         confidence: float,
-        validation: Optional[ValidationResult] = None
+        validation: Optional[ValidationResult] = None,
     ) -> str:
         """Generate human-readable report.
 
@@ -720,7 +743,9 @@ class PatternAwareGenerator:
             pattern_name = match["pattern"]["name"]
             pattern_confidence = match["confidence"]
             severity = match["severity"]
-            lines.append(f"  - {pattern_name} (severity: {severity}, confidence: {pattern_confidence:.2%})")
+            lines.append(
+                f"  - {pattern_name} (severity: {severity}, confidence: {pattern_confidence:.2%})"
+            )
 
         lines.append("")
         lines.append(f"Patterns Suggested: {len(patterns_suggested)}")
@@ -743,7 +768,9 @@ class PatternAwareGenerator:
                 for warning in validation.warnings:
                     lines.append(f"    - {warning}")
 
-            lines.append(f"  Overall: {'✓ Valid' if validation.is_valid else '✗ Issues Found'}")
+            lines.append(
+                f"  Overall: {'✓ Valid' if validation.is_valid else '✗ Issues Found'}"
+            )
 
         lines.append("")
         lines.append("=== End Report ===")

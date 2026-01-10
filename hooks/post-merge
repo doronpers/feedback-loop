@@ -7,9 +7,10 @@ Install: cp hooks/post-merge .git/hooks/post-merge && chmod +x .git/hooks/post-m
 """
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
+
 
 def check_config_enabled():
     """Check if post-merge analysis is enabled in config."""

@@ -34,11 +34,11 @@ class CodeReviewer:
 
     def review_code(self, code: str, context: Optional[str] = None) -> Dict[str, Any]:
         """Review code with pattern awareness.
-        
+
         Args:
             code: Code to review
             context: Optional context about the code
-            
+
         Returns:
             Dictionary with review results including debrief
         """
@@ -50,56 +50,58 @@ class CodeReviewer:
                 "debrief": {
                     "strategies": ["Provide valid code for review."],
                     "difficulty": 1,
-                    "explanation": "No code was provided for review."
-                }
+                    "explanation": "No code was provided for review.",
+                },
             }
-        
+
         max_code_size = self.config.get("code_review.max_code_size", 50000)
         if len(code) > max_code_size:
             return {
                 "error": f"Code too large for review (max {max_code_size} bytes). Please review in smaller chunks.",
                 "suggestions": [],
                 "debrief": {
-                    "strategies": ["Break the code into smaller, logical chunks for review."],
+                    "strategies": [
+                        "Break the code into smaller, logical chunks for review."
+                    ],
                     "difficulty": 2,
-                    "explanation": "Code exceeded size limit for review."
-                }
+                    "explanation": "Code exceeded size limit for review.",
+                },
             }
-        
+
         if not self.llm_manager.is_any_available():
             return {
                 "error": "No LLM providers available. Set API keys to use code review.",
                 "suggestions": [],
                 "debrief": {
-                    "strategies": ["Set up API keys for ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY."],
+                    "strategies": [
+                        "Set up API keys for ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY."
+                    ],
                     "difficulty": 2,
-                    "explanation": "Cannot generate review or debrief without LLM access."
-                }
+                    "explanation": "Cannot generate review or debrief without LLM access.",
+                },
             }
 
         # Build review prompt
         prompt = self._build_review_prompt(code, context)
-        
+
         try:
             # Get LLM review
             max_tokens = self.config.get("code_review.max_tokens", 2048)
             response = self.llm_manager.generate(
-                prompt,
-                max_tokens=max_tokens,
-                fallback=True
+                prompt, max_tokens=max_tokens, fallback=True
             )
-            
+
             # Generate debrief
             debrief = self.generate_debrief(code, response.text, context)
-            
+
             # Parse response
             return {
                 "review": response.text,
                 "provider": response.provider,
                 "model": response.model,
-                "debrief": debrief
+                "debrief": debrief,
             }
-            
+
         except Exception as e:
             logger.error(f"Code review failed: {e}")
             return {
@@ -109,20 +111,20 @@ class CodeReviewer:
                     "strategies": [
                         "Check if the LLM service is available and responding.",
                         "Verify API keys are valid and have sufficient quota.",
-                        "Try again after a short wait if this is a temporary service issue."
+                        "Try again after a short wait if this is a temporary service issue.",
                     ],
                     "difficulty": 3,
-                    "explanation": "Review failed due to an error during processing."
-                }
+                    "explanation": "Review failed due to an error during processing.",
+                },
             }
 
     def _build_review_prompt(self, code: str, context: Optional[str] = None) -> str:
         """Build review prompt with pattern context.
-        
+
         Args:
             code: Code to review
             context: Optional context
-            
+
         Returns:
             Review prompt
         """
@@ -136,20 +138,20 @@ Review the following Python code and provide:
 
 Focus on these key patterns:
 """
-        
+
         # Add key patterns
         for pattern in self.patterns[:5]:  # Top 5 patterns
             name = pattern.get("name", "")
             desc = pattern.get("description", "")
             prompt += f"- **{name}**: {desc}\n"
-        
+
         prompt += "\n## Code to Review:\n\n```python\n"
         prompt += code
         prompt += "\n```\n"
-        
+
         if context:
             prompt += f"\n## Context:\n{context}\n"
-        
+
         prompt += """
 ## Review Guidelines:
 - Be specific and actionable
@@ -158,15 +160,15 @@ Focus on these key patterns:
 - Suggest concrete code improvements
 - Keep feedback concise but thorough
 """
-        
+
         return prompt
 
     def explain_issue(self, issue_description: str) -> str:
         """Get detailed explanation of a code issue.
-        
+
         Args:
             issue_description: Description of the issue
-            
+
         Returns:
             Detailed explanation
         """
@@ -189,9 +191,7 @@ Keep it practical and code-focused."""
         try:
             max_tokens = self.config.get("code_review.max_tokens_explain", 1500)
             response = self.llm_manager.generate(
-                prompt,
-                max_tokens=max_tokens,
-                fallback=True
+                prompt, max_tokens=max_tokens, fallback=True
             )
             return response.text
         except Exception as e:
@@ -200,11 +200,11 @@ Keep it practical and code-focused."""
 
     def suggest_improvements(self, code: str, goal: str) -> str:
         """Suggest improvements to achieve a specific goal.
-        
+
         Args:
             code: Current code
             goal: Improvement goal (e.g., "make it more efficient")
-            
+
         Returns:
             Improvement suggestions
         """
@@ -229,31 +229,33 @@ Keep suggestions practical and pattern-aware."""
         try:
             max_tokens = self.config.get("code_review.max_tokens_suggest", 2048)
             response = self.llm_manager.generate(
-                prompt,
-                max_tokens=max_tokens,
-                fallback=True
+                prompt, max_tokens=max_tokens, fallback=True
             )
             return response.text
         except Exception as e:
             logger.error(f"Suggestions failed: {e}")
             return f"Could not generate suggestions: {e}"
 
-    def generate_debrief(self, code: str, review: str, context: Optional[str] = None) -> Dict[str, Any]:
+    def generate_debrief(
+        self, code: str, review: str, context: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Generate a debrief with improvement strategies and difficulty rating.
-        
+
         Args:
             code: The code that was reviewed
             review: The review feedback provided
             context: Optional context about the code
-            
+
         Returns:
             Dictionary containing improvement strategies and difficulty rating
         """
         if not self.llm_manager.is_any_available():
             return {
-                "strategies": ["No LLM providers available. Set API keys to use this feature."],
+                "strategies": [
+                    "No LLM providers available. Set API keys to use this feature."
+                ],
                 "difficulty": 5,
-                "explanation": "Cannot generate debrief without LLM access."
+                "explanation": "Cannot generate debrief without LLM access.",
             }
 
         prompt = f"""Based on the code review provided, generate a debrief that includes:
@@ -273,10 +275,10 @@ Keep suggestions practical and pattern-aware."""
 ## Review Feedback:
 {review}
 """
-        
+
         if context:
             prompt += f"\n## Context:\n{context}\n"
-        
+
         prompt += """
 ## Output Format:
 Provide your response in the following format:
@@ -296,9 +298,7 @@ Provide your response in the following format:
         try:
             max_tokens = self.config.get("code_review.max_tokens_debrief", 1500)
             response = self.llm_manager.generate(
-                prompt,
-                max_tokens=max_tokens,
-                fallback=True
+                prompt, max_tokens=max_tokens, fallback=True
             )
 
             # Parse the response
@@ -306,13 +306,17 @@ Provide your response in the following format:
             strategies = []
             difficulty = 5
             explanation = ""
-            
+
             # Extract strategies
             if "**Improvement Strategies:**" in debrief_text:
-                strategies_section = debrief_text.split("**Improvement Strategies:**")[1]
+                strategies_section = debrief_text.split("**Improvement Strategies:**")[
+                    1
+                ]
                 if "**Difficulty Rating:**" in strategies_section:
-                    strategies_section = strategies_section.split("**Difficulty Rating:**")[0]
-                
+                    strategies_section = strategies_section.split(
+                        "**Difficulty Rating:**"
+                    )[0]
+
                 # Parse numbered list using regex for better handling
                 lines = strategies_section.strip().split("\n")
                 for line in lines:
@@ -320,12 +324,12 @@ Provide your response in the following format:
                     if line:
                         # Match numbered lists (1., 2., etc), bullet points (-, *), or simple text
                         # Pattern: optional number/bullet + optional space + content
-                        match = re.match(r'^(?:\d+\.|\*|\-)?\s*(.+)$', line)
+                        match = re.match(r"^(?:\d+\.|\*|\-)?\s*(.+)$", line)
                         if match:
                             clean_line = match.group(1).strip()
                             if clean_line:
                                 strategies.append(clean_line)
-            
+
             # Extract difficulty rating
             if "**Difficulty Rating:**" in debrief_text:
                 rating_section = debrief_text.split("**Difficulty Rating:**")[1]
@@ -333,62 +337,62 @@ Provide your response in the following format:
                     rating_text = rating_section.split("**Explanation:**")[0].strip()
                 else:
                     rating_text = rating_section.strip().split("\n")[0].strip()
-                
+
                 # Extract number from the beginning of rating text
-                numbers = re.findall(r'^\s*(\d+)', rating_text)
+                numbers = re.findall(r"^\s*(\d+)", rating_text)
                 if numbers:
                     difficulty = min(10, max(1, int(numbers[0])))
-            
+
             # Extract explanation
             if "**Explanation:**" in debrief_text:
                 explanation = debrief_text.split("**Explanation:**")[1].strip()
-            
+
             # Fallback if parsing failed
             if not strategies:
                 strategies = [debrief_text]
-            
+
             return {
                 "strategies": strategies,
                 "difficulty": difficulty,
-                "explanation": explanation
+                "explanation": explanation,
             }
-            
+
         except Exception as e:
             logger.error(f"Debrief generation failed: {e}")
             return {
                 "strategies": [f"Could not generate debrief: {e}"],
                 "difficulty": 5,
-                "explanation": "Error during debrief generation."
+                "explanation": "Error during debrief generation.",
             }
 
 
 def display_debrief(debrief: Dict[str, Any]) -> None:
     """Display the debrief section in a formatted way.
-    
+
     Args:
         debrief: Debrief dictionary containing strategies, difficulty, and explanation
     """
-    print("="*70)
+    print("=" * 70)
     print("📋 REVIEW DEBRIEF")
-    print("="*70)
+    print("=" * 70)
     print()
-    
+
     if "strategies" in debrief and debrief["strategies"]:
         print("💡 Improvement Strategies:")
         print()
         for i, strategy in enumerate(debrief["strategies"], 1):
             print(f"  {i}. {strategy}")
         print()
-    
+
     if "difficulty" in debrief:
         difficulty = debrief["difficulty"]
         print(f"📊 Difficulty of Execution: {difficulty}/10")
-        
+
         # Visual representation
         filled = "█" * difficulty
         empty = "░" * (10 - difficulty)
         print(f"   {filled}{empty}")
-        
+
         # Difficulty level description
         if difficulty <= 3:
             level = "Easy"
@@ -402,30 +406,30 @@ def display_debrief(debrief: Dict[str, Any]) -> None:
         else:
             level = "Very Hard"
             emoji = "⚫"
-        
+
         print(f"   {emoji} Level: {level}")
         print()
-    
+
     if "explanation" in debrief and debrief["explanation"]:
         print("📝 Explanation:")
-        explanation_lines = debrief['explanation'].split('\n')
+        explanation_lines = debrief["explanation"].split("\n")
         for line in explanation_lines:
             if line.strip():
                 print(f"   {line}")
         print()
-    
-    print("="*70)
+
+    print("=" * 70)
 
 
 def interactive_review():
     """Run interactive code review session."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🔍 Interactive Code Review")
-    print("="*70)
+    print("=" * 70)
     print()
-    
+
     reviewer = CodeReviewer()
-    
+
     if not reviewer.llm_manager.is_any_available():
         print("⚠️  No LLM providers available!")
         print()
@@ -435,13 +439,13 @@ def interactive_review():
         print("  • GOOGLE_API_KEY")
         print()
         return
-    
+
     providers = reviewer.llm_manager.list_available_providers()
     print(f"✓ Using LLM: {', '.join(providers)}")
     print()
     print("Paste your code (end with a line containing only '---'):")
     print()
-    
+
     # Collect code
     code_lines = []
     while True:
@@ -452,28 +456,28 @@ def interactive_review():
             code_lines.append(line)
         except EOFError:
             break
-    
+
     code = "\n".join(code_lines)
-    
+
     if not code.strip():
         print("\nNo code provided.\n")
         return
-    
+
     print("\n🔍 Reviewing code...\n")
-    
+
     # Review code
     result = reviewer.review_code(code)
-    
+
     if "error" in result:
         print(f"Error: {result['error']}\n")
     else:
         print(result["review"])
         print()
-        
+
         # Display debrief if available
         if "debrief" in result:
             display_debrief(result["debrief"])
-        
+
         print()
         print(f"Reviewed by: {result['provider']} ({result['model']})")
         print()

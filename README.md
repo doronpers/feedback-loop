@@ -83,6 +83,8 @@ feedback-loop generate "Create a safe file handler"
 - **[Cloud Sync](Documentation/CLOUD_SYNC.md)**
 - **[API Reference](metrics/README.md)**
 - **[Contributing](CONTRIBUTING.md)**
+- **[Security](Documentation/Status/SECURITY.md)**
+- **[Results](Documentation/Status/RESULTS.md)**
 
 ## Memory-Enhanced Patterns (Optional)
 
@@ -177,3 +179,6 @@ See **[Superset Integration Guide](Documentation/SUPERSET_INTEGRATION.md)** for 
 ## Project status
 
 See **[RESULTS.md](RESULTS.md)** for test coverage and verification details.
+
+## Agent Instructions
+This repository follows [Agent Behavioral Standards](Documentation/Governance/AGENT_BEHAVIORAL_STANDARDS.md). All AI agents MUST read these before performing any tasks.

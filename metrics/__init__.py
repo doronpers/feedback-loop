@@ -10,10 +10,10 @@ This module provides functionality for:
 
 __version__ = "1.0.0"
 
-from metrics.collector import MetricsCollector
 from metrics.analyzer import MetricsAnalyzer
-from metrics.pattern_manager import PatternManager
 from metrics.code_generator import PatternAwareGenerator
+from metrics.collector import MetricsCollector
+from metrics.pattern_manager import PatternManager
 
 __all__ = [
     "MetricsCollector",

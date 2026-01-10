@@ -1,228 +1,177 @@
 #!/usr/bin/env python3
 """
-Demonstration script showing good patterns in action.
-Run this to see the patterns working correctly.
+feedback-loop Unified Demo
+Consolidated demonstration of all framework capabilities.
+Usage:
+  python demo.py patterns   - Show core AI development patterns
+  python demo.py fastapi    - Show memory-safe FastAPI audio processing
+  python demo.py workflow   - Show full metrics loop and code generation
+  python demo.py review     - Show AI code review with debriefing
 """
 
+import argparse
+import asyncio
+import io
 import json
 import logging
 import os
+import sys
 import tempfile
+from pathlib import Path
+
 import numpy as np
-from examples.good_patterns import (
-    convert_numpy_types,
-    process_data_good,
-    get_first_item_good,
-    parse_config_good,
-    debug_processing_good,
-    categorize_by_metadata_good,
-    DataProcessor,
-    write_temp_file_good,
-    cleanup_temp_file_good,
-    process_large_file_good
-)
 
-# Configure logging to show debug messages
+# Configure elegant logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(levelname)s - %(name)s - %(message)s'
+    level=logging.INFO, format="\033[90m%(levelname)s:\033[0m %(message)s"
 )
+logger = logging.getLogger("demo")
 
 
-def demo_numpy_conversion():
-    """Demonstrate NumPy type conversion."""
-    print("\n" + "="*60)
-    print("1. NumPy Type Conversion Demo")
-    print("="*60)
-    
-    data = np.array([1.5, 2.5, 3.5, 4.5, 5.5])
+def print_header(text):
+    print(f"\n\033[95m{'='*60}\033[0m")
+    print(f"\033[1m  {text.upper()}\033[0m")
+    print(f"\033[95m{'='*60}\033[0m")
+
+
+def print_step(text):
+    print(f"\n\033[94m➤ {text}\033[0m")
+
+
+async def run_patterns_demo():
+    from examples.good_patterns import (DataProcessor,
+                                        categorize_by_metadata_good,
+                                        cleanup_temp_file_good,
+                                        debug_processing_good,
+                                        get_first_item_good, parse_config_good,
+                                        process_data_good,
+                                        process_large_file_good,
+                                        write_temp_file_good)
+
+    print_header("Core AI Patterns")
+
+    print_step("NumPy Serialization Safety")
+    data = np.array([1.5, 2.5, 3.5])
     result = process_data_good(data)
-    print(f"Input: NumPy array {data}")
-    print(f"Output: {result}")
-    print(f"✅ Successfully serialized to JSON!")
-    
+    print(f"  Input: {data} -> Output: {result} ✅")
 
-def demo_bounds_checking():
-    """Demonstrate bounds checking."""
-    print("\n" + "="*60)
-    print("2. Bounds Checking Demo")
-    print("="*60)
-    
-    # Non-empty list
-    items = ["apple", "banana", "cherry"]
-    first = get_first_item_good(items)
-    print(f"Items: {items}")
-    print(f"First item: {first}")
-    
-    # Empty list
-    empty_items = []
-    first_empty = get_first_item_good(empty_items)
-    print(f"\nEmpty items: {empty_items}")
-    print(f"First item: {first_empty}")
-    print(f"✅ No crashes on empty list!")
+    print_step("Bounds Checking & Edge Cases")
+    print(f"  Empty list handle: {get_first_item_good([])} ✅")
+
+    print_step("Specific Exception Handling")
+    print(f"  Invalid JSON handle: {parse_config_good('{bad}')} ✅")
+
+    print_step("Temp File Hygiene")
+    path, _ = write_temp_file_good(b"data")
+    print(f"  Created: {path}")
+    cleanup_temp_file_good(path)
+    print(f"  Cleaned: {not os.path.exists(path)} ✅")
 
 
-def demo_specific_exceptions():
-    """Demonstrate specific exception handling."""
-    print("\n" + "="*60)
-    print("3. Specific Exception Handling Demo")
-    print("="*60)
-    
-    # Valid config
-    valid_config = '{"database": {"host": "db.example.com"}}'
-    result = parse_config_good(valid_config)
-    print(f"Valid config: {valid_config}")
-    print(f"Result: {result}")
-    
-    # Invalid JSON
-    invalid_json = '{not valid json}'
-    result = parse_config_good(invalid_json)
-    print(f"\nInvalid JSON: {invalid_json}")
-    print(f"Result: {result}")
-    
-    # Missing key
-    missing_key = '{"other": "value"}'
-    result = parse_config_good(missing_key)
-    print(f"\nMissing key: {missing_key}")
-    print(f"Result: {result}")
-    print(f"✅ Specific exceptions handled gracefully!")
+async def run_fastapi_demo():
+    from fastapi import UploadFile
+
+    from examples.fastapi_audio_patterns import (process_audio_file_chunked,
+                                                 safe_audio_upload_workflow,
+                                                 stream_upload_to_disk)
+
+    print_header("FastAPI Audio Workflow (800MB Safe)")
+
+    print_step("Streaming Upload Simulation")
+    content = b"audio" * 1000
+    file = UploadFile(filename="demo.wav", file=io.BytesIO(content))
+    temp_path, success = await stream_upload_to_disk(file)
+    print(f"  Streamed to: {temp_path} ({success}) ✅")
+
+    print_step("Chunked Processing Simulation")
+    result = await process_audio_file_chunked(temp_path, chunk_size=1024)
+    print(f"  Processed {result['chunks_processed']} chunks ✅")
+
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
 
 
-def demo_logging():
-    """Demonstrate logger.debug() usage."""
-    print("\n" + "="*60)
-    print("4. Structured Logging Demo")
-    print("="*60)
-    
-    print("Processing data with structured logging...")
-    data = [10, 20, 30, 40, 50]
-    result = debug_processing_good(data)
-    print(f"Result: {result}")
-    print(f"✅ Debug information logged (check logs above)!")
+async def run_workflow_demo():
+    from metrics.analyzer import MetricsAnalyzer
+    from metrics.code_generator import PatternAwareGenerator
+    from metrics.collector import MetricsCollector
+    from metrics.pattern_manager import PatternManager
+
+    print_header("Full Metrics Feedback Loop")
+
+    print_step("1. Metrics Collection")
+    collector = MetricsCollector()
+    collector.log_bug(
+        pattern="numpy_json_serialization",
+        error="TypeError",
+        code='{"v": np.float64(1)}',
+        file_path="src/api.py",
+        line=42,
+    )
+    print(f"  Collected bug report for 'numpy_json_serialization' ✅")
+
+    print_step("2. Pattern Analysis")
+    analyzer = MetricsAnalyzer(collector.export_dict())
+    high_freq = analyzer.get_high_frequency_patterns(threshold=0)
+    print(f"  Identified {len(high_freq)} high-frequency items ✅")
+
+    print_step("3. Pattern-Aware Generation")
+    generator = PatternAwareGenerator([], "1.0.0")
+    result = generator.generate(
+        "Process NumPy array", metrics_context=analyzer.get_context()
+    )
+    print(f"  Generated code with pattern awareness ✅")
+    print(f"\033[92m{result.code[:150]}...\033[0m")
 
 
-def demo_metadata_categorization():
-    """Demonstrate metadata-based categorization."""
-    print("\n" + "="*60)
-    print("5. Metadata-Based Categorization Demo")
-    print("="*60)
-    
-    items = [
-        {"name": "Critical bug fix", "priority": 10},
-        {"name": "Feature request", "priority": 6},
-        {"name": "Documentation update", "priority": 2},
-        {"name": "Maintenance task", "category": "maintenance"},
-        {"name": "Unknown item"}
-    ]
-    
-    for item in items:
-        category = categorize_by_metadata_good(item)
-        print(f"Item: {item['name']:<25} → Category: {category}")
-    
-    print(f"✅ Categorization based on metadata, not string matching!")
+async def run_review_demo():
+    from metrics.code_reviewer import CodeReviewer, display_debrief
 
+    print_header("AI Code Review with Debrief")
 
-def demo_data_processor():
-    """Demonstrate DataProcessor class with all patterns."""
-    print("\n" + "="*60)
-    print("6. Complete DataProcessor Demo")
-    print("="*60)
-    
-    # Valid config
-    config = {"host": "api.example.com", "port": 8080}
-    processor = DataProcessor(config)
-    print(f"Config: {config}")
-    print(f"Processor initialized: host={processor.host}, port={processor.port}")
-    
-    # Process items
-    items = ["task1", "task2", "task3"]
-    result = processor.process(items)
-    print(f"\nProcessing items: {items}")
-    print(f"Result: {result}")
-    
-    # Process empty list
-    result_empty = processor.process([])
-    print(f"\nProcessing empty list")
-    print(f"Result: {result_empty}")
-    print(f"✅ All patterns working together!")
+    reviewer = CodeReviewer()
+    if not reviewer.llm_manager.is_any_available():
+        print(
+            "\033[91m  Error: No LLM API key found (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY)\033[0m"
+        )
+        return
 
+    code = "def calc(a, b): return a / b"
+    print_step(f"Reviewing Code: {code}")
+    result = reviewer.review_code(code)
+    print(f"  Review Provider: {result['provider']}")
+    print(f"\033[92m{result['review'][:200]}...\033[0m")
 
-def demo_temp_file_handling():
-    """Demonstrate proper temp file handling."""
-    print("\n" + "="*60)
-    print("7. Temp File Handling Demo")
-    print("="*60)
-    
-    # Write temp file
-    test_data = b"This is test audio data content for processing"
-    path, success = write_temp_file_good(test_data)
-    
-    print(f"Data to write: {len(test_data)} bytes")
-    print(f"Write success: {success}")
-    print(f"Temp file path: {path}")
-    print(f"File exists: {os.path.exists(path)}")
-    
-    # Cleanup
-    cleanup_result = cleanup_temp_file_good(path)
-    print(f"\nCleanup success: {cleanup_result}")
-    print(f"File exists after cleanup: {os.path.exists(path)}")
-    print(f"✅ Temp file handled properly with cleanup!")
-
-
-def demo_large_file_processing():
-    """Demonstrate large file processing."""
-    print("\n" + "="*60)
-    print("8. Large File Processing Demo")
-    print("="*60)
-    
-    # Create a test file
-    fd, test_path = tempfile.mkstemp(suffix=".wav")
-    try:
-        # Write 5KB of test data
-        test_data = b"x" * 5120
-        with os.fdopen(fd, 'wb') as f:
-            f.write(test_data)
-        
-        print(f"Created test file: {test_path}")
-        print(f"File size: {len(test_data)} bytes")
-        
-        # Process with default settings (800MB max)
-        result = process_large_file_good(test_path)
-        print(f"\nProcessing result:")
-        for key, value in result.items():
-            print(f"  {key}: {value}")
-        
-        # Test size limit rejection
-        result_limited = process_large_file_good(test_path, max_size_bytes=1024)
-        print(f"\nWith 1KB limit: {result_limited}")
-        print(f"✅ Large file processed in chunks safely!")
-        
-    finally:
-        # Cleanup test file
-        if os.path.exists(test_path):
-            os.unlink(test_path)
+    if "debrief" in result:
+        display_debrief(result["debrief"])
 
 
 def main():
-    """Run all demonstrations."""
-    print("\n" + "="*60)
-    print("AI Development Patterns - Live Demo")
-    print("="*60)
-    
-    demo_numpy_conversion()
-    demo_bounds_checking()
-    demo_specific_exceptions()
-    demo_logging()
-    demo_metadata_categorization()
-    demo_data_processor()
-    demo_temp_file_handling()
-    demo_large_file_processing()
-    
-    print("\n" + "="*60)
-    print("Demo Complete!")
-    print("="*60)
-    print("\nAll patterns demonstrated successfully! ✅")
-    print("See Documentation/AI_PATTERNS_GUIDE.md for detailed documentation.")
+    parser = argparse.ArgumentParser(description="feedback-loop Unified Demo")
+    parser.add_argument(
+        "mode",
+        nargs="?",
+        default="patterns",
+        choices=["patterns", "fastapi", "workflow", "review"],
+        help="Demo mode to run",
+    )
+
+    args = parser.parse_args()
+
+    try:
+        if args.mode == "patterns":
+            asyncio.run(run_patterns_demo())
+        elif args.mode == "fastapi":
+            asyncio.run(run_fastapi_demo())
+        elif args.mode == "workflow":
+            asyncio.run(run_workflow_demo())
+        elif args.mode == "review":
+            asyncio.run(run_review_demo())
+    except KeyboardInterrupt:
+        print("\n👋 Demo stopped.")
+    except Exception as e:
+        logger.error(f"Demo failed: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

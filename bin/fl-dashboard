@@ -6,10 +6,11 @@ Displays metrics, patterns, and recommendations in a beautiful terminal UI.
 """
 
 import json
-import sys
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # Auto-venv detection
 def _ensure_venv():
@@ -29,10 +30,10 @@ def _ensure_venv():
             pass
 
 _ensure_venv()
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
-def load_metrics(metrics_file: str = "metrics_data.json") -> Dict[str, List[Any]]:
+def load_metrics(metrics_file: str = "data/metrics_data.json") -> Dict[str, List[Any]]:
     """Load metrics from JSON file."""
     if not Path(metrics_file).exists():
         return {}
@@ -41,7 +42,7 @@ def load_metrics(metrics_file: str = "metrics_data.json") -> Dict[str, List[Any]
         return json.load(f)
 
 
-def load_patterns(patterns_file: str = "patterns.json") -> List[Dict[str, Any]]:
+def load_patterns(patterns_file: str = "data/patterns.json") -> List[Dict[str, Any]]:
     """Load patterns from JSON file."""
     if not Path(patterns_file).exists():
         return []

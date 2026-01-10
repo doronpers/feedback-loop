@@ -10,6 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 # Auto-venv detection
 def _ensure_venv():
     # If already in venv, do nothing

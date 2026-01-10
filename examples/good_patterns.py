@@ -8,6 +8,7 @@ import logging
 import os
 import tempfile
 from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 # Configure logging
@@ -16,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 def convert_numpy_types(obj: Any) -> Any:
     """Convert NumPy types to Python native types for JSON serialization.
-    
+
     Args:
         obj: Object potentially containing NumPy types
-        
+
     Returns:
         Object with NumPy types converted to native Python types
     """
@@ -38,10 +39,10 @@ def convert_numpy_types(obj: Any) -> Any:
 
 def process_data_good(data_array: np.ndarray) -> str:
     """Process data with proper NumPy type conversion.
-    
+
     Args:
         data_array: NumPy array to process
-        
+
     Returns:
         JSON string with converted types
     """
@@ -49,17 +50,17 @@ def process_data_good(data_array: np.ndarray) -> str:
     result = {
         "mean": float(np.mean(data_array)),
         "std": float(np.std(data_array)),
-        "max": float(np.max(data_array))
+        "max": float(np.max(data_array)),
     }
     return json.dumps(result)
 
 
 def get_first_item_good(items: List[Any]) -> Optional[Any]:
     """Get first item with bounds checking.
-    
+
     Args:
         items: List to get first item from
-        
+
     Returns:
         First item or None if list is empty
     """
@@ -72,10 +73,10 @@ def get_first_item_good(items: List[Any]) -> Optional[Any]:
 
 def parse_config_good(config_str: str) -> Optional[str]:
     """Parse configuration with specific exception handling.
-    
+
     Args:
         config_str: JSON configuration string
-        
+
     Returns:
         Database host or None on error
     """
@@ -98,17 +99,17 @@ def parse_config_good(config_str: str) -> Optional[str]:
 
 def debug_processing_good(data: Any) -> int:
     """Debug processing using proper logging.
-    
+
     Args:
         data: Data to process
-        
+
     Returns:
         Length of data or 0 if not applicable
     """
     # GOOD: Using logger.debug() instead of print()
     logger.debug(f"Processing data: {data}")
     logger.debug(f"Data type: {type(data)}")
-    
+
     result = len(data) if hasattr(data, "__len__") else 0
     logger.debug(f"Result: {result}")
     return result
@@ -116,10 +117,10 @@ def debug_processing_good(data: Any) -> int:
 
 def categorize_by_metadata_good(item: Dict[str, Any]) -> str:
     """Categorize items by metadata instead of string matching.
-    
+
     Args:
         item: Item dictionary with metadata
-        
+
     Returns:
         Category string
     """
@@ -132,17 +133,17 @@ def categorize_by_metadata_good(item: Dict[str, Any]) -> str:
             return "medium_priority"
         else:
             return "low_priority"
-    
+
     # Fallback to category metadata if priority not set
     return item.get("category", "unknown")
 
 
 class DataProcessor:
     """Example class with good patterns."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize processor with configuration.
-        
+
         Args:
             config: Configuration dictionary
         """
@@ -150,28 +151,30 @@ class DataProcessor:
         try:
             self.host = config.get("host", "localhost")
             self.port = config.get("port", 5432)
-            
+
             # Validate that we got the expected keys if config is a dict
             if not isinstance(config, dict):
                 raise TypeError("Configuration must be a dictionary")
-                
+
             # Log if defaults were used
             if "host" not in config:
-                logger.debug("Missing 'host' configuration key, using default: localhost")
+                logger.debug(
+                    "Missing 'host' configuration key, using default: localhost"
+                )
             if "port" not in config:
                 logger.debug("Missing 'port' configuration key, using default: 5432")
-                
+
         except (AttributeError, TypeError) as e:
             logger.debug(f"Invalid configuration type: {e}")
             self.host = "localhost"
             self.port = 5432
-    
+
     def process(self, items: List[Any]) -> Optional[str]:
         """Process items with proper validation.
-        
+
         Args:
             items: List of items to process
-            
+
         Returns:
             JSON string or None on error
         """
@@ -179,28 +182,25 @@ class DataProcessor:
         if not items:
             logger.debug("Empty items list provided")
             return None
-        
+
         first = items[0]
         logger.debug(f"Processing first item: {first}")
-        
+
         # GOOD: NumPy types converted before serialization
-        metrics = {
-            "count": int(np.int64(len(items))),
-            "first_value": first
-        }
-        
+        metrics = {"count": int(np.int64(len(items))), "first_value": first}
+
         return json.dumps(metrics)
 
 
 def write_temp_file_good(data: bytes) -> Tuple[str, bool]:
     """Write data to a temporary file with proper cleanup.
-    
+
     This pattern ensures proper file descriptor handling that AI often gets wrong.
     AI commonly uses None for fd or forgets to close/unlink the file.
-    
+
     Args:
         data: Binary data to write to temp file
-        
+
     Returns:
         Tuple of (file path, success status)
     """
@@ -209,15 +209,15 @@ def write_temp_file_good(data: bytes) -> Tuple[str, bool]:
     try:
         # GOOD: Use mkstemp which returns both fd and path
         fd, path = tempfile.mkstemp(suffix=".tmp")
-        
+
         # GOOD: Use os.fdopen to convert fd to file object and ensure it's closed
-        with os.fdopen(fd, 'wb') as f:
+        with os.fdopen(fd, "wb") as f:
             f.write(data)
             fd = None  # fd is now managed by the file object
-        
+
         logger.debug(f"Successfully wrote {len(data)} bytes to {path}")
         return path, True
-        
+
     except (IOError, OSError) as e:
         logger.debug(f"Failed to write temp file: {e}")
         # GOOD: Clean up on error
@@ -236,16 +236,16 @@ def write_temp_file_good(data: bytes) -> Tuple[str, bool]:
 
 def cleanup_temp_file_good(path: str) -> bool:
     """Clean up a temporary file safely.
-    
+
     Args:
         path: Path to the temporary file to clean up
-        
+
     Returns:
         True if cleanup was successful, False otherwise
     """
     if not path:
         return True
-        
+
     try:
         if os.path.exists(path):
             os.unlink(path)
@@ -259,43 +259,45 @@ def cleanup_temp_file_good(path: str) -> bool:
 def process_large_file_good(
     file_path: str,
     max_size_bytes: int = 800 * 1024 * 1024,  # 800MB default
-    chunk_size: int = 1024 * 1024  # 1MB chunks
+    chunk_size: int = 1024 * 1024,  # 1MB chunks
 ) -> Optional[Dict[str, Any]]:
     """Process large files (up to 800MB) with proper memory management.
-    
+
     For audio processing workflows, this handles large file constraints
     that nginx defaults would otherwise block.
-    
+
     Args:
         file_path: Path to the file to process
         max_size_bytes: Maximum allowed file size (default 800MB)
         chunk_size: Size of chunks for reading (default 1MB)
-        
+
     Returns:
         Dictionary with file info or None on error
     """
     try:
         # GOOD: Check file size before loading into memory
         file_size = os.path.getsize(file_path)
-        
+
         if file_size > max_size_bytes:
             logger.debug(f"File too large: {file_size} bytes > {max_size_bytes} bytes")
             return None
-        
+
         # GOOD: Calculate chunks from file size (no need to read entire file)
         # For actual processing, read in chunks to avoid memory exhaustion
-        chunks_needed = (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
-        
+        chunks_needed = (
+            (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
+        )
+
         result = {
             "file_path": file_path,
             "size_bytes": int(file_size),  # Ensure Python int for JSON
             "size_mb": float(file_size / (1024 * 1024)),
-            "chunks_needed": int(chunks_needed)
+            "chunks_needed": int(chunks_needed),
         }
-        
+
         logger.debug(f"Processed file: {result}")
         return result
-        
+
     except FileNotFoundError:
         logger.debug(f"File not found: {file_path}")
         return None

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class LLMResponse:
     """Unified response from any LLM provider."""
+
     text: str
     model: str
     provider: str
@@ -33,7 +34,7 @@ class LLMProvider(ABC):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         """Initialize provider with API key and model.
-        
+
         Args:
             api_key: API key for the provider
             model: Model name to use (provider-specific)
@@ -45,12 +46,12 @@ class LLMProvider(ABC):
     @abstractmethod
     def generate(self, prompt: str, max_tokens: int = 4096, **kwargs) -> LLMResponse:
         """Generate response from the LLM.
-        
+
         Args:
             prompt: Input prompt
             max_tokens: Maximum tokens to generate
             **kwargs: Provider-specific parameters
-            
+
         Returns:
             LLMResponse with generated text
         """
@@ -71,18 +72,21 @@ class LLMProvider(ABC):
 class ClaudeProvider(LLMProvider):
     """Anthropic Claude LLM provider."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-5-20250929"):
+    def __init__(
+        self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-5-20250929"
+    ):
         """Initialize Claude provider.
-        
+
         Args:
             api_key: Anthropic API key (uses ANTHROPIC_API_KEY env var if not provided)
             model: Claude model to use
         """
         super().__init__(api_key or os.environ.get("ANTHROPIC_API_KEY"), model)
-        
+
         if self.is_available():
             try:
                 import anthropic
+
                 self.client = anthropic.Anthropic(api_key=self.api_key)
                 logger.info(f"Claude provider initialized with model: {self.model}")
             except Exception as e:
@@ -99,7 +103,7 @@ class ClaudeProvider(LLMProvider):
                 model=self.model,
                 max_tokens=max_tokens,
                 messages=[{"role": "user", "content": prompt}],
-                **kwargs
+                **kwargs,
             )
 
             return LLMResponse(
@@ -109,8 +113,8 @@ class ClaudeProvider(LLMProvider):
                 tokens_used=response.usage.input_tokens + response.usage.output_tokens,
                 metadata={
                     "input_tokens": response.usage.input_tokens,
-                    "output_tokens": response.usage.output_tokens
-                }
+                    "output_tokens": response.usage.output_tokens,
+                },
             )
         except Exception as e:
             logger.error(f"Claude API error: {e}")
@@ -120,6 +124,7 @@ class ClaudeProvider(LLMProvider):
         """Check if Claude is available."""
         try:
             import anthropic
+
             return self.api_key is not None
         except ImportError:
             return False
@@ -134,16 +139,17 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o"):
         """Initialize OpenAI provider.
-        
+
         Args:
             api_key: OpenAI API key (uses OPENAI_API_KEY env var if not provided)
             model: OpenAI model to use
         """
         super().__init__(api_key or os.environ.get("OPENAI_API_KEY"), model)
-        
+
         if self.is_available():
             try:
                 import openai
+
                 self.client = openai.OpenAI(api_key=self.api_key)
                 logger.info(f"OpenAI provider initialized with model: {self.model}")
             except Exception as e:
@@ -160,7 +166,7 @@ class OpenAIProvider(LLMProvider):
                 model=self.model,
                 max_tokens=max_tokens,
                 messages=[{"role": "user", "content": prompt}],
-                **kwargs
+                **kwargs,
             )
 
             return LLMResponse(
@@ -169,9 +175,13 @@ class OpenAIProvider(LLMProvider):
                 provider="openai",
                 tokens_used=response.usage.total_tokens if response.usage else None,
                 metadata={
-                    "input_tokens": response.usage.prompt_tokens if response.usage else None,
-                    "output_tokens": response.usage.completion_tokens if response.usage else None
-                }
+                    "input_tokens": (
+                        response.usage.prompt_tokens if response.usage else None
+                    ),
+                    "output_tokens": (
+                        response.usage.completion_tokens if response.usage else None
+                    ),
+                },
             )
         except Exception as e:
             logger.error(f"OpenAI API error: {e}")
@@ -181,6 +191,7 @@ class OpenAIProvider(LLMProvider):
         """Check if OpenAI is available."""
         try:
             import openai
+
             return self.api_key is not None
         except ImportError:
             return False
@@ -192,34 +203,40 @@ class OpenAIProvider(LLMProvider):
 
 class GeminiProvider(LLMProvider):
     """Google Gemini LLM provider.
-    
+
     Note: Uses the newer google.genai package (recommended) with fallback
     to google.generativeai if available.
     """
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
+    def __init__(
+        self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"
+    ):
         """Initialize Gemini provider.
-        
+
         Args:
             api_key: Google API key (uses GOOGLE_API_KEY env var if not provided)
             model: Gemini model to use
         """
         super().__init__(api_key or os.environ.get("GOOGLE_API_KEY"), model)
         self._using_new_api = False
-        
+
         if self.is_available():
             try:
                 # Try new google.genai package first
                 try:
                     import google.genai as genai
+
                     self._using_new_api = True
                     logger.info("Using new google.genai package")
                 except ImportError:
                     # Fallback to deprecated package
                     import google.generativeai as genai
-                    logger.warning("Using deprecated google.generativeai package. "
-                                 "Please migrate to google.genai: pip install google-genai")
-                
+
+                    logger.warning(
+                        "Using deprecated google.generativeai package. "
+                        "Please migrate to google.genai: pip install google-genai"
+                    )
+
                 genai.configure(api_key=self.api_key)
                 self.client = genai.GenerativeModel(self.model)
                 logger.info(f"Gemini provider initialized with model: {self.model}")
@@ -237,10 +254,9 @@ class GeminiProvider(LLMProvider):
             generation_config = {
                 "max_output_tokens": max_tokens,
             }
-            
+
             response = self.client.generate_content(
-                prompt,
-                generation_config=generation_config
+                prompt, generation_config=generation_config
             )
 
             return LLMResponse(
@@ -249,8 +265,12 @@ class GeminiProvider(LLMProvider):
                 provider="gemini",
                 tokens_used=None,  # Gemini doesn't always provide token counts
                 metadata={
-                    "finish_reason": response.candidates[0].finish_reason if response.candidates else None
-                }
+                    "finish_reason": (
+                        response.candidates[0].finish_reason
+                        if response.candidates
+                        else None
+                    )
+                },
             )
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
@@ -264,10 +284,12 @@ class GeminiProvider(LLMProvider):
             # Try new package first
             try:
                 import google.genai
+
                 return True
             except ImportError:
                 # Fallback to deprecated package
                 import google.generativeai
+
                 return True
         except ImportError:
             return False
@@ -282,15 +304,19 @@ class LLMManager:
 
     def __init__(self, preferred_provider: Optional[str] = None):
         """Initialize LLM manager.
-        
+
         Args:
             preferred_provider: Preferred provider name ("claude", "openai", "gemini")
         """
         self.providers: Dict[str, LLMProvider] = {}
         self._initialize_providers()
-        
-        self.preferred_provider = preferred_provider or os.environ.get("FL_LLM_PROVIDER", "claude")
-        logger.info(f"LLM Manager initialized with preferred provider: {self.preferred_provider}")
+
+        self.preferred_provider = preferred_provider or os.environ.get(
+            "FL_LLM_PROVIDER", "claude"
+        )
+        logger.info(
+            f"LLM Manager initialized with preferred provider: {self.preferred_provider}"
+        )
 
     def _initialize_providers(self):
         """Initialize all available providers."""
@@ -309,28 +335,30 @@ class LLMManager:
         prompt: str,
         provider: Optional[str] = None,
         fallback: bool = True,
-        **kwargs
+        **kwargs,
     ) -> LLMResponse:
         """Generate response using specified or preferred provider.
-        
+
         Args:
             prompt: Input prompt
             provider: Specific provider to use (None = use preferred)
             fallback: If True, try other providers on failure
             **kwargs: Provider-specific parameters
-            
+
         Returns:
             LLMResponse with generated text
-            
+
         Raises:
             RuntimeError: If no providers are available or all fail
         """
         if not self.providers:
-            raise RuntimeError("No LLM providers available. Set API keys and install packages.")
+            raise RuntimeError(
+                "No LLM providers available. Set API keys and install packages."
+            )
 
         # Determine which provider to use
         target_provider = provider or self.preferred_provider
-        
+
         # Try preferred provider first
         if target_provider in self.providers:
             try:

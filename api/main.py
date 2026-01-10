@@ -5,19 +5,20 @@ Centralized API gateway for feedback-loop team collaboration platform.
 Handles authentication, pattern sync, team management, and analytics.
 """
 
-from datetime import datetime, timedelta
-from typing import Optional, List
 import base64
 import binascii
+import hashlib
 import hmac
 import logging
 import os
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr
 import secrets
-import hashlib
+from datetime import datetime, timedelta
+from typing import List, Optional
+
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, EmailStr
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,9 @@ app = FastAPI(
     description="Cloud backend API for feedback-loop team collaboration",
     version="0.1.0",
     docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    redoc_url="/api/redoc",
 )
+
 
 # CORS configuration for web dashboard.
 # Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
@@ -45,9 +47,7 @@ def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
     return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
 
-allowed_origins = parse_allowed_origins(
-    os.getenv("FEEDBACK_LOOP_ALLOWED_ORIGINS")
-)
+allowed_origins = parse_allowed_origins(os.getenv("FEEDBACK_LOOP_ALLOWED_ORIGINS"))
 
 # CORS middleware for web dashboard
 app.add_middleware(
@@ -65,14 +65,17 @@ security = HTTPBearer()
 # Request/Response Models
 # ============================================================================
 
+
 class LoginRequest(BaseModel):
     """Login request model."""
+
     email: EmailStr
     password: str
 
 
 class LoginResponse(BaseModel):
     """Login response model."""
+
     access_token: str
     token_type: str = "bearer"
     user_id: int
@@ -83,6 +86,7 @@ class LoginResponse(BaseModel):
 
 class UserCreate(BaseModel):
     """User creation request."""
+
     email: EmailStr
     username: str
     password: str
@@ -92,6 +96,7 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     """User response model."""
+
     id: int
     username: str
     email: str
@@ -103,11 +108,13 @@ class UserResponse(BaseModel):
 
 class PatternSync(BaseModel):
     """Pattern synchronization request."""
+
     patterns: List[dict]
 
 
 class PatternSyncResponse(BaseModel):
     """Pattern synchronization response."""
+
     status: str
     synced_count: int
     conflicts: List[dict] = []
@@ -116,6 +123,7 @@ class PatternSyncResponse(BaseModel):
 
 class ConfigResponse(BaseModel):
     """Configuration response model."""
+
     config: dict
     enforced_settings: List[str]
     team_id: Optional[int]
@@ -139,11 +147,11 @@ CONFIG_DB = {}
 # Authentication & Authorization
 # ============================================================================
 
+
 def create_api_key(user_id: int) -> str:
     """Generate a secure API key."""
     random_str = secrets.token_urlsafe(32)
     return f"fl_{user_id}_{random_str}"
-
 
 
 # Security Constants
@@ -152,9 +160,10 @@ def create_api_key(user_id: int) -> str:
 PBKDF2_ITERATIONS = 210000
 PBKDF2_MIN_ITERATIONS = 100000
 
+
 def hash_password(password: str) -> str:
     """Hash password using PBKDF2 with per-user salt.
-    
+
     Iteration count can be configured via FEEDBACK_LOOP_PASSWORD_ITERATIONS
     environment variable, but will default to PBKDF2_ITERATIONS if not set
     or if the value is below the NIST-recommended minimum.
@@ -176,14 +185,9 @@ def hash_password(password: str) -> str:
             logger.warning(
                 f"Invalid FEEDBACK_LOOP_PASSWORD_ITERATIONS value, using default ({PBKDF2_ITERATIONS})"
             )
-    
+
     salt = secrets.token_bytes(16)
-    digest = hashlib.pbkdf2_hmac(
-        "sha256",
-        password.encode("utf-8"),
-        salt,
-        iterations
-    )
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
     salt_b64 = base64.b64encode(salt).decode("utf-8")
     digest_b64 = base64.b64encode(digest).decode("utf-8")
     return f"pbkdf2_sha256${iterations}${salt_b64}${digest_b64}"
@@ -211,28 +215,25 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
     derived = hashlib.pbkdf2_hmac(
-        "sha256",
-        plain_password.encode("utf-8"),
-        salt,
-        int(iterations)
+        "sha256", plain_password.encode("utf-8"), salt, int(iterations)
     )
     return hmac.compare_digest(derived, expected_digest)
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict:
     """Verify API key and return current user."""
     api_key = credentials.credentials
-    
+
     # Look up user by API key
     user = SESSIONS_DB.get(api_key)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired API key"
+            detail="Invalid or expired API key",
         )
-    
+
     return user
 
 
@@ -240,8 +241,7 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     """Require admin role for endpoint access."""
     if current_user.get("role") != "admin":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
     return current_user
 
@@ -250,13 +250,14 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
 # API Endpoints
 # ============================================================================
 
+
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint."""
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "0.1.0"
+        "version": "0.1.0",
     }
 
 
@@ -264,7 +265,7 @@ async def health_check():
 async def login(request: LoginRequest):
     """
     Authenticate user and return API key.
-    
+
     This endpoint supports the 'feedback-loop login' command in the CLI.
     """
     # Find user by email
@@ -273,23 +274,21 @@ async def login(request: LoginRequest):
         if u["email"] == request.email:
             user = u
             break
-    
+
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
-    
+
     # Verify password
     if not verify_password(request.password, user["hashed_password"]):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
-    
+
     # Generate API key
     api_key = create_api_key(user["id"])
-    
+
     # Store session
     SESSIONS_DB[api_key] = {
         "user_id": user["id"],
@@ -297,18 +296,18 @@ async def login(request: LoginRequest):
         "email": user["email"],
         "role": user["role"],
         "organization_id": user["organization_id"],
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     # Update last login
     user["last_login"] = datetime.utcnow().isoformat()
-    
+
     return LoginResponse(
         access_token=api_key,
         user_id=user["id"],
         organization_id=user["organization_id"],
         username=user["username"],
-        role=user["role"]
+        role=user["role"],
     )
 
 
@@ -320,19 +319,18 @@ async def register(request: UserCreate):
         if user["email"] == request.email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered"
+                detail="Email already registered",
             )
         if user["username"] == request.username:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already taken"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken"
             )
-    
+
     # Create organization if provided
     org_id = 1  # Default org
     if request.organization_name:
         org_id = len(USERS_DB) + 1  # Simple ID generation
-    
+
     # Create user
     user_id = len(USERS_DB) + 1
     user = {
@@ -344,11 +342,11 @@ async def register(request: UserCreate):
         "role": "admin" if not USERS_DB else "developer",  # First user is admin
         "organization_id": org_id,
         "is_active": True,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     USERS_DB[user_id] = user
-    
+
     return UserResponse(
         id=user["id"],
         username=user["username"],
@@ -356,7 +354,7 @@ async def register(request: UserCreate):
         full_name=user["full_name"],
         role=user["role"],
         organization_id=user["organization_id"],
-        created_at=datetime.utcnow()
+        created_at=datetime.utcnow(),
     )
 
 
@@ -366,10 +364,9 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     user = USERS_DB.get(current_user["user_id"])
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     return UserResponse(
         id=user["id"],
         username=user["username"],
@@ -377,61 +374,62 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
         full_name=user.get("full_name"),
         role=user["role"],
         organization_id=user["organization_id"],
-        created_at=datetime.fromisoformat(user["created_at"])
+        created_at=datetime.fromisoformat(user["created_at"]),
     )
 
 
 @app.post("/api/v1/patterns/sync", response_model=PatternSyncResponse)
 async def sync_patterns(
-    request: PatternSync,
-    current_user: dict = Depends(get_current_user)
+    request: PatternSync, current_user: dict = Depends(get_current_user)
 ):
     """
     Sync patterns to cloud storage.
-    
+
     Implements bi-directional sync with conflict resolution.
     """
     org_id = current_user["organization_id"]
     user_id = current_user["user_id"]
-    
+
     # Initialize organization patterns if not exists
     if org_id not in PATTERNS_DB:
         PATTERNS_DB[org_id] = {}
-    
+
     conflicts = []
     synced_count = 0
-    
+
     for pattern in request.patterns:
         pattern_name = pattern.get("name")
         if not pattern_name:
             continue
-        
+
         # Check for conflicts
         existing = PATTERNS_DB[org_id].get(pattern_name)
         if existing:
             # Simple conflict detection - check last modified
             if existing.get("version", 0) != pattern.get("version", 0):
-                conflicts.append({
-                    "pattern": pattern_name,
-                    "reason": "Version mismatch",
-                    "server_version": existing.get("version"),
-                    "client_version": pattern.get("version")
-                })
+                conflicts.append(
+                    {
+                        "pattern": pattern_name,
+                        "reason": "Version mismatch",
+                        "server_version": existing.get("version"),
+                        "client_version": pattern.get("version"),
+                    }
+                )
                 continue
-        
+
         # Store pattern with metadata
         pattern["last_modified_by"] = user_id
         pattern["last_modified_at"] = datetime.utcnow().isoformat()
         pattern["version"] = pattern.get("version", 1) + 1
-        
+
         PATTERNS_DB[org_id][pattern_name] = pattern
         synced_count += 1
-    
+
     return PatternSyncResponse(
         status="success",
         synced_count=synced_count,
         conflicts=conflicts,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
 
 
@@ -439,18 +437,18 @@ async def sync_patterns(
 async def pull_patterns(current_user: dict = Depends(get_current_user)):
     """
     Pull patterns from cloud storage.
-    
+
     Returns all patterns for the user's organization.
     """
     org_id = current_user["organization_id"]
-    
+
     patterns = list(PATTERNS_DB.get(org_id, {}).values())
-    
+
     return {
         "patterns": patterns,
         "count": len(patterns),
         "organization_id": org_id,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
 
@@ -458,76 +456,70 @@ async def pull_patterns(current_user: dict = Depends(get_current_user)):
 async def get_config(current_user: dict = Depends(get_current_user)):
     """
     Get team configuration.
-    
+
     Returns enforced settings and team-specific configuration.
     """
     org_id = current_user["organization_id"]
-    
+
     # Get organization config
-    config = CONFIG_DB.get(org_id, {
-        "min_confidence_threshold": 0.8,
-        "security_checks_required": True,
-        "auto_sync_enabled": True
-    })
-    
+    config = CONFIG_DB.get(
+        org_id,
+        {
+            "min_confidence_threshold": 0.8,
+            "security_checks_required": True,
+            "auto_sync_enabled": True,
+        },
+    )
+
     # List enforced settings (cannot be overridden by users)
-    enforced_settings = [
-        "security_checks_required",
-        "min_confidence_threshold"
-    ]
-    
+    enforced_settings = ["security_checks_required", "min_confidence_threshold"]
+
     return ConfigResponse(
         config=config,
         enforced_settings=enforced_settings,
         team_id=None,  # TODO: Implement team selection
-        organization_id=org_id
+        organization_id=org_id,
     )
 
 
 @app.post("/api/v1/config")
-async def update_config(
-    config: dict,
-    current_user: dict = Depends(require_admin)
-):
+async def update_config(config: dict, current_user: dict = Depends(require_admin)):
     """
     Update team configuration (admin only).
-    
+
     Allows team leads to enforce specific settings across all team members.
     """
     org_id = current_user["organization_id"]
-    
+
     CONFIG_DB[org_id] = config
-    
+
     return {
         "status": "success",
         "message": "Configuration updated",
         "organization_id": org_id,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
 
 @app.post("/api/v1/metrics")
-async def submit_metrics(
-    metrics: dict,
-    current_user: dict = Depends(get_current_user)
-):
+async def submit_metrics(metrics: dict, current_user: dict = Depends(get_current_user)):
     """
     Submit metrics for analytics.
-    
+
     Used for ROI calculations and team analytics dashboard.
     """
     org_id = current_user["organization_id"]
     user_id = current_user["user_id"]
-    
+
     # TODO: Store metrics in database for analytics
     # For now, just acknowledge receipt
-    
+
     return {
         "status": "success",
         "message": "Metrics received",
         "organization_id": org_id,
         "user_id": user_id,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
 
@@ -535,53 +527,49 @@ async def submit_metrics(
 # Admin Endpoints
 # ============================================================================
 
+
 @app.get("/api/v1/admin/users")
 async def list_users(current_user: dict = Depends(require_admin)):
     """List all users in organization (admin only)."""
     org_id = current_user["organization_id"]
-    
+
     users = [
         {
             "id": u["id"],
             "username": u["username"],
             "email": u["email"],
             "role": u["role"],
-            "is_active": u.get("is_active", True)
+            "is_active": u.get("is_active", True),
         }
         for u in USERS_DB.values()
         if u["organization_id"] == org_id
     ]
-    
-    return {
-        "users": users,
-        "count": len(users),
-        "organization_id": org_id
-    }
+
+    return {"users": users, "count": len(users), "organization_id": org_id}
 
 
 @app.delete("/api/v1/admin/patterns/{pattern_name}")
 async def delete_pattern(
-    pattern_name: str,
-    current_user: dict = Depends(require_admin)
+    pattern_name: str, current_user: dict = Depends(require_admin)
 ):
     """Delete a pattern (admin only)."""
     org_id = current_user["organization_id"]
-    
+
     if org_id not in PATTERNS_DB or pattern_name not in PATTERNS_DB[org_id]:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Pattern not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Pattern not found"
         )
-    
+
     del PATTERNS_DB[org_id][pattern_name]
-    
+
     return {
         "status": "success",
         "message": f"Pattern '{pattern_name}' deleted",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

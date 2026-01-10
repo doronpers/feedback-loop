@@ -51,8 +51,8 @@ report-md:  ## Generate markdown report
 	feedback-loop report --format markdown --output report.md
 
 clean:  ## Clean generated files
-	rm -f metrics_data.json
-	rm -f patterns.json
+	rm -f data/metrics_data.json
+	rm -f data/patterns.json
 	rm -f generated*.py
 	rm -f *.meta.json
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

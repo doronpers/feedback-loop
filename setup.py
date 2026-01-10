@@ -5,8 +5,9 @@ A system for collecting metrics, learning patterns, and generating better code
 using real LLM integration and automated feedback loops.
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 test_requires = [
     "pytest>=7.0.0",
