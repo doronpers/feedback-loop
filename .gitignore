@@ -222,3 +222,7 @@ sync_config.json
 .DS_Store
 *.pyc
 .venv/
+*.bak.*
+.env.local
+.env.*.local
+coverage/
