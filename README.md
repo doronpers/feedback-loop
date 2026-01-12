@@ -44,6 +44,7 @@ pip install -e .[test]
 ```
 
 See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
+
 - Complete setup instructions
 - Pattern-aware code generation with Cursor Composer
 - Interactive workflows and tasks
@@ -51,7 +52,7 @@ See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
 
 ### Desktop Launchers (Easy Mode!)
 
-**Mac:** Double-click `launch-feedback-loop.command`  
+**Mac:** Double-click `launch-feedback-loop.command`
 **Windows:** Double-click `launch-feedback-loop.bat`
 
 These launchers provide an interactive menu to run any feedback-loop tool. See [DESKTOP_LAUNCHERS.md](DESKTOP_LAUNCHERS.md) for details.
@@ -109,10 +110,10 @@ feedback-loop generate "Create a safe file handler"
 
 feedback-loop now supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
 
-✨ **Semantic Search**: Query patterns by concept, not just name  
-🧠 **Self-Evolving**: Patterns improve based on usage over time  
-🔗 **Cross-Project**: Share learnings across all your codebases  
-💡 **Smart Recommendations**: Get context-aware pattern suggestions  
+✨ **Semantic Search**: Query patterns by concept, not just name
+🧠 **Self-Evolving**: Patterns improve based on usage over time
+🔗 **Cross-Project**: Share learnings across all your codebases
+💡 **Smart Recommendations**: Get context-aware pattern suggestions
 
 ### Quick Setup
 
@@ -189,9 +190,9 @@ Use **[Quick Reference](documentation/QUICK_REFERENCE.md)** for the full catalog
 
 feedback-loop integrates with **Apache Superset** to provide powerful analytics dashboards:
 
-📊 **Code Quality Dashboard** - Track bugs, test failures, and code review issues  
-📈 **Pattern Analysis Dashboard** - Visualize pattern frequency and effectiveness  
-🚀 **Development Trends Dashboard** - Monitor AI-assisted development metrics  
+📊 **Code Quality Dashboard** - Track bugs, test failures, and code review issues
+📈 **Pattern Analysis Dashboard** - Visualize pattern frequency and effectiveness
+🚀 **Development Trends Dashboard** - Monitor AI-assisted development metrics
 
 See **[Superset Integration Guide](documentation/SUPERSET_INTEGRATION.md)** for setup instructions.
 
@@ -200,4 +201,9 @@ See **[Superset Integration Guide](documentation/SUPERSET_INTEGRATION.md)** for 
 See **[documentation/Status/RESULTS.md](documentation/Status/RESULTS.md)** for test coverage and verification details.
 
 ## Agent Instructions
-This repository follows [Agent Behavioral Standards](documentation/governance/AGENT_BEHAVIORAL_STANDARDS.md). All AI agents MUST read these before performing any tasks.
+
+> **CRITICAL**: All AI agents MUST read [`AGENT_KNOWLEDGE_BASE.md`](AGENT_KNOWLEDGE_BASE.md) before performing any tasks. It contains non-negotiable Patent, Security, and Design rules.
+
+Additional resources:
+
+- [Agent Behavioral Standards](documentation/governance/AGENT_BEHAVIORAL_STANDARDS.md)
