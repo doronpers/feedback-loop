@@ -8,7 +8,7 @@ Thank you for your interest in improving this project!
 
 When you discover a useful pattern:
 
-1. **Document it** in `docs/AI_PATTERNS_GUIDE.md`
+1. **Document it** in `documentation/AI_PATTERNS_GUIDE.md`
    - Add to the appropriate section
    - Include bad and good examples
    - Explain why the pattern matters
@@ -24,7 +24,7 @@ When you discover a useful pattern:
    - Cover edge cases
 
 4. **Update documentation**
-   - Add to [QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)
+   - Add to [QUICK_REFERENCE.md](documentation/QUICK_REFERENCE.md)
    - Update pattern count in README badges
    - Run `python -m metrics.integrate sync-to-markdown`
 
@@ -38,6 +38,7 @@ We follow Dieter Rams' design principles:
 - **Thorough**: Cover edge cases and gotchas
 
 **Before submitting:**
+
 - Verify all code examples run correctly
 - Check for broken links
 - Ensure consistent formatting
@@ -106,7 +107,7 @@ Explain the problem this solves or feature this adds
 
 ```
 feedback-loop/
-├── docs/               # All documentation lives here
+├── documentation/      # All documentation lives here
 ├── examples/           # Code examples (good & bad patterns)
 ├── metrics/            # Metrics collection system
 ├── tests/              # Test suite
