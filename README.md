@@ -5,9 +5,9 @@
 ![Tests](https://img.shields.io/badge/tests-183%20collected-success.svg)
 ![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
 
-**A practical framework for AI-assisted development with continuous learning from your code.**
+**Strategic Map: AI-Assisted Development with Continuous Learning**
 
-feedback-loop turns test failures into reusable patterns, then uses those patterns to improve code generation, review, and onboarding.
+feedback-loop is a production-ready framework that transforms test failures into reusable patterns, creating a living pattern library that improves AI code generation, review, and team collaboration.
 
 ## What it does
 
@@ -91,20 +91,14 @@ feedback-loop generate "Create a safe file handler"
 
 ## Documentation
 
-- **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** ⭐ NEW - Complete Cursor IDE setup
-- **[Getting Started](documentation/GETTING_STARTED.md)**
-- **[Quick Reference](documentation/QUICK_REFERENCE.md)**
-- **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)**
-- **[Metrics Guide](documentation/METRICS_GUIDE.md)**
-- **[Memory Integration](documentation/MEMORY_INTEGRATION.md)** ⭐ NEW - Semantic pattern learning with MemU
-- **[Superset Analytics Integration](documentation/SUPERSET_INTEGRATION.md)** ⭐ NEW
-- **[LLM Integration Guide](documentation/LLM_GUIDE.md)**
-- **[Cloud Sync](documentation/CLOUD_SYNC.md)**
-- **[Desktop Launchers](DESKTOP_LAUNCHERS.md)**
-- **[API Reference](metrics/README.md)**
-- **[Contributing](CONTRIBUTING.md)**
-- **[Security](documentation/Status/SECURITY.md)**
-- **[Results](documentation/Status/RESULTS.md)**
+**Start here:** See **[documentation/INDEX.md](documentation/INDEX.md)** for a complete table of contents.
+
+**Key guides:**
+- **[Getting Started](documentation/GETTING_STARTED.md)** - Installation and first steps
+- **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)** - Living pattern library philosophy
+- **[Cursor Integration](CURSOR_INTEGRATION.md)** - IDE setup with pattern-aware AI
+- **[Memory Integration](documentation/MEMORY_INTEGRATION.md)** - Semantic pattern learning
+- **[Cloud Sync](documentation/CLOUD_SYNC.md)** - Team collaboration features
 
 ## Memory-Enhanced Patterns (Optional)
 

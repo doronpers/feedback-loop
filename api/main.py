@@ -5,10 +5,6 @@ Centralized API gateway for feedback-loop team collaboration platform.
 Handles authentication, pattern sync, team management, and analytics.
 """
 
-import base64
-import binascii
-import hashlib
-import hmac
 import logging
 import os
 import secrets
@@ -27,12 +23,13 @@ load_env_file(project_root)
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 
 logger = logging.getLogger(__name__)
 
-# Note: In production, use proper password hashing (bcrypt, argon2)
-# and database (PostgreSQL with SQLAlchemy)
+# Password hashing context - using bcrypt for better GPU-resistance than PBKDF2
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 app = FastAPI(
@@ -47,13 +44,31 @@ app = FastAPI(
 # CORS configuration for web dashboard.
 # Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
 def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
-    """Parse allowed origins from env configuration."""
+    """Parse allowed origins from env configuration.
+    
+    Hardened: Defaults to localhost only for security.
+    Raises warning if wildcard detected in production.
+    """
     if not raw_value:
-        return [
-            "http://localhost:3000",
-            "http://localhost:5173",
-        ]
-    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+        # Strict default - localhost only
+        return ["http://localhost:3000"]
+    
+    origins = [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+    
+    # Security check: warn if wildcard detected in production
+    if "*" in origins:
+        env = os.getenv("ENVIRONMENT", "development").lower()
+        if env in ("production", "prod"):
+            logger.warning(
+                "SECURITY WARNING: Wildcard CORS origin detected in production! "
+                "This is a major security risk. Use specific origins instead."
+            )
+        else:
+            logger.warning(
+                "Wildcard CORS origin detected. This should not be used in production."
+            )
+    
+    return origins
 
 
 allowed_origins = parse_allowed_origins(os.getenv("FEEDBACK_LOOP_ALLOWED_ORIGINS"))
@@ -163,70 +178,22 @@ def create_api_key(user_id: int) -> str:
     return f"fl_{user_id}_{random_str}"
 
 
-# Security Constants
-# NIST recommends minimum 100,000 iterations for PBKDF2-HMAC-SHA256
-# Default to 210,000 for additional security margin
-PBKDF2_ITERATIONS = 210000
-PBKDF2_MIN_ITERATIONS = 100000
-
-
 def hash_password(password: str) -> str:
-    """Hash password using PBKDF2 with per-user salt.
-
-    Iteration count can be configured via FEEDBACK_LOOP_PASSWORD_ITERATIONS
-    environment variable, but will default to PBKDF2_ITERATIONS if not set
-    or if the value is below the NIST-recommended minimum.
+    """Hash password using bcrypt for better GPU-resistance than PBKDF2.
+    
+    Optimized: Uses bcrypt via passlib CryptContext for standardized,
+    production-ready password hashing.
     """
-    # Get iterations from env var, with validation
-    iterations = PBKDF2_ITERATIONS
-    env_iterations = os.getenv("FEEDBACK_LOOP_PASSWORD_ITERATIONS")
-    if env_iterations:
-        try:
-            iterations = int(env_iterations)
-            # Enforce minimum security standard
-            if iterations < PBKDF2_MIN_ITERATIONS:
-                logger.warning(
-                    f"FEEDBACK_LOOP_PASSWORD_ITERATIONS ({iterations}) below minimum "
-                    f"({PBKDF2_MIN_ITERATIONS}), using default ({PBKDF2_ITERATIONS})"
-                )
-                iterations = PBKDF2_ITERATIONS
-        except (TypeError, ValueError):
-            logger.warning(
-                f"Invalid FEEDBACK_LOOP_PASSWORD_ITERATIONS value, using default ({PBKDF2_ITERATIONS})"
-            )
-
-    salt = secrets.token_bytes(16)
-    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
-    salt_b64 = base64.b64encode(salt).decode("utf-8")
-    digest_b64 = base64.b64encode(digest).decode("utf-8")
-    return f"pbkdf2_sha256${iterations}${salt_b64}${digest_b64}"
+    return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against PBKDF2 hash or legacy SHA-256."""
-    if "$" not in hashed_password:
-        legacy = hashlib.sha256(plain_password.encode("utf-8")).hexdigest()
-        return hmac.compare_digest(legacy, hashed_password)
-
-    try:
-        algorithm, iterations, salt_b64, digest_b64 = hashed_password.split("$", 3)
-    except ValueError:
-        return False
-
-    if algorithm != "pbkdf2_sha256":
-        return False
-
-    try:
-        salt = base64.b64decode(salt_b64)
-        expected_digest = base64.b64decode(digest_b64)
-    except (ValueError, binascii.Error):
-        # Handle malformed base64 data
-        return False
-
-    derived = hashlib.pbkdf2_hmac(
-        "sha256", plain_password.encode("utf-8"), salt, int(iterations)
-    )
-    return hmac.compare_digest(derived, expected_digest)
+    """Verify password against bcrypt hash.
+    
+    Optimized: Standardized on CryptContext; removed legacy SHA-256 fallback
+    to prevent downgrade attacks.
+    """
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 async def get_current_user(

@@ -31,6 +31,34 @@ from metrics.synthesizer import CodeSynthesizer
 logger = logging.getLogger(__name__)
 
 
+# ============================================================================
+# Centralized Memory Service Helper
+# ============================================================================
+
+async def _get_memory_service():
+    """Centralized helper to reduce redundancy in memory command handlers.
+    
+    Returns:
+        FeedbackLoopMemory instance if enabled and initialized, None otherwise
+    """
+    from metrics.memory_service import FeedbackLoopMemory
+    
+    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
+        print("⚠ Memory integration is not enabled. Set FEEDBACK_LOOP_MEMORY_ENABLED=true.")
+        return None
+    
+    memory = FeedbackLoopMemory(
+        storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+    )
+    
+    if not await memory.initialize():
+        print("✗ Failed to initialize memory service.")
+        return None
+    
+    return memory
+
+
 class MetricsIntegration:
     """Orchestrates the metrics collection and analysis system."""
 
@@ -662,28 +690,13 @@ async def _handle_memory_sync(patterns_file: str) -> None:
     Args:
         patterns_file: Path to patterns file
     """
-    from metrics.memory_service import FeedbackLoopMemory
-
     print("=== Feedback Loop - Memory Sync ===\n")
 
-    # Check if memory is enabled
-    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
-        print("⚠  Memory integration is not enabled")
-        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+    memory = await _get_memory_service()
+    if not memory:
         return
 
     try:
-        # Initialize memory service
-        memory = FeedbackLoopMemory(
-            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-        )
-
-        if not await memory.initialize():
-            print("✗ Failed to initialize memory service")
-            print("  Make sure MemU is installed: pip install memu-py")
-            return
-
         # Load patterns
         pattern_manager = PatternManager(patterns_file, use_memory=False)
         pattern_manager.memory = memory
@@ -706,29 +719,15 @@ async def _handle_memory_query(query: str, limit: int) -> None:
         query: Search query
         limit: Maximum number of results
     """
-    from metrics.memory_service import FeedbackLoopMemory
-
     print("=== Feedback Loop - Memory Query ===\n")
     print(f"Query: {query}")
     print(f"Limit: {limit}\n")
 
-    # Check if memory is enabled
-    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
-        print("⚠  Memory integration is not enabled")
-        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+    memory = await _get_memory_service()
+    if not memory:
         return
 
     try:
-        # Initialize memory service
-        memory = FeedbackLoopMemory(
-            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-        )
-
-        if not await memory.initialize():
-            print("✗ Failed to initialize memory service")
-            return
-
         # Query patterns
         print("🔍 Searching patterns...")
         result = await memory.retrieve_patterns(query, method="rag", limit=limit)
@@ -759,29 +758,15 @@ async def _handle_memory_recommend(context: str, limit: int) -> None:
         context: Development context
         limit: Maximum number of recommendations
     """
-    from metrics.memory_service import FeedbackLoopMemory
-
     print("=== Feedback Loop - Pattern Recommendations ===\n")
     print(f"Context: {context}")
     print(f"Limit: {limit}\n")
 
-    # Check if memory is enabled
-    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
-        print("⚠  Memory integration is not enabled")
-        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+    memory = await _get_memory_service()
+    if not memory:
         return
 
     try:
-        # Initialize memory service
-        memory = FeedbackLoopMemory(
-            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-        )
-
-        if not await memory.initialize():
-            print("✗ Failed to initialize memory service")
-            return
-
         # Get recommendations
         print("💡 Getting recommendations...")
         recommendations = await memory.get_pattern_recommendations(context, limit)
@@ -803,27 +788,13 @@ async def _handle_memory_recommend(context: str, limit: int) -> None:
 
 async def _handle_memory_stats() -> None:
     """Handle memory stats command."""
-    from metrics.memory_service import FeedbackLoopMemory
-
     print("=== Feedback Loop - Memory Statistics ===\n")
 
-    # Check if memory is enabled
-    if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
-        print("⚠  Memory integration is not enabled")
-        print("   Set FEEDBACK_LOOP_MEMORY_ENABLED=true to enable")
+    memory = await _get_memory_service()
+    if not memory:
         return
 
     try:
-        # Initialize memory service
-        memory = FeedbackLoopMemory(
-            storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-        )
-
-        if not await memory.initialize():
-            print("✗ Failed to initialize memory service")
-            return
-
         # Get statistics
         stats = await memory.get_memory_stats()
 

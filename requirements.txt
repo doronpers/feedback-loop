@@ -12,6 +12,7 @@ uvicorn>=0.23.0
 pygls>=1.0.0
 memu-py>=0.1.0  # Agentic memory framework
 python-dotenv>=1.0.0  # Load .env files automatically
+passlib[bcrypt]>=1.7.4  # Secure password hashing with bcrypt
 
 # Development / Testing
 pytest>=7.0.0

@@ -12,6 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import httpx
+
 logger = logging.getLogger(__name__)
 
 
@@ -218,6 +220,7 @@ class CloudSyncClient(SyncClient):
         api_key: str,
         organization_id: Optional[str] = None,
         team_id: Optional[str] = None,
+        timeout: float = 30.0,
     ):
         """Initialize cloud sync client.
 
@@ -226,12 +229,21 @@ class CloudSyncClient(SyncClient):
             api_key: API key for authentication
             organization_id: Optional organization ID
             team_id: Optional team ID
+            timeout: Request timeout in seconds (default: 30.0)
         """
         self.api_url = api_url.rstrip("/")
         self.api_key = api_key
         self.organization_id = organization_id
         self.team_id = team_id
+        self.timeout = timeout
         self._authenticated = bool(api_key)
+        
+        # Initialize httpx client with proper error handling
+        self._client = httpx.AsyncClient(
+            base_url=self.api_url,
+            headers={"Authorization": f"Bearer {self.api_key}"},
+            timeout=timeout,
+        )
         logger.debug("Initialized CloudSyncClient")
 
     def sync_patterns(self, patterns: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -251,22 +263,45 @@ class CloudSyncClient(SyncClient):
             }
 
         try:
-            # TODO: PRODUCTION - Implement actual API call to cloud backend
-            # This is a placeholder implementation for Phase 1
-            # Phase 2 should implement actual HTTP requests using requests/httpx
-            # See docs/PRODUCTION_CHECKLIST.md for implementation plan
-            logger.debug(f"Would sync {len(patterns)} patterns to cloud")
-
+            import asyncio
+            
+            # Use async httpx client for actual HTTP call
+            async def _sync():
+                response = await self._client.post(
+                    "/api/v1/patterns/sync",
+                    json={"patterns": patterns},
+                )
+                response.raise_for_status()
+                return response.json()
+            
+            result = asyncio.run(_sync())
+            
+            logger.info(f"Synced {len(patterns)} patterns to cloud")
             return {
                 "status": "success",
-                "synced_count": len(patterns),
+                "synced_count": result.get("synced_count", len(patterns)),
+                "conflicts": result.get("conflicts", []),
                 "timestamp": datetime.now().isoformat(),
                 "storage": "cloud",
                 "organization_id": self.organization_id,
                 "team_id": self.team_id,
             }
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error syncing patterns: {e.response.status_code} - {e.response.text}")
+            return {
+                "status": "error",
+                "error": f"HTTP {e.response.status_code}: {e.response.text[:200]}",
+                "timestamp": datetime.now().isoformat(),
+            }
+        except httpx.RequestError as e:
+            logger.error(f"Network error syncing patterns to cloud: {e}")
+            return {
+                "status": "error",
+                "error": f"Network error: {str(e)}",
+                "timestamp": datetime.now().isoformat(),
+            }
         except Exception as e:
-            logger.error(f"Failed to sync patterns to cloud: {e}")
+            logger.error(f"Failed to sync patterns to cloud: {e}", exc_info=True)
             return {
                 "status": "error",
                 "error": str(e),
@@ -284,12 +319,26 @@ class CloudSyncClient(SyncClient):
             return []
 
         try:
-            # TODO: Implement actual API call to cloud backend
-            # This is a placeholder for future implementation
-            logger.debug("Would pull patterns from cloud")
+            import asyncio
+            
+            # Use async httpx client for actual HTTP call
+            async def _pull():
+                response = await self._client.get("/api/v1/patterns/pull")
+                response.raise_for_status()
+                data = response.json()
+                return data.get("patterns", [])
+            
+            patterns = asyncio.run(_pull())
+            logger.info(f"Pulled {len(patterns)} patterns from cloud")
+            return patterns
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error pulling patterns: {e.response.status_code} - {e.response.text}")
+            return []
+        except httpx.RequestError as e:
+            logger.error(f"Network error pulling patterns from cloud: {e}")
             return []
         except Exception as e:
-            logger.error(f"Failed to pull patterns from cloud: {e}")
+            logger.error(f"Failed to pull patterns from cloud: {e}", exc_info=True)
             return []
 
     def sync_metrics(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
@@ -309,10 +358,20 @@ class CloudSyncClient(SyncClient):
             }
 
         try:
-            # TODO: Implement actual API call to cloud backend
-            # This is a placeholder for future implementation
-            logger.debug("Would sync metrics to cloud")
-
+            import asyncio
+            
+            # Use async httpx client for actual HTTP call
+            async def _sync():
+                response = await self._client.post(
+                    "/api/v1/metrics",
+                    json=metrics,
+                )
+                response.raise_for_status()
+                return response.json()
+            
+            result = asyncio.run(_sync())
+            logger.info("Synced metrics to cloud")
+            
             return {
                 "status": "success",
                 "timestamp": datetime.now().isoformat(),
@@ -320,8 +379,22 @@ class CloudSyncClient(SyncClient):
                 "organization_id": self.organization_id,
                 "team_id": self.team_id,
             }
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error syncing metrics: {e.response.status_code} - {e.response.text}")
+            return {
+                "status": "error",
+                "error": f"HTTP {e.response.status_code}: {e.response.text[:200]}",
+                "timestamp": datetime.now().isoformat(),
+            }
+        except httpx.RequestError as e:
+            logger.error(f"Network error syncing metrics to cloud: {e}")
+            return {
+                "status": "error",
+                "error": f"Network error: {str(e)}",
+                "timestamp": datetime.now().isoformat(),
+            }
         except Exception as e:
-            logger.error(f"Failed to sync metrics to cloud: {e}")
+            logger.error(f"Failed to sync metrics to cloud: {e}", exc_info=True)
             return {
                 "status": "error",
                 "error": str(e),
@@ -339,12 +412,26 @@ class CloudSyncClient(SyncClient):
             return {}
 
         try:
-            # TODO: Implement actual API call to cloud backend
-            # This is a placeholder for future implementation
-            logger.debug("Would pull config from cloud")
+            import asyncio
+            
+            # Use async httpx client for actual HTTP call
+            async def _pull():
+                response = await self._client.get("/api/v1/config")
+                response.raise_for_status()
+                data = response.json()
+                return data.get("config", {})
+            
+            config = asyncio.run(_pull())
+            logger.info("Pulled config from cloud")
+            return config
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error pulling config: {e.response.status_code} - {e.response.text}")
+            return {}
+        except httpx.RequestError as e:
+            logger.error(f"Network error pulling config from cloud: {e}")
             return {}
         except Exception as e:
-            logger.error(f"Failed to pull config from cloud: {e}")
+            logger.error(f"Failed to pull config from cloud: {e}", exc_info=True)
             return {}
 
     def is_authenticated(self) -> bool:
@@ -354,6 +441,22 @@ class CloudSyncClient(SyncClient):
             True if authenticated, False otherwise
         """
         return self._authenticated
+    
+    async def close(self) -> None:
+        """Close the httpx client and clean up resources."""
+        await self._client.aclose()
+    
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - closes httpx client."""
+        import asyncio
+        try:
+            asyncio.run(self.close())
+        except Exception:
+            pass  # Ignore errors during cleanup
 
 
 def create_sync_client(

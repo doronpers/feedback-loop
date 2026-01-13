@@ -1,8 +1,8 @@
-# AI Patterns Guide (Condensed)
+# AI Patterns Guide
 
-This guide is the shortest path to understanding how feedback-loop uses patterns to improve code. It focuses on workflow, pattern structure, and when to apply each stage.
+**Living Pattern Library Philosophy** - This guide explains how feedback-loop transforms failures into reusable patterns, creating a self-evolving knowledge base that improves AI code generation and team collaboration.
 
-If you want the full deep dive (workflows, prompts, extended examples), see **[docs/archive/AI_PATTERNS_GUIDE_FULL.md](archive/AI_PATTERNS_GUIDE_FULL.md)**.
+> **Consistency Note:** This guide aligns with `.cursorrules` to ensure the "living pattern library" philosophy is consistent across IDE integration and documentation. See **[.cursorrules](../.cursorrules)** for Cursor-specific pattern application rules.
 
 ## What is a pattern?
 
@@ -74,8 +74,19 @@ The system is designed to keep the pattern library current. If patterns stop pre
 
 When that happens, revise the pattern and re-run tests.
 
+## Integration with Cursor IDE
+
+The `.cursorrules` file ensures Cursor IDE automatically applies these patterns during code generation. The patterns are the same across both the CLI and IDE integration, creating a consistent developer experience.
+
+**Key principles (from .cursorrules):**
+- Patterns exist because they've prevented real bugs in production
+- Apply them consistently, and the feedback loop continues learning
+- When in doubt, check existing code in `/examples/` or `/tests/` for pattern application examples
+- For new patterns, follow the workflow: observe, identify, codify, apply, verify, share
+
 ## Where to go next
 
-- **[Quick Reference](QUICK_REFERENCE.md)** — the full pattern list.
+- **[Quick Reference](QUICK_REFERENCE.md)** — the full pattern list with examples.
 - **[Metrics Guide](METRICS_GUIDE.md)** — collection and analysis workflows.
+- **[Cursor Integration](../CURSOR_INTEGRATION.md)** — IDE setup with pattern-aware AI.
 - **[Full guide archive](archive/AI_PATTERNS_GUIDE_FULL.md)** — deep dives and extended examples.

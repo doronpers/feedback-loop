@@ -46,6 +46,7 @@ setup(
         "email-validator>=2.0.0",
         "memu-py>=0.1.0",  # Agentic memory framework for pattern learning
         "python-dotenv>=1.0.0",  # Load .env files automatically
+        "passlib[bcrypt]>=1.7.4",  # Secure password hashing with bcrypt
     ],
     extras_require={
         "test": test_requires,

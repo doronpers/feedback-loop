@@ -1,6 +1,6 @@
 # Documentation Index
 
-A concise map of the documentation set. Start with the shortest path to value, then go deeper as needed.
+**Table of Contents** - Non-redundant navigation to all documentation resources.
 
 ## Start here
 

@@ -87,18 +87,53 @@ class PatternManager:
             self.changelog = []
 
     def save_patterns(self) -> None:
-        """Save patterns to JSON file."""
+        """Save patterns to JSON file using atomic write strategy.
+        
+        Optimized: Uses temporary file + atomic rename to prevent data corruption
+        during power failures or crashes during write operations.
+        """
+        import tempfile
+        import shutil
+        
         try:
             data = {
                 "patterns": self.patterns,
                 "changelog": self.changelog,
                 "last_updated": datetime.now().isoformat(),
             }
-            with open(self.pattern_library_path, "w") as f:
-                json.dump(data, f, indent=2)
-            logger.debug(
-                f"Saved {len(self.patterns)} patterns to {self.pattern_library_path}"
+            
+            # Atomic write: write to temp file first, then rename
+            pattern_path = Path(self.pattern_library_path)
+            pattern_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Create temporary file in same directory for atomic rename
+            temp_fd, temp_path = tempfile.mkstemp(
+                suffix=".json",
+                dir=pattern_path.parent,
+                prefix=pattern_path.stem + "_",
             )
+            
+            try:
+                # Write to temporary file
+                with os.fdopen(temp_fd, "w") as f:
+                    json.dump(data, f, indent=2)
+                    f.flush()
+                    os.fsync(f.fileno())  # Ensure data is written to disk
+                
+                # Atomic rename (works on POSIX and Windows)
+                shutil.move(temp_path, self.pattern_library_path)
+                
+                logger.debug(
+                    f"Saved {len(self.patterns)} patterns to {self.pattern_library_path}"
+                )
+            except Exception:
+                # Clean up temp file on error
+                try:
+                    os.unlink(temp_path)
+                except Exception:
+                    pass
+                raise
+                
         except IOError as e:
             logger.error(
                 f"Failed to save patterns to {self.pattern_library_path}: {e}",
