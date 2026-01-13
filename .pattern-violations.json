@@ -1,7 +1,7 @@
 [
   {
     "file": "metrics/integrate.py",
-    "line": 460,
+    "line": 488,
     "pattern": "bounds_checking",
     "description": "List access without bounds checking",
     "suggestion": "Check list length before accessing: if items: first = items[0]",
@@ -9,7 +9,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 96,
+    "line": 47,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -17,7 +17,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 97,
+    "line": 56,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -25,63 +25,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 98,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 99,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 100,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 101,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 102,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 103,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 115,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 116,
+    "line": 124,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -97,6 +41,22 @@
   },
   {
     "file": "metrics/integrate.py",
+    "line": 126,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 127,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
     "line": 128,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -105,7 +65,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 136,
+    "line": 129,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -113,7 +73,15 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 138,
+    "line": 130,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 131,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -129,7 +97,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 145,
+    "line": 144,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -137,7 +105,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 149,
+    "line": 153,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -145,23 +113,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 151,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 155,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 157,
+    "line": 156,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -177,7 +129,31 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 175,
+    "line": 166,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 171,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 173,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 177,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -193,7 +169,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 226,
+    "line": 183,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -201,7 +177,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 227,
+    "line": 185,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -209,7 +185,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 228,
+    "line": 192,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -217,7 +193,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 229,
+    "line": 203,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -225,7 +201,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 230,
+    "line": 207,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -233,7 +209,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 231,
+    "line": 254,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -241,23 +217,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 232,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 233,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 239,
+    "line": 255,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -273,7 +233,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 296,
+    "line": 257,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -281,7 +241,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 305,
+    "line": 258,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -289,7 +249,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 313,
+    "line": 259,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -297,7 +257,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 314,
+    "line": 260,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -305,7 +265,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 315,
+    "line": 261,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -313,7 +273,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 316,
+    "line": 267,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -321,7 +281,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 317,
+    "line": 284,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -329,7 +289,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 318,
+    "line": 324,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -337,7 +297,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 319,
+    "line": 333,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -345,7 +305,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 320,
+    "line": 341,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -353,7 +313,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 326,
+    "line": 342,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -361,7 +321,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 332,
+    "line": 343,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -369,7 +329,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 351,
+    "line": 344,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -377,7 +337,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 365,
+    "line": 345,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -385,7 +345,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 371,
+    "line": 346,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -393,7 +353,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 419,
+    "line": 347,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -401,7 +361,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 420,
+    "line": 348,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -409,7 +369,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 421,
+    "line": 354,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -417,7 +377,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 424,
+    "line": 360,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -425,7 +385,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 426,
+    "line": 379,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -433,7 +393,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 432,
+    "line": 393,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -441,7 +401,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 435,
+    "line": 399,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -449,7 +409,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 509,
+    "line": 447,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -457,7 +417,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 511,
+    "line": 448,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -465,7 +425,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 602,
+    "line": 449,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -473,7 +433,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 603,
+    "line": 452,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -481,7 +441,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 639,
+    "line": 454,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -489,7 +449,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 640,
+    "line": 460,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -497,7 +457,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 641,
+    "line": 463,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -505,7 +465,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 642,
+    "line": 537,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -513,7 +473,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 643,
+    "line": 539,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -521,7 +481,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 644,
+    "line": 630,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -529,55 +489,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 645,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 646,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 647,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 650,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 653,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 654,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 656,
+    "line": 631,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -586,6 +498,30 @@
   {
     "file": "metrics/integrate.py",
     "line": 667,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 668,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 669,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 670,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -609,7 +545,47 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 683,
+    "line": 673,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 674,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 675,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 678,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 681,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 682,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -625,7 +601,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 691,
+    "line": 693,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -633,7 +609,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 694,
+    "line": 704,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -641,7 +617,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 695,
+    "line": 707,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -649,7 +625,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 698,
+    "line": 708,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -665,7 +641,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 712,
+    "line": 722,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -673,7 +649,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 713,
+    "line": 723,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -681,7 +657,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 717,
+    "line": 724,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -689,7 +665,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 718,
+    "line": 732,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -697,7 +673,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 729,
+    "line": 736,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -705,7 +681,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 733,
+    "line": 739,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -713,7 +689,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 737,
+    "line": 743,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -721,15 +697,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 740,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 744,
+    "line": 746,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -745,7 +713,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 748,
+    "line": 750,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -753,7 +721,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 751,
+    "line": 761,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -761,7 +729,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 764,
+    "line": 762,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -769,23 +737,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 765,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 766,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 770,
+    "line": 763,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -801,6 +753,38 @@
   },
   {
     "file": "metrics/integrate.py",
+    "line": 775,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 778,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 780,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 781,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
     "line": 782,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -809,7 +793,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 786,
+    "line": 785,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -817,7 +801,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 790,
+    "line": 791,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -825,7 +809,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 793,
+    "line": 802,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -833,7 +817,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 795,
+    "line": 805,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -841,7 +825,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 796,
+    "line": 806,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -849,15 +833,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 797,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 800,
+    "line": 807,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -873,7 +849,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 812,
+    "line": 809,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -881,7 +857,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 813,
+    "line": 810,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -889,7 +865,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 824,
+    "line": 811,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -897,7 +873,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 831,
+    "line": 816,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -905,7 +881,7 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 834,
+    "line": 1084,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
@@ -913,74 +889,18 @@
   },
   {
     "file": "metrics/integrate.py",
-    "line": 835,
+    "line": 1103,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "metrics/integrate.py",
-    "line": 836,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 837,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 838,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 839,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 840,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 845,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 1113,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/integrate.py",
-    "line": 1132,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
+    "file": "metrics/pattern_manager.py",
+    "line": 320,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "lines[0]"
   }
 ]
