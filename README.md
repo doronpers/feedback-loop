@@ -157,7 +157,7 @@ Use **[Quick Reference](documentation/QUICK_REFERENCE.md)** for the full catalog
 
 ## Architecture (high-level)
 
-```
+```text
 ┌─────────────────────────────┐
 │            Tests            │
 │          (pytest)           │
