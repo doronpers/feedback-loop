@@ -109,7 +109,7 @@ print(f"High frequency patterns: {high_freq}")
 from metrics.pattern_manager import PatternManager
 from metrics.code_generator import PatternAwareGenerator
 
-manager = PatternManager("patterns.json")
+manager = PatternManager("data/patterns.json")
 manager.load_from_ai_patterns_md("AI_PATTERNS.md")
 
 generator = PatternAwareGenerator(manager.get_all_patterns())
@@ -232,7 +232,7 @@ Manages the pattern library with CRUD operations.
 
 **Example:**
 ```python
-manager = PatternManager("patterns.json")
+manager = PatternManager("data/patterns.json")
 manager.load_from_ai_patterns_md("AI_PATTERNS.md")
 manager.update_frequencies(high_freq_patterns)
 manager.archive_unused_patterns(days=90)
@@ -319,7 +319,7 @@ high_freq = analyzer.get_high_frequency_patterns()
 new_patterns = analyzer.detect_new_patterns(["numpy_json_serialization", "bounds_checking"])
 
 # 3. Update pattern library
-manager = PatternManager("patterns.json")
+manager = PatternManager("data/patterns.json")
 manager.load_from_ai_patterns_md("AI_PATTERNS.md")
 manager.update_frequencies(high_freq)
 manager.add_new_patterns(new_patterns)
@@ -383,7 +383,7 @@ print(f"Most common pattern: {high_freq[0]['pattern']} ({high_freq[0]['count']} 
 ### Example 2: Generate Code for File Processing
 
 ```python
-manager = PatternManager("patterns.json")
+manager = PatternManager("data/patterns.json")
 manager.load_from_ai_patterns_md("AI_PATTERNS.md")
 
 generator = PatternAwareGenerator(manager.get_all_patterns())
@@ -489,7 +489,7 @@ Current test coverage:
 
 ### Pattern Library Path
 
-By default, the pattern library is stored in `patterns.json`. You can specify a custom path:
+By default, the pattern library is stored in `data/patterns.json`. You can specify a custom path:
 
 ```python
 manager = PatternManager("custom/path/patterns.json")
