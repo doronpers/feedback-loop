@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+- **Added**
+
 - 20 additional test cases to improve coverage
 - Tests for edge cases in NumPy type conversion (nested lists, non-NumPy passthrough)
 - Tests for DataProcessor configuration with missing keys
@@ -20,19 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tests for duplicate test failure tracking
 - Tests for invalid JSON loading
 
-### Changed
+- **Changed**
+
 - Test count increased from 99 to 119 tests
 - Coverage improved from 85% to 91% (excluding demo files and CLI)
 - Updated README badges to reflect current test count and coverage
 - Updated README test suite breakdown
 
-### Fixed
+- **Fixed**
+
 - Improved test coverage for error handling paths
 - Enhanced edge case testing for all core patterns
 
 ## [1.0.0] - 2026-01-04
 
-### Added
+- **Added**
+
 - Core pattern library with 9 essential patterns:
   1. NumPy Type Conversion
   2. Bounds Checking
@@ -62,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fastapi_audio_patterns.py - Production-ready FastAPI patterns
   - fastapi_audio_example.py - Complete FastAPI application
 
-### Infrastructure
+- **Infrastructure**
+
 - MIT License
 - Python 3.8+ support
 - pytest-based testing
