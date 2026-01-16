@@ -83,6 +83,16 @@ This interactive demo shows:
 
 **Try this:** When prompted, ask it to generate code for "process NumPy array to JSON" - it will automatically apply the right patterns.
 
+## Data Locations
+
+By default, feedback-loop stores learning artifacts in these locations:
+
+- **Metrics** (test runs): `data/metrics_data.json`
+- **Patterns** (learned library): `data/patterns.json`
+- **Optional markdown sync** (pattern guide): `docs/AI_PATTERNS_GUIDE.md`
+
+If you change paths via CLI flags, keep these files together so the metrics and pattern sync stay aligned.
+
 ## What's Next?
 
 ### Use in Your Project
