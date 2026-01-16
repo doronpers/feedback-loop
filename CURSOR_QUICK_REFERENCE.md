@@ -25,7 +25,7 @@ especially for error handling and type safety
 
 ### Testing
 ```
-@Codebase Generate pytest tests for this function that validate 
+@Codebase Generate pytest tests for this function that validate
 all feedback-loop patterns are correctly applied
 ```
 
@@ -234,7 +234,7 @@ Cmd/Ctrl + Shift + P → "Developer: Reload Window"
 
 ---
 
-**Need more help?** 
+**Need more help?**
 - Run: `./bin/fl-chat` for interactive assistance
 - Read: `CURSOR_INTEGRATION.md` for detailed guide
 - Visit: [GitHub Issues](https://github.com/doronpers/feedback-loop/issues)

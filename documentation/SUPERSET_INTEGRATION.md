@@ -27,13 +27,13 @@ Apache Superset offers several advantages for feedback-loop metrics:
 
 ### Key Benefits
 
-✅ **Open Source**: Apache 2.0 license (compatible with feedback-loop's MIT license)  
-✅ **Powerful Visualizations**: 40+ chart types, interactive dashboards  
-✅ **SQL Support**: Native SQL Lab for custom queries  
-✅ **Real-time Updates**: Configurable refresh rates  
-✅ **Multi-user**: Team collaboration features  
-✅ **Extensible**: Custom visualization plugins  
-✅ **Production Ready**: Used by Airbnb, Twitter, Netflix  
+✅ **Open Source**: Apache 2.0 license (compatible with feedback-loop's MIT license)
+✅ **Powerful Visualizations**: 40+ chart types, interactive dashboards
+✅ **SQL Support**: Native SQL Lab for custom queries
+✅ **Real-time Updates**: Configurable refresh rates
+✅ **Multi-user**: Team collaboration features
+✅ **Extensible**: Custom visualization plugins
+✅ **Production Ready**: Used by Airbnb, Twitter, Netflix
 
 ### Use Cases
 
@@ -275,20 +275,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-      
+
       - name: Install dependencies
         run: |
           pip install -e .[test]
           pip install sqlalchemy psycopg2-binary
-      
+
       - name: Run tests with metrics
         run: pytest --enable-metrics
-      
+
       - name: Export to database
         env:
           DB_URI: ${{ secrets.METRICS_DB_URI }}
@@ -326,7 +326,7 @@ ORDER BY bug_count DESC
 LIMIT 10;
 
 -- Pattern effectiveness over time
-SELECT 
+SELECT
     DATE_TRUNC('week', period_start) as week,
     pattern_name,
     AVG(effectiveness_score) as avg_effectiveness
@@ -335,7 +335,7 @@ GROUP BY week, pattern_name
 ORDER BY week DESC, avg_effectiveness DESC;
 
 -- Code generation success rate by confidence
-SELECT 
+SELECT
     ROUND(confidence, 1) as confidence_bucket,
     COUNT(*) as total,
     SUM(CASE WHEN success THEN 1 ELSE 0 END) as successes,
@@ -377,7 +377,7 @@ From any dashboard or chart:
    ```bash
    # PostgreSQL
    pg_dump feedback_loop > backup_$(date +%Y%m%d).sql
-   
+
    # SQLite
    cp metrics.db metrics_backup_$(date +%Y%m%d).db
    ```
@@ -408,13 +408,13 @@ From any dashboard or chart:
 1. **Materialized Views** (PostgreSQL)
    ```sql
    CREATE MATERIALIZED VIEW pattern_summary AS
-   SELECT 
+   SELECT
        pattern,
        COUNT(*) as total_bugs,
        MAX(timestamp) as last_occurrence
    FROM metrics_bugs
    GROUP BY pattern;
-   
+
    -- Refresh periodically
    REFRESH MATERIALIZED VIEW pattern_summary;
    ```

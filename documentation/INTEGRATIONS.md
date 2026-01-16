@@ -48,6 +48,6 @@ The VS Code extension POC and language server setup are described in `../vscode-
 
 **Features:**
 - Real-time diagnostics
-- Quick fixes for pattern violations  
+- Quick fixes for pattern violations
 - Hover documentation
 - Task integration

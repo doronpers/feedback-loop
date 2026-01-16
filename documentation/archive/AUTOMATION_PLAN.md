@@ -139,14 +139,14 @@ def should_auto_enable_metrics():
 def pytest_sessionfinish(self, session, exitstatus):
     if not self.enable_metrics:
         return
-    
+
     # Load configuration
     config = self._load_auto_analysis_config()
-    
+
     if config.get("enabled", False):
         threshold = config.get("threshold_failures", 1)
         failures = session.testsfailed
-        
+
         if failures >= threshold:
             print(f"\n📊 Auto-analyzing {failures} test failures...")
             self._run_analysis(show_dashboard=config.get("show_dashboard", False))
@@ -199,7 +199,7 @@ def pytest_sessionfinish(self, session, exitstatus):
 # Check if auto-analyze is enabled
 if [ -f ".feedback-loop/config.json" ]; then
     ENABLED=$(python3 -c "import json; print(json.load(open('.feedback-loop/config.json')).get('post_commit_analyze', {}).get('enabled', False))" 2>/dev/null)
-    
+
     if [ "$ENABLED" = "True" ]; then
         echo "🔄 Running feedback-loop analysis on committed changes..."
         feedback-loop analyze --quiet
@@ -214,7 +214,7 @@ fi
 
 if [ -f ".feedback-loop/config.json" ]; then
     ENABLED=$(python3 -c "import json; print(json.load(open('.feedback-loop/config.json')).get('post_merge_analyze', {}).get('enabled', False))" 2>/dev/null)
-    
+
     if [ "$ENABLED" = "True" ]; then
         echo "🔄 Analyzing merged changes..."
         feedback-loop analyze --since ORIG_HEAD
@@ -370,27 +370,27 @@ class FeedbackLoopWatcher(FileSystemEventHandler):
         self.config = config
         self.debounce_time = config.get("debounce_seconds", 2)
         self.last_trigger = {}
-    
+
     def on_modified(self, event):
         if event.is_directory:
             return
-        
+
         path = Path(event.src_path)
-        
+
         # Watch Python files
         if path.suffix == ".py":
             self._debounced_trigger("python_file", path)
-        
+
         # Watch AI_PATTERNS.md
         if path.name == "AI_PATTERNS_GUIDE.md":
             self._debounced_trigger("patterns_md", path)
-    
+
     def _debounced_trigger(self, key, path):
         now = time.time()
         if now - self.last_trigger.get(key, 0) > self.debounce_time:
             self.last_trigger[key] = now
             self._handle_change(key, path)
-    
+
     def _handle_change(self, key, path):
         if key == "python_file":
             print(f"🔍 Detected change in {path}, analyzing...")
@@ -450,16 +450,16 @@ class FeedbackLoopWatcher(FileSystemEventHandler):
 def auto_sync_from_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"):
     """Auto-sync patterns from markdown if changed."""
     md_file = Path(md_path)
-    
+
     if not md_file.exists():
         return
-    
+
     # Check if markdown is newer than patterns.json
     patterns_file = Path(self.patterns_file)
     if patterns_file.exists():
         if md_file.stat().st_mtime <= patterns_file.stat().st_mtime:
             return  # Patterns are up to date
-    
+
     logger.info(f"Auto-syncing patterns from {md_path}...")
     self.load_from_ai_patterns_md(md_path)
     self.save_patterns()
@@ -502,19 +502,19 @@ def auto_sync_from_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"):
 {
   "$schema": "./config.schema.json",
   "version": "1.0",
-  
+
   "auto_metrics": {
     "enabled": true,
     "output_file": "metrics_data.json"
   },
-  
+
   "auto_analyze": {
     "enabled": true,
     "threshold_failures": 1,
     "show_dashboard": false,
     "quiet": false
   },
-  
+
   "git_hooks": {
     "post_commit_analyze": {
       "enabled": false,
@@ -525,7 +525,7 @@ def auto_sync_from_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"):
       "since_merge_base": true
     }
   },
-  
+
   "watcher": {
     "enabled": false,
     "debounce_seconds": 2,
@@ -534,7 +534,7 @@ def auto_sync_from_markdown(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"):
     "auto_analyze": true,
     "auto_sync_patterns": true
   },
-  
+
   "patterns": {
     "auto_sync_from_markdown": true,
     "markdown_path": "docs/AI_PATTERNS_GUIDE.md",
@@ -557,26 +557,26 @@ logger = logging.getLogger(__name__)
 
 class ConfigManager:
     """Manages feedback-loop configuration."""
-    
+
     DEFAULT_CONFIG_PATH = ".feedback-loop/config.json"
-    
+
     def __init__(self, config_path: str = None):
         self.config_path = config_path or self.DEFAULT_CONFIG_PATH
         self._config = self._load_config()
-    
+
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from file."""
         path = Path(self.config_path)
         if not path.exists():
             return self._default_config()
-        
+
         try:
             with open(path) as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Failed to load config: {e}, using defaults")
             return self._default_config()
-    
+
     def _default_config(self) -> Dict[str, Any]:
         """Return default configuration."""
         return {
@@ -589,7 +589,7 @@ class ConfigManager:
             "watcher": {"enabled": False, "debounce_seconds": 2},
             "patterns": {"auto_sync_from_markdown": False}
         }
-    
+
     def get(self, key_path: str, default=None):
         """Get config value by dot-separated path."""
         keys = key_path.split(".")
@@ -600,7 +600,7 @@ class ConfigManager:
             else:
                 return default
         return value if value is not None else default
-    
+
     def set(self, key_path: str, value: Any):
         """Set config value by dot-separated path."""
         keys = key_path.split(".")
@@ -609,7 +609,7 @@ class ConfigManager:
             config = config.setdefault(key, {})
         config[keys[-1]] = value
         self._save_config()
-    
+
     def _save_config(self):
         """Save configuration to file."""
         path = Path(self.config_path)
@@ -687,13 +687,13 @@ class Trigger:
 
 class TriggerManager:
     """Manages and executes context-aware triggers."""
-    
+
     def __init__(self, config_path: str = ".feedback-loop/triggers.json"):
         self.config_path = config_path
         self.config = self._load_config()
         self.triggers: List[Trigger] = []
         self._setup_triggers()
-    
+
     def _load_config(self):
         """Load trigger configuration."""
         if not Path(self.config_path).exists():
@@ -704,7 +704,7 @@ class TriggerManager:
             }
         with open(self.config_path) as f:
             return json.load(f)
-    
+
     def _setup_triggers(self):
         """Setup built-in triggers."""
         # Trigger: Auto-analyze after N commits
@@ -714,7 +714,7 @@ class TriggerManager:
             action=self._run_analysis,
             cooldown=60  # 1 hour
         ))
-        
+
         # Trigger: Auto-suggest patterns after N failures
         self.triggers.append(Trigger(
             name="after_n_failures",
@@ -722,7 +722,7 @@ class TriggerManager:
             action=self._suggest_patterns,
             cooldown=30  # 30 minutes
         ))
-        
+
         # Trigger: Alert on low effectiveness
         self.triggers.append(Trigger(
             name="low_effectiveness",
@@ -730,7 +730,7 @@ class TriggerManager:
             action=self._alert_low_effectiveness,
             cooldown=1440  # 24 hours
         ))
-    
+
     def check_and_fire(self):
         """Check all triggers and fire if conditions met."""
         for trigger in self.triggers:
@@ -739,32 +739,32 @@ class TriggerManager:
                     print(f"🔔 Trigger: {trigger.name}")
                     trigger.action()
                     self._update_last_fired(trigger)
-    
+
     def _check_commits_since_last_analysis(self) -> int:
         """Count commits since last analysis."""
         # Implementation: check git log vs last analysis timestamp
         pass
-    
+
     def _check_recent_failures(self) -> int:
         """Count recent test failures."""
         # Implementation: check metrics_data.json for recent failures
         pass
-    
+
     def _check_pattern_effectiveness(self) -> float:
         """Calculate pattern effectiveness score."""
         # Implementation: analyze pattern application rate
         pass
-    
+
     def _run_analysis(self):
         """Run feedback-loop analysis."""
         import subprocess
         subprocess.run(["feedback-loop", "analyze", "--quiet"])
-    
+
     def _suggest_patterns(self):
         """Suggest patterns for recent failures."""
         print("💡 Recent failures detected. Suggested patterns:")
         # Implementation: analyze and suggest
-    
+
     def _alert_low_effectiveness(self):
         """Alert about low pattern effectiveness."""
         print("⚠️ Pattern effectiveness is low. Consider reviewing patterns.")
@@ -814,7 +814,7 @@ These features require more effort and should be prioritized based on user feedb
 
 **Status:** Deferred pending Phase 1-2 feedback.
 
-**Rationale:** 
+**Rationale:**
 - More complex to implement correctly
 - Requires process management (start/stop/restart)
 - May have platform-specific issues (Linux/macOS/Windows)
@@ -940,13 +940,13 @@ These features require more effort and should be prioritized based on user feedb
 {
   "$schema": "./config.schema.json",
   "version": "1.0",
-  
+
   "auto_metrics": {
     "enabled": true,
     "output_file": "metrics_data.json",
     "comment": "Auto-enable metrics collection during pytest runs"
   },
-  
+
   "auto_analyze": {
     "enabled": true,
     "threshold_failures": 1,
@@ -954,7 +954,7 @@ These features require more effort and should be prioritized based on user feedb
     "quiet": false,
     "comment": "Run analysis automatically after test sessions"
   },
-  
+
   "git_hooks": {
     "post_commit_analyze": {
       "enabled": false,
@@ -967,7 +967,7 @@ These features require more effort and should be prioritized based on user feedb
       "comment": "Check for pattern violations in merged code"
     }
   },
-  
+
   "watcher": {
     "enabled": false,
     "debounce_seconds": 2,
@@ -977,14 +977,14 @@ These features require more effort and should be prioritized based on user feedb
     "auto_sync_patterns": true,
     "comment": "Real-time file watching and analysis"
   },
-  
+
   "patterns": {
     "auto_sync_from_markdown": true,
     "markdown_path": "docs/AI_PATTERNS_GUIDE.md",
     "patterns_file": "patterns.json",
     "comment": "Pattern library management"
   },
-  
+
   "triggers": {
     "enabled": false,
     "config_file": ".feedback-loop/triggers.json",
@@ -1035,16 +1035,16 @@ feedback-loop config set auto_analyze.enabled false
 ## Risk Assessment
 
 ### Low Risk Items
-✅ Auto-enable metrics - Fallback to manual flag  
-✅ Post-test analysis - Runs in same process  
-✅ Git hooks - Can be removed/disabled easily  
-✅ VS Code integration - Optional files  
-✅ Configuration management - Defaults to safe behavior  
+✅ Auto-enable metrics - Fallback to manual flag
+✅ Post-test analysis - Runs in same process
+✅ Git hooks - Can be removed/disabled easily
+✅ VS Code integration - Optional files
+✅ Configuration management - Defaults to safe behavior
 
 ### Medium Risk Items
-⚠️ File watcher - Requires external library (watchdog)  
-⚠️ Auto-sync patterns - Could overwrite manual changes  
-⚠️ Triggers - Depends on data accuracy  
+⚠️ File watcher - Requires external library (watchdog)
+⚠️ Auto-sync patterns - Could overwrite manual changes
+⚠️ Triggers - Depends on data accuracy
 
 ### Mitigation Strategies
 - Comprehensive error handling with clear messages
@@ -1163,25 +1163,25 @@ extras_require={
 
 ## Appendix C: FAQ
 
-**Q: Will automation slow down my tests?**  
+**Q: Will automation slow down my tests?**
 A: No. Metrics collection adds <5ms per test. Auto-analysis runs after tests complete.
 
-**Q: Can I disable specific features?**  
+**Q: Can I disable specific features?**
 A: Yes. Each feature has an `enabled` flag in config. Set to `false` to disable.
 
-**Q: What if I don't want any automation?**  
+**Q: What if I don't want any automation?**
 A: Don't create `.feedback-loop/config.json`. Everything remains manual.
 
-**Q: How do I debug automation issues?**  
+**Q: How do I debug automation issues?**
 A: Run `./bin/fl-doctor` for diagnostics. Check logs in `.feedback-loop/logs/`.
 
-**Q: Can I customize trigger conditions?**  
+**Q: Can I customize trigger conditions?**
 A: Currently built-in triggers only. Custom triggers planned for future release.
 
-**Q: Does the watcher work on Windows?**  
+**Q: Does the watcher work on Windows?**
 A: Yes. `watchdog` library is cross-platform.
 
-**Q: What happens if config.json is invalid?**  
+**Q: What happens if config.json is invalid?**
 A: System falls back to safe defaults and logs a warning.
 
 ---
@@ -1211,6 +1211,6 @@ This enhanced plan provides a clear, prioritized roadmap for automation features
 
 ---
 
-*Document Version: 1.0*  
-*Last Updated: 2026-01-07*  
+*Document Version: 1.0*
+*Last Updated: 2026-01-07*
 *Authors: Enhanced from original automation plan*

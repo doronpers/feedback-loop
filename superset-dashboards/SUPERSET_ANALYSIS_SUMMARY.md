@@ -4,7 +4,7 @@
 
 This document provides an executive summary of the Superset dashboard design analysis for the doronpers/feedback-loop repository, including database schemas, data source configurations, and specific dashboard recommendations.
 
-**Date:** January 2026  
+**Date:** January 2026
 **Repository:** doronpers/feedback-loop
 
 ---
@@ -96,7 +96,7 @@ We recommend **4 primary dashboards** based on the data models:
 **SQL Example:**
 
 ```sql
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as date,
   AVG(CASE WHEN success THEN 100.0 ELSE 0.0 END) as success_rate,
   AVG(confidence) as avg_confidence,
@@ -141,7 +141,7 @@ ORDER BY date DESC;
 
 ```sql
 -- Pattern ROI calculation
-SELECT 
+SELECT
   p.name as pattern_name,
   p.category,
   AVG(pe.effectiveness_score) as effectiveness,
@@ -193,7 +193,7 @@ WITH all_detections AS (
   UNION ALL
   SELECT timestamp, 'code_review', pattern FROM metrics_code_reviews
 )
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as day,
   type,
   COUNT(*) as detection_count
@@ -242,7 +242,7 @@ ORDER BY day, type;
 
 ```sql
 -- Comprehensive Pattern Analysis (SAR-style)
-SELECT 
+SELECT
   p.name as pattern_name,
   p.category,
   p.severity,
@@ -251,7 +251,7 @@ SELECT
   COUNT(CASE WHEN mb.pattern = p.name THEN 1 END) as related_bugs,
   COUNT(CASE WHEN mtf.pattern_violated = p.name THEN 1 END) as related_test_failures,
   EXTRACT(days FROM NOW() - p.created_at) as days_active,
-  CASE 
+  CASE
     WHEN p.last_applied >= NOW() - INTERVAL '7 days' THEN 'Active'
     WHEN p.last_applied >= NOW() - INTERVAL '30 days' THEN 'Recent'
     ELSE 'Inactive'
@@ -261,7 +261,7 @@ LEFT JOIN pattern_effectiveness pe ON pe.pattern_name = p.name
 LEFT JOIN metrics_bugs mb ON mb.pattern = p.name
 LEFT JOIN metrics_test_failures mtf ON mtf.pattern_violated = p.name
 WHERE p.is_active = true
-GROUP BY p.id, p.name, p.category, p.severity, p.times_applied, 
+GROUP BY p.id, p.name, p.category, p.severity, p.times_applied,
          pe.effectiveness_score, p.created_at, p.last_applied
 ORDER BY p.times_applied DESC;
 ```
@@ -490,11 +490,11 @@ The feedback-loop repository has a well-structured data model that supports comp
 
 ### Key Strengths
 
-✅ **Comprehensive Data Model** - 16 tables covering all aspects of development workflow  
-✅ **Pre-populated Sample Data** - Ready to visualize immediately  
-✅ **Production-ready** - SQLite for dev, PostgreSQL for production  
-✅ **Well-indexed** - Optimized for analytics queries  
-✅ **Extensible** - Easy to add new metrics and dashboards  
+✅ **Comprehensive Data Model** - 16 tables covering all aspects of development workflow
+✅ **Pre-populated Sample Data** - Ready to visualize immediately
+✅ **Production-ready** - SQLite for dev, PostgreSQL for production
+✅ **Well-indexed** - Optimized for analytics queries
+✅ **Extensible** - Easy to add new metrics and dashboards
 
 ### Recommended Next Steps
 
@@ -529,7 +529,7 @@ The feedback-loop repository has a well-structured data model that supports comp
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** January 2026  
-**Author:** GitHub Copilot Analysis  
+**Document Version:** 1.0
+**Last Updated:** January 2026
+**Author:** GitHub Copilot Analysis
 **Repository:** doronpers/feedback-loop

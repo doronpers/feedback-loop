@@ -1,5 +1,9 @@
 # Production Readiness Checklist
 
+**⚠️ NOTE**: This document has been consolidated into [ROADMAP.md](../../ROADMAP.md).
+Please refer to ROADMAP.md for the current TODO list and roadmap.
+This file is kept for detailed implementation notes and code examples.
+
 This document tracks items that need to be addressed before deploying the cloud backend to production.
 
 ## Critical - Must Fix Before Production

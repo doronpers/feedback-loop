@@ -324,8 +324,8 @@ python -m metrics.integrate generate-with-plan \
 
 ## References
 
-1. **Planning with Files** - OthmanAdi (2024). 
-   [planning-with-files](https://github.com/OthmanAdi/planning-with-files). 
+1. **Planning with Files** - OthmanAdi (2024).
+   [planning-with-files](https://github.com/OthmanAdi/planning-with-files).
    MIT License. Claude Code skill implementing Manus-style persistent markdown planning.
 
 2. **Manus AI** - Context engineering patterns that inspired Planning with Files.

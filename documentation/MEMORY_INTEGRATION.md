@@ -186,7 +186,7 @@ async def main():
     # Initialize memory service
     memory = FeedbackLoopMemory(storage_type="inmemory")
     await memory.initialize()
-    
+
     # Store a pattern
     pattern = {
         "name": "numpy_json_serialization",
@@ -195,14 +195,14 @@ async def main():
         "severity": "high"
     }
     await memory.memorize_pattern(pattern)
-    
+
     # Semantic search
     results = await memory.retrieve_patterns(
         "How do I handle JSON with NumPy?",
         method="rag",
         limit=5
     )
-    
+
     # Get recommendations
     recommendations = await memory.get_pattern_recommendations(
         context="Building FastAPI endpoint",
@@ -228,20 +228,20 @@ async def main():
             "openai_api_key": "sk-..."
         }
     )
-    
+
     # Initialize memory
     await manager.memory.initialize()
-    
+
     # Sync all patterns to memory
     synced_count = await manager.sync_patterns_to_memory()
     print(f"Synced {synced_count} patterns")
-    
+
     # Semantic search through manager
     results = await manager.retrieve_similar_patterns(
         "safe file handling",
         limit=5
     )
-    
+
     for result in results:
         print(f"Found: {result.get('name')}")
 
@@ -259,10 +259,10 @@ async def main():
     # Initialize memory
     memory = FeedbackLoopMemory()
     await memory.initialize()
-    
+
     # Create collector with memory
     collector = MetricsCollector(memory_service=memory)
-    
+
     # Log metrics
     collector.log_bug(
         pattern="numpy_json_serialization",
@@ -271,14 +271,14 @@ async def main():
         file_path="api/endpoints.py",
         line=42
     )
-    
+
     collector.log_code_generation(
         prompt="Create JSON API endpoint",
         patterns_applied=["numpy_json_serialization", "input_validation"],
         confidence=0.9,
         success=True
     )
-    
+
     # Store session to memory
     await collector.store_session_to_memory(session_id="dev-session-001")
 
@@ -379,7 +379,7 @@ This demonstrates:
 
 ## Backward Compatibility
 
-**Important:** MemU integration is completely **opt-in**. 
+**Important:** MemU integration is completely **opt-in**.
 
 - If `FEEDBACK_LOOP_MEMORY_ENABLED` is not set, feedback-loop works exactly as before
 - All existing tests and functionality remain unchanged

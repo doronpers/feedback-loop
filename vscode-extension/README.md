@@ -109,19 +109,19 @@ Available settings:
 {
   // Enable/disable the extension
   "feedback-loop.enable": true,
-  
+
   // Path to the language server
   "feedback-loop.serverPath": "python",
-  
+
   // Server arguments
   "feedback-loop.serverArgs": ["-m", "feedback_loop_lsp"],
-  
+
   // LLM provider (claude, openai, gemini)
   "feedback-loop.llmProvider": "claude",
-  
+
   // Enable LLM features
   "feedback-loop.enableLLM": true,
-  
+
   // Analysis delay (milliseconds)
   "feedback-loop.analysisDelay": 500
 }

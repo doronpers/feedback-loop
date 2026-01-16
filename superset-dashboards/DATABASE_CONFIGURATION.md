@@ -167,7 +167,7 @@ CREATE TABLE metrics_performance (
     metric_type VARCHAR(100) NOT NULL,          -- Type of performance metric
     details JSON,                               -- Full metric details
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    
+
     -- Extracted fields for easier querying
     function_name VARCHAR(255),                 -- Function being measured
     execution_time_ms FLOAT,                    -- Execution time in milliseconds
@@ -272,17 +272,17 @@ CREATE TABLE metrics_summary (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     metric_type VARCHAR(100) NOT NULL,          -- Type of summary
     summary_date DATETIME NOT NULL,             -- Date of summary
-    
+
     -- Summary counts
     total_count INTEGER DEFAULT 0,
     high_severity_count INTEGER DEFAULT 0,
     medium_severity_count INTEGER DEFAULT 0,
     low_severity_count INTEGER DEFAULT 0,
-    
+
     -- Pattern statistics
     top_pattern VARCHAR(255),                   -- Most frequent pattern
     top_pattern_count INTEGER,
-    
+
     -- Trends
     trend_direction VARCHAR(20),                -- increasing, decreasing, stable
     week_over_week_change FLOAT                 -- % change
@@ -771,7 +771,7 @@ Create virtual datasets for complex queries:
 **Example: Pattern ROI Analysis**
 
 ```sql
-SELECT 
+SELECT
   p.name as pattern_name,
   p.category,
   p.times_applied,
@@ -862,7 +862,7 @@ GRANT USAGE ON SCHEMA public TO superset_viewer;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO superset_viewer;
 
 -- For future tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public 
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT ON TABLES TO superset_viewer;
 ```
 
@@ -933,7 +933,7 @@ CREATE INDEX idx_code_gen_timestamp ON metrics_code_generation(timestamp DESC);
 CREATE INDEX idx_metrics_bugs_pattern ON metrics_bugs(pattern);
 
 -- For JSON field queries (PostgreSQL)
-CREATE INDEX idx_code_gen_patterns_gin ON metrics_code_generation 
+CREATE INDEX idx_code_gen_patterns_gin ON metrics_code_generation
   USING GIN (patterns_applied jsonb_path_ops);
 ```
 
@@ -943,11 +943,11 @@ For large datasets (millions of records), consider partitioning:
 
 ```sql
 -- Partition metrics_code_generation by month
-CREATE TABLE metrics_code_generation_y2024m01 
+CREATE TABLE metrics_code_generation_y2024m01
   PARTITION OF metrics_code_generation
   FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
 
-CREATE TABLE metrics_code_generation_y2024m02 
+CREATE TABLE metrics_code_generation_y2024m02
   PARTITION OF metrics_code_generation
   FOR VALUES FROM ('2024-02-01') TO ('2024-03-01');
 
@@ -961,7 +961,7 @@ Create pre-aggregated views for complex dashboards:
 ```sql
 -- Create materialized view for daily pattern statistics
 CREATE MATERIALIZED VIEW daily_pattern_stats AS
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as day,
   pattern,
   COUNT(*) as bug_count,
@@ -992,8 +992,8 @@ SELECT cron.schedule(
 
 ```sql
 EXPLAIN ANALYZE
-SELECT pattern, COUNT(*) 
-FROM metrics_bugs 
+SELECT pattern, COUNT(*)
+FROM metrics_bugs
 WHERE timestamp > NOW() - INTERVAL '30 days'
 GROUP BY pattern;
 ```

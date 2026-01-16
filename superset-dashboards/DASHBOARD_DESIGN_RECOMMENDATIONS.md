@@ -77,7 +77,7 @@ This document provides specific Superset dashboard designs based on the feedback
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as date,
   AVG(CASE WHEN success THEN 100.0 ELSE 0.0 END) as success_rate,
   COUNT(*) as total_generations
@@ -115,7 +115,7 @@ ORDER BY date DESC;
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   AVG(confidence) as avg_confidence,
   STDDEV(confidence) as confidence_stddev,
   MIN(confidence) as min_confidence,
@@ -155,7 +155,7 @@ WHERE timestamp >= NOW() - INTERVAL '24 hours';
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   DATE_TRUNC('hour', timestamp) as hour,
   AVG(patterns_count) as avg_patterns_applied,
   COUNT(*) as generation_count,
@@ -188,14 +188,14 @@ ORDER BY hour;
 ```sql
 -- Pattern co-occurrence analysis
 WITH pattern_combinations AS (
-  SELECT 
+  SELECT
     patterns_applied::jsonb as patterns_json,
     success,
     confidence
   FROM metrics_code_generation
   WHERE patterns_applied IS NOT NULL
 )
-SELECT 
+SELECT
   jsonb_array_length(patterns_json) as pattern_count,
   AVG(CASE WHEN success THEN 1.0 ELSE 0.0 END) as success_rate,
   AVG(confidence) as avg_confidence,
@@ -223,7 +223,7 @@ ORDER BY pattern_count;
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   FLOOR(code_length / 100) * 100 as code_length_bin,
   COUNT(*) as frequency,
   AVG(confidence) as avg_confidence,
@@ -252,7 +252,7 @@ ORDER BY code_length_bin;
 ```sql
 -- Top pattern combinations
 WITH pattern_arrays AS (
-  SELECT 
+  SELECT
     patterns_applied::jsonb as patterns_json,
     success,
     confidence
@@ -261,13 +261,13 @@ WITH pattern_arrays AS (
     AND timestamp >= NOW() - INTERVAL '30 days'
 ),
 expanded_patterns AS (
-  SELECT 
+  SELECT
     jsonb_array_elements_text(patterns_json) as pattern_name,
     success,
     confidence
   FROM pattern_arrays
 )
-SELECT 
+SELECT
   pattern_name,
   COUNT(*) as usage_count,
   AVG(CASE WHEN success THEN 1.0 ELSE 0.0 END) as success_rate,
@@ -303,14 +303,14 @@ LIMIT 20;
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   LEFT(compilation_error, 100) as error_summary,
   COUNT(*) as error_count,
   AVG(confidence) as avg_confidence_when_failed,
   AVG(patterns_count) as avg_patterns_applied,
   ARRAY_AGG(DISTINCT jsonb_array_elements_text(patterns_applied::jsonb)) as common_patterns
 FROM metrics_code_generation
-WHERE success = false 
+WHERE success = false
   AND compilation_error IS NOT NULL
   AND timestamp >= NOW() - INTERVAL '7 days'
 GROUP BY LEFT(compilation_error, 100)
@@ -351,7 +351,7 @@ LIMIT 15;
 **SQL Query:**
 ```sql
 -- Confidence calibration analysis
-SELECT 
+SELECT
   ROUND(confidence, 1) as confidence_bin,
   COUNT(*) as total_cases,
   SUM(CASE WHEN success THEN 1 ELSE 0 END) as successful_cases,
@@ -384,7 +384,7 @@ ORDER BY confidence_bin;
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   pattern_name,
   DATE_TRUNC('week', period_start) as week,
   AVG(effectiveness_score) as avg_effectiveness,
@@ -416,7 +416,7 @@ ORDER BY week DESC, avg_effectiveness DESC;
 **SQL Query:**
 ```sql
 -- Most effective patterns (last 30 days)
-SELECT 
+SELECT
   pe.pattern_name,
   AVG(pe.effectiveness_score) as avg_effectiveness,
   SUM(pe.application_count) as total_applications,
@@ -441,7 +441,7 @@ LIMIT 10;
 
 ```sql
 -- Pattern ROI Dashboard Query
-SELECT 
+SELECT
   p.name as pattern_name,
   p.category,
   p.times_applied,
@@ -451,7 +451,7 @@ SELECT
   p.created_at,
   EXTRACT(days FROM NOW() - p.created_at) as days_active,
   -- ROI calculation (hours saved per day)
-  (SUM(m.time_saved_seconds) / 3600.0) / 
+  (SUM(m.time_saved_seconds) / 3600.0) /
     NULLIF(EXTRACT(days FROM NOW() - p.created_at), 0) as hours_saved_per_day
 FROM api.patterns p
 LEFT JOIN api.metrics m ON m.pattern_id = p.id
@@ -503,7 +503,7 @@ LIMIT 20;
 **SQL Query:**
 ```sql
 -- Confidence distribution statistics
-SELECT 
+SELECT
   success,
   COUNT(*) as count,
   AVG(confidence) as mean,
@@ -543,7 +543,7 @@ GROUP BY success;
 **SQL Queries:**
 ```sql
 -- Bug Detection Summary
-SELECT 
+SELECT
   COUNT(DISTINCT id) as total_bugs,
   COUNT(DISTINCT pattern) as unique_patterns,
   COUNT(DISTINCT file_path) as affected_files,
@@ -552,7 +552,7 @@ FROM metrics_bugs
 WHERE timestamp >= NOW() - INTERVAL '7 days';
 
 -- Test Failure Summary
-SELECT 
+SELECT
   COUNT(*) as total_failures,
   COUNT(DISTINCT test_name) as unique_tests,
   COUNT(DISTINCT pattern_violated) as patterns_violated
@@ -560,7 +560,7 @@ FROM metrics_test_failures
 WHERE timestamp >= NOW() - INTERVAL '7 days';
 
 -- Code Review Summary
-SELECT 
+SELECT
   COUNT(*) as total_issues,
   SUM(CASE WHEN severity = 'high' THEN 1 ELSE 0 END) as high_severity,
   SUM(CASE WHEN severity = 'medium' THEN 1 ELSE 0 END) as medium_severity,
@@ -594,7 +594,7 @@ WITH all_detections AS (
   UNION ALL
   SELECT timestamp, 'deployment' as type, pattern FROM metrics_deployment
 )
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as day,
   type,
   COUNT(*) as detection_count
@@ -623,7 +623,7 @@ ORDER BY day, type;
 **SQL Query:**
 ```sql
 -- Bug pattern hierarchy
-SELECT 
+SELECT
   pattern,
   COUNT(*) as unique_bugs,
   SUM(count) as total_occurrences,
@@ -631,7 +631,7 @@ SELECT
   MIN(timestamp) as first_seen,
   MAX(timestamp) as last_seen,
   -- Categorize by recency
-  CASE 
+  CASE
     WHEN MAX(timestamp) >= NOW() - INTERVAL '7 days' THEN 'active'
     WHEN MAX(timestamp) >= NOW() - INTERVAL '30 days' THEN 'recent'
     ELSE 'historical'
@@ -659,7 +659,7 @@ ORDER BY total_occurrences DESC;
 **SQL Query:**
 ```sql
 -- Files with most bugs
-SELECT 
+SELECT
   file_path,
   COUNT(*) as bug_count,
   COUNT(DISTINCT pattern) as unique_patterns,
@@ -689,7 +689,7 @@ LIMIT 15;
 **SQL Query:**
 ```sql
 -- Test failure flow analysis
-SELECT 
+SELECT
   pattern_violated as source,
   test_name as target,
   COUNT(*) as failure_count
@@ -719,7 +719,7 @@ LIMIT 50;
 
 **SQL Query:**
 ```sql
-SELECT 
+SELECT
   DATE_TRUNC('day', timestamp) as day,
   severity,
   COUNT(*) as issue_count,
@@ -744,7 +744,7 @@ ORDER BY day, severity;
 
 ```sql
 -- Pattern library statistics
-SELECT 
+SELECT
   COUNT(*) as total_patterns,
   COUNT(CASE WHEN is_active THEN 1 END) as active_patterns,
   COUNT(CASE WHEN is_archived THEN 1 END) as archived_patterns,
@@ -781,7 +781,7 @@ FROM api.patterns;
 **SQL Query:**
 ```sql
 -- Pattern evolution tracking
-SELECT 
+SELECT
   p.name as pattern_name,
   p.version,
   p.created_at,
@@ -816,7 +816,7 @@ ORDER BY p.name, p.version;
 **SQL Query:**
 ```sql
 -- Audit activity matrix
-SELECT 
+SELECT
   action,
   resource_type,
   COUNT(*) as event_count,
@@ -843,7 +843,7 @@ ORDER BY event_count DESC;
 **SQL Query:**
 ```sql
 -- User activity audit trail
-SELECT 
+SELECT
   u.username,
   u.role,
   a.action,
@@ -868,7 +868,7 @@ LIMIT 100;
 ```sql
 -- Comprehensive Pattern Analysis Report (SAR-style)
 WITH pattern_metrics AS (
-  SELECT 
+  SELECT
     p.id,
     p.name,
     p.category,
@@ -887,7 +887,7 @@ WITH pattern_metrics AS (
   WHERE p.is_active = true
 ),
 usage_stats AS (
-  SELECT 
+  SELECT
     pattern_name,
     COUNT(*) as generation_uses,
     AVG(confidence) as avg_confidence,
@@ -898,7 +898,7 @@ usage_stats AS (
   GROUP BY pattern_name
 ),
 issue_correlations AS (
-  SELECT 
+  SELECT
     pattern,
     COUNT(*) as bug_count,
     'bug' as issue_type
@@ -906,7 +906,7 @@ issue_correlations AS (
   WHERE timestamp >= NOW() - INTERVAL '90 days'
   GROUP BY pattern
   UNION ALL
-  SELECT 
+  SELECT
     pattern_violated as pattern,
     COUNT(*) as count,
     'test_failure' as issue_type
@@ -914,7 +914,7 @@ issue_correlations AS (
   WHERE timestamp >= NOW() - INTERVAL '90 days'
   GROUP BY pattern_violated
 )
-SELECT 
+SELECT
   pm.name as pattern_name,
   pm.category,
   pm.severity,
@@ -935,7 +935,7 @@ SELECT
   COALESCE(SUM(CASE WHEN ic.issue_type = 'bug' THEN ic.bug_count ELSE 0 END), 0) as related_bugs,
   COALESCE(SUM(CASE WHEN ic.issue_type = 'test_failure' THEN ic.bug_count ELSE 0 END), 0) as related_test_failures,
   -- Status
-  CASE 
+  CASE
     WHEN pm.last_applied >= NOW() - INTERVAL '7 days' THEN 'Active'
     WHEN pm.last_applied >= NOW() - INTERVAL '30 days' THEN 'Recent'
     WHEN pm.last_applied IS NULL THEN 'Never Used'
@@ -944,8 +944,8 @@ SELECT
 FROM pattern_metrics pm
 LEFT JOIN usage_stats us ON pm.name = us.pattern_name
 LEFT JOIN issue_correlations ic ON pm.name = ic.pattern
-GROUP BY pm.id, pm.name, pm.category, pm.severity, pm.organization, pm.team, 
-         pm.author, pm.created_at, pm.last_applied, pm.times_applied, 
+GROUP BY pm.id, pm.name, pm.category, pm.severity, pm.organization, pm.team,
+         pm.author, pm.created_at, pm.last_applied, pm.times_applied,
          pm.effectiveness_score, us.generation_uses, us.avg_confidence, us.success_rate
 ORDER BY pm.times_applied DESC, pm.effectiveness_score DESC;
 ```
@@ -956,7 +956,7 @@ ORDER BY pm.times_applied DESC, pm.effectiveness_score DESC;
   "viz_type": "table",
   "datasource": "pattern_analysis_report",
   "groupby": [
-    "pattern_name", "category", "severity", "organization", 
+    "pattern_name", "category", "severity", "organization",
     "team", "status"
   ],
   "metrics": [
@@ -1001,7 +1001,7 @@ ORDER BY pm.times_applied DESC, pm.effectiveness_score DESC;
 **SQL Query:**
 ```sql
 -- Performance bottleneck detection
-SELECT 
+SELECT
   metric_type,
   function_name,
   COUNT(*) as sample_count,
@@ -1039,7 +1039,7 @@ LIMIT 20;
 **SQL Query:**
 ```sql
 -- Summary trends with week-over-week comparison
-SELECT 
+SELECT
   DATE_TRUNC('week', summary_date) as week,
   metric_type,
   SUM(total_count) as total,
@@ -1068,7 +1068,7 @@ For complex queries, create materialized views for better performance:
 ```sql
 -- Create view for pattern ROI analysis
 CREATE MATERIALIZED VIEW pattern_roi_view AS
-SELECT 
+SELECT
   p.id,
   p.name as pattern_name,
   p.category,
@@ -1078,7 +1078,7 @@ SELECT
   COUNT(DISTINCT m.user_id) as users_benefited,
   p.created_at,
   EXTRACT(days FROM NOW() - p.created_at) as days_active,
-  (SUM(m.time_saved_seconds) / 3600.0) / 
+  (SUM(m.time_saved_seconds) / 3600.0) /
     NULLIF(EXTRACT(days FROM NOW() - p.created_at), 0) as hours_saved_per_day
 FROM api.patterns p
 LEFT JOIN api.metrics m ON m.pattern_id = p.id
@@ -1129,7 +1129,7 @@ Example calculated column for `metrics_code_generation`:
 CASE WHEN success THEN 100 ELSE 0 END
 
 -- Pattern count category
-CASE 
+CASE
   WHEN patterns_count = 0 THEN 'None'
   WHEN patterns_count <= 2 THEN 'Low (1-2)'
   WHEN patterns_count <= 5 THEN 'Medium (3-5)'
@@ -1185,7 +1185,7 @@ Find patterns that work well together:
 
 ```sql
 WITH pattern_pairs AS (
-  SELECT 
+  SELECT
     mcg.id,
     p1.value::text as pattern_a,
     p2.value::text as pattern_b,
@@ -1198,7 +1198,7 @@ WITH pattern_pairs AS (
     AND mcg.patterns_applied IS NOT NULL
     AND jsonb_array_length(mcg.patterns_applied::jsonb) >= 2
 )
-SELECT 
+SELECT
   pattern_a,
   pattern_b,
   COUNT(*) as co_occurrence_count,
@@ -1217,7 +1217,7 @@ Detect degrading patterns:
 
 ```sql
 WITH recent_performance AS (
-  SELECT 
+  SELECT
     pattern_name,
     DATE_TRUNC('week', period_start) as week,
     AVG(effectiveness_score) as effectiveness,
@@ -1227,7 +1227,7 @@ WITH recent_performance AS (
   GROUP BY pattern_name, DATE_TRUNC('week', period_start)
 ),
 performance_comparison AS (
-  SELECT 
+  SELECT
     pattern_name,
     MAX(CASE WHEN week_rank = 1 THEN effectiveness END) as current_week,
     MAX(CASE WHEN week_rank = 2 THEN effectiveness END) as last_week,
@@ -1235,14 +1235,14 @@ performance_comparison AS (
   FROM recent_performance
   GROUP BY pattern_name
 )
-SELECT 
+SELECT
   pattern_name,
   current_week,
   last_week,
   three_week_avg,
   current_week - last_week as wow_change,
   current_week - three_week_avg as vs_avg_change,
-  CASE 
+  CASE
     WHEN current_week < 0.6 AND current_week < three_week_avg - 0.1 THEN 'CRITICAL'
     WHEN current_week < last_week - 0.05 THEN 'WARNING'
     WHEN current_week > last_week + 0.05 THEN 'IMPROVING'
@@ -1258,7 +1258,7 @@ ORDER BY wow_change ASC;
 Measure impact across teams:
 
 ```sql
-SELECT 
+SELECT
   o.name as organization,
   t.name as team,
   COUNT(DISTINCT u.id) as user_count,

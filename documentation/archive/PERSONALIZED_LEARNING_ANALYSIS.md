@@ -62,7 +62,7 @@ Current metrics visible in docs:
 
 **Recommendation**: Consider adding "fulfillment metrics":
 - User satisfaction surveys (NPS, but also qualitative feedback)
-- "Would you recommend this to someone with your learning style?" 
+- "Would you recommend this to someone with your learning style?"
 - Time-to-first-value (how quickly can someone get something useful?)
 - Personalization depth (how much can users customize without forking?)
 

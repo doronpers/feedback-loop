@@ -266,11 +266,11 @@ class FeedbackLoopServer(LanguageServer):
         self.pattern_manager = PatternManager()
         self.code_reviewer = CodeReviewer()
         self.analyzer = PatternAnalyzer()
-    
+
     def analyze_document(self, uri: str, text: str):
         # Run pattern analysis
         issues = self.analyzer.analyze(text)
-        
+
         # Return diagnostics
         return [
             Diagnostic(
@@ -290,15 +290,15 @@ class PatternAnalyzer:
         """Analyze code in real-time."""
         # Parse AST
         tree = ast.parse(code)
-        
+
         # Check patterns
         issues = []
         issues.extend(self._check_numpy_patterns(tree))
         issues.extend(self._check_exception_patterns(tree))
         issues.extend(self._check_bounds_patterns(tree))
-        
+
         return issues
-    
+
     def _check_numpy_patterns(self, tree) -> List[Issue]:
         """Check for NumPy-related issues."""
         # Look for json.dumps() with NumPy arrays
@@ -311,7 +311,7 @@ class PatternAnalyzer:
 def get_code_actions(uri: str, range: Range) -> List[CodeAction]:
     """Provide quick fixes for issues."""
     actions = []
-    
+
     # Suggest pattern application
     actions.append(CodeAction(
         title="Apply numpy_json_serialization pattern",
@@ -323,7 +323,7 @@ def get_code_actions(uri: str, range: Range) -> List[CodeAction]:
             )]
         })
     ))
-    
+
     return actions
 ```
 
@@ -515,25 +515,25 @@ class PerformantAnalyzer:
     def __init__(self):
         self.cache = LRUCache(max_size=1000)
         self.debounce_timer = None
-    
+
     async def analyze_debounced(self, uri, text):
         # Cancel previous timer
         if self.debounce_timer:
             self.debounce_timer.cancel()
-        
+
         # Wait 500ms before analyzing
         self.debounce_timer = asyncio.create_task(
             self._analyze_after_delay(uri, text, delay=0.5)
         )
-    
+
     async def _analyze_after_delay(self, uri, text, delay):
         await asyncio.sleep(delay)
-        
+
         # Check cache
         cache_key = hash(text)
         if cache_key in self.cache:
             return self.cache[cache_key]
-        
+
         # Run analysis
         result = await self.analyze_async(text)
         self.cache[cache_key] = result
@@ -742,17 +742,17 @@ async def did_open(ls, params):
     """Analyze when file opens."""
     uri = params.text_document.uri
     text = params.text_document.text
-    
+
     diagnostics = analyze_code(text)
     ls.publish_diagnostics(uri, diagnostics)
 
 def analyze_code(code: str) -> list[Diagnostic]:
     """Quick pattern check."""
     diagnostics = []
-    
+
     try:
         tree = ast.parse(code)
-        
+
         # Check for bare except:
         for node in ast.walk(tree):
             if isinstance(node, ast.ExceptHandler):
@@ -766,7 +766,7 @@ def analyze_code(code: str) -> list[Diagnostic]:
                         severity=DiagnosticSeverity.Warning,
                         source="feedback-loop"
                     ))
-        
+
         # Check for print() statements
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
@@ -780,10 +780,10 @@ def analyze_code(code: str) -> list[Diagnostic]:
                         severity=DiagnosticSeverity.Information,
                         source="feedback-loop"
                     ))
-    
+
     except SyntaxError:
         pass  # Ignore syntax errors (user is still typing)
-    
+
     return diagnostics
 
 if __name__ == '__main__':
@@ -919,7 +919,7 @@ This 50-line script already provides value!
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2026-01-06  
-**Author:** feedback-loop team  
+**Document Version:** 1.0
+**Last Updated:** 2026-01-06
+**Author:** feedback-loop team
 **Status:** ASSESSMENT COMPLETE - READY FOR DECISION

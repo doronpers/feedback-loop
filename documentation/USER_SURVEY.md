@@ -12,8 +12,8 @@ We believe developers learn differently, work differently, and succeed different
 - What brings YOU fulfillment (not just feature usage)
 - How we can better support YOUR path to excellence
 
-**Time**: 5-7 minutes  
-**Privacy**: Responses are anonymous unless you choose to share contact info  
+**Time**: 5-7 minutes
+**Privacy**: Responses are anonymous unless you choose to share contact info
 **Impact**: Directly shapes future development and documentation
 
 ---

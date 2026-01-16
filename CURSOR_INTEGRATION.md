@@ -98,20 +98,20 @@ Create or update `.vscode/settings.json` (Cursor uses the same format):
   // Enable feedback-loop language server
   "feedback-loop.enable": true,
   "feedback-loop.serverPath": "${workspaceFolder}/bin/feedback_loop_lsp.py",
-  
+
   // LLM integration
   "feedback-loop.llmProvider": "claude",
   "feedback-loop.enableLLM": true,
-  
+
   // Analysis settings
   "feedback-loop.analysisDelay": 500,
-  
+
   // Python settings for consistency
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": ["--line-length", "88"],
-  
+
   // Test discovery
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
@@ -259,7 +259,7 @@ Use Cursor Composer (Cmd/Ctrl + I) with feedback-loop context:
 
 **With pattern context:**
 ```
-@Codebase Using the feedback-loop patterns, create a FastAPI endpoint 
+@Codebase Using the feedback-loop patterns, create a FastAPI endpoint
 that accepts file uploads up to 800MB and processes them asynchronously
 ```
 
@@ -271,7 +271,7 @@ especially for error handling and type safety
 
 **For testing:**
 ```
-@Codebase Generate pytest tests for this function that validate 
+@Codebase Generate pytest tests for this function that validate
 all feedback-loop patterns are correctly applied
 ```
 
@@ -460,7 +460,7 @@ Use in GitHub Actions:
   run: |
     pip install -e .
     pytest --enable-metrics
-    
+
 - name: Analyze patterns
   run: feedback-loop analyze
 ```
@@ -483,7 +483,7 @@ The same extension works in Cursor:
 
 ## 🤝 Contributing
 
-Found a way to improve Cursor integration? 
+Found a way to improve Cursor integration?
 
 1. Fork the repository
 2. Create a feature branch

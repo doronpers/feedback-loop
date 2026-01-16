@@ -84,10 +84,10 @@
    ```bash
    # Install dependencies
    pip install pygls
-   
+
    # Run language server
    python feedback_loop_lsp.py
-   
+
    # Test in VS Code
    # (see vscode-extension/README.md)
    ```
@@ -226,6 +226,6 @@ The feedback-loop framework is **excellently positioned** for IDE integration. T
 
 ---
 
-**Prepared by:** feedback-loop team  
-**Date:** 2026-01-06  
+**Prepared by:** feedback-loop team
+**Date:** 2026-01-06
 **Status:** ✅ READY FOR IMPLEMENTATION

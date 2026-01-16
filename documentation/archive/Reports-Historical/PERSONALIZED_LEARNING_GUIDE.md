@@ -26,7 +26,7 @@ Traditional documentation assumes everyone learns the same way: Getting Started 
 pip install -e .
 python demo.py
 ```
-**Time**: 2 minutes  
+**Time**: 2 minutes
 **Then**: Explore whatever catches your interest
 
 ### 💬 "I want to ask questions"
@@ -34,23 +34,23 @@ python demo.py
 ./bin/fl-setup
 ./bin/fl-chat
 ```
-Ask: "How do I prevent JSON serialization errors?"  
+Ask: "How do I prevent JSON serialization errors?"
 **Then**: Follow the conversation wherever it leads
 
 ### 📖 "Give me the one-page cheat sheet"
-**Read**: [Quick Reference](docs/QUICK_REFERENCE.md)  
+**Read**: [Quick Reference](docs/QUICK_REFERENCE.md)
 **Then**: Search for your specific error in `examples/`
 
 ### 🔧 "I want to see the implementation"
-**Read**: `metrics/pattern_manager.py` (core)  
-**Read**: `conftest.py` (pytest integration)  
+**Read**: `metrics/pattern_manager.py` (core)
+**Read**: `conftest.py` (pytest integration)
 **Then**: Modify and experiment
 
 ### 🧪 "I learn by breaking things"
 ```bash
 pytest tests/test_bad_patterns.py -v
 ```
-Watch intentional failures, then fix them  
+Watch intentional failures, then fix them
 **Then**: Try breaking `examples/good_patterns.py`
 
 ### 🎯 "I have a specific problem to solve"
@@ -77,7 +77,7 @@ That's it. No docs needed.
 
 Includes:
 - 6 different workflow strategies
-- 4 learning profile deep dives  
+- 4 learning profile deep dives
 - Self-assessment tools
 - Customization examples
 - Non-linear navigation

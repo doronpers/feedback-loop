@@ -124,9 +124,9 @@ Related: backend/api/routes/upload.py, docker-compose.yml
 
 **When to pass:** Can articulate the problem to AI in <30 seconds
 
-**Human Gap:** Exploring full possibility space  
-**AI Fills:** Generating alternative approaches, researching patterns  
-**AI Gap:** Judging relevance to real constraints  
+**Human Gap:** Exploring full possibility space
+**AI Fills:** Generating alternative approaches, researching patterns
+**AI Gap:** Judging relevance to real constraints
 **Human Fills:** Filtering based on domain knowledge and tacit requirements
 
 **Feedback Loop:** Learning propagates back to reframe the problem itself. If implementation reveals wrong assumptions, return to DEFINE, don't force the solution.
@@ -166,9 +166,9 @@ Help me design the approach. Consider:
 
 **When to pass:** Design written down, not just in my head
 
-**Human Gap:** Generating pattern variations quickly  
-**AI Fills:** Creating multiple design options, architectural patterns  
-**AI Gap:** Selecting based on tacit domain knowledge  
+**Human Gap:** Generating pattern variations quickly
+**AI Fills:** Creating multiple design options, architectural patterns
+**AI Gap:** Selecting based on tacit domain knowledge
 **Human Fills:** Choosing design based on maintenance burden, team expertise, real-world constraints
 
 ---
@@ -217,9 +217,9 @@ finally:
 
 **When to pass:** Code compiles/imports, basic manual test works
 
-**Human Gap:** Speed, syntax recall, boilerplate  
-**AI Fills:** Fast code generation, API usage, common patterns  
-**AI Gap:** Physics/compliance correctness, domain edge cases  
+**Human Gap:** Speed, syntax recall, boilerplate
+**AI Fills:** Fast code generation, API usage, common patterns
+**AI Gap:** Physics/compliance correctness, domain edge cases
 **Human Fills:** Validating domain-specific correctness, security implications
 
 ---
@@ -285,9 +285,9 @@ def test_with_monkeypatch(monkeypatch):
 
 **When to pass:** Tests green, review feedback addressed
 
-**Human Gap:** Finding unknown unknowns, exhaustive test cases  
-**AI Fills:** Generating test scenarios, exploring edge cases  
-**AI Gap:** Validating against ground truth, real-world data  
+**Human Gap:** Finding unknown unknowns, exhaustive test cases
+**AI Fills:** Generating test scenarios, exploring edge cases
+**AI Gap:** Validating against ground truth, real-world data
 **Human Fills:** Confirming behavior matches actual requirements, domain validation
 
 ---
@@ -325,9 +325,9 @@ Code:
 
 **When to pass:** Security checklist complete, no high/critical issues
 
-**Human Gap:** Exhaustive enumeration of edge cases  
-**AI Fills:** Security checklist generation, vulnerability scanning  
-**AI Gap:** Prioritizing real-world risk severity  
+**Human Gap:** Exhaustive enumeration of edge cases
+**AI Fills:** Security checklist generation, vulnerability scanning
+**AI Gap:** Prioritizing real-world risk severity
 **Human Fills:** Risk assessment based on actual usage patterns and compliance needs
 
 ---
@@ -372,7 +372,7 @@ pytest --cov=. --cov-report=term-missing
 DEFINE (mental) → BUILD (Copilot) → VERIFY (quick test) → SHIP
 ```
 
-**Skip:** Formal design, multi-agent review, dedicated security pass  
+**Skip:** Formal design, multi-agent review, dedicated security pass
 **Use when:** Typo fixes, small bug fixes, simple config changes
 
 ### Standard Feature (1-4 hours)
@@ -381,7 +381,7 @@ DEFINE (mental) → BUILD (Copilot) → VERIFY (quick test) → SHIP
 DEFINE → DESIGN → BUILD → VERIFY → SHIP
 ```
 
-**Skip:** Dedicated security pass (rolled into VERIFY)  
+**Skip:** Dedicated security pass (rolled into VERIFY)
 **Use when:** Most features, non-security-critical endpoints
 
 ### Security-Critical (4+ hours)
@@ -390,7 +390,7 @@ DEFINE → DESIGN → BUILD → VERIFY → SHIP
 DEFINE → DESIGN → BUILD → VERIFY → HARDEN → SHIP
 ```
 
-**Skip:** Nothing  
+**Skip:** Nothing
 **Use when:** Auth, file uploads, user input handling, payment flows
 
 ### Experimental/Spike
@@ -399,7 +399,7 @@ DEFINE → DESIGN → BUILD → VERIFY → HARDEN → SHIP
 DEFINE (loose) → BUILD → VERIFY (manual only) → [Throw away or restart properly]
 ```
 
-**Skip:** Formal design, security, CI/CD  
+**Skip:** Formal design, security, CI/CD
 **Use when:** Exploring feasibility, learning new tool/library
 
 ---
@@ -438,7 +438,7 @@ Agent A (Generator) ──► Agent B (Reviewer) ──► Human Decision
      Copilot              Claude/GPT-4           You
 ```
 
-**When to use:** Standard feature development, bug fixes  
+**When to use:** Standard feature development, bug fixes
 **Setup:** Write with Copilot, review with Claude or GPT-4
 
 ### Pattern 2: Specialist Chain
@@ -450,7 +450,7 @@ Agent A (Architect) ──► Agent B (Implementer) ──► Agent C (Security)
     Claude/GPT-4           Copilot                  GPT-4/Claude         You
 ```
 
-**When to use:** New features with security implications, API design  
+**When to use:** New features with security implications, API design
 **Setup:** Design with Claude, implement with Copilot, security review with GPT-4
 
 ### Pattern 3: Parallel Perspectives
@@ -463,7 +463,7 @@ Problem Statement ──┼─► Agent B (Security focus)     ──► Human s
                     └─► Agent C (Maintainability)
 ```
 
-**When to use:** Trade-off decisions, architecture choices  
+**When to use:** Trade-off decisions, architecture choices
 **Setup:** Same prompt to 3 different agents, compare responses
 
 ### Pattern 4: Adversarial Testing
@@ -475,7 +475,7 @@ Agent A (Builder) ──► Agent B (Breaker) ──► Agent A (Fix) ──► 
     Copilot            Claude/GPT-4          Copilot         You
 ```
 
-**When to use:** Authentication, file uploads, user input handling  
+**When to use:** Authentication, file uploads, user input handling
 **Setup:** Build with Copilot, ask Claude to break it, fix issues
 
 ---
@@ -920,7 +920,7 @@ def sync_function():
 # ❌ AI loads entire file into memory
 async def upload(file: UploadFile):
     content = await file.read()  # OOM for large files!
-    
+
 # ✅ Stream to disk in chunks
 async def upload(file: UploadFile):
     fd, path = tempfile.mkstemp()
@@ -1008,18 +1008,18 @@ def validate_audio_array(audio: np.ndarray, metadata: dict) -> bool:
     """Validate audio array dimensions and extract sample rate safely."""
     # CRITICAL: Verify dimensions first
     assert audio.ndim in (1, 2), f"Expected mono/stereo, got shape {audio.shape}"
-    
+
     # NEVER derive sample rate from array shape
     sample_rate = metadata.get('sample_rate')
     if sample_rate is None:
         logger.debug("Sample rate missing from metadata")
         return False
-    
+
     # Validate mono (1D) or stereo (2D)
     if audio.ndim == 2:
         channels = audio.shape[1]
         assert channels <= 2, f"Expected max 2 channels, got {channels}"
-    
+
     return True
 ```
 
@@ -1040,13 +1040,13 @@ import numpy as np
 
 def compute_stft_forensics(audio: np.ndarray, sr: int = 44100) -> np.ndarray:
     """Compute STFT with forensics-appropriate parameters.
-    
+
     For voice fraud detection, higher overlap reveals microstructure.
     """
     # CRITICAL: 75% overlap for forensic analysis
     n_fft = 2048
     hop_length = n_fft // 4  # 75% overlap, not default 50%
-    
+
     # Hann window reduces spectral leakage
     stft = librosa.stft(
         audio,
@@ -1054,7 +1054,7 @@ def compute_stft_forensics(audio: np.ndarray, sr: int = 44100) -> np.ndarray:
         hop_length=hop_length,
         window='hann'
     )
-    
+
     return stft
 ```
 
@@ -1076,18 +1076,18 @@ import numpy as np
 
 def compute_phase_coherence(stft: np.ndarray) -> np.ndarray:
     """Compute phase coherence with proper unwrapping.
-    
+
     Essential for EM hum analysis (50/60 Hz) in audio forensics.
     """
     # Extract phase
     phase = np.angle(stft)
-    
+
     # CRITICAL: Unwrap phase to remove 2π discontinuities
     phase_unwrapped = np.unwrap(phase, axis=1)
-    
+
     # Compute instantaneous frequency (phase derivative)
     inst_freq = np.diff(phase_unwrapped, axis=1)
-    
+
     return inst_freq
 ```
 
@@ -1110,7 +1110,7 @@ logger = logging.getLogger(__name__)
 
 def normalize_rir(rir: np.ndarray, method: str = 'peak') -> np.ndarray:
     """Normalize room impulse response for consistent analysis.
-    
+
     Critical for comparing recordings across different rooms/mics.
     """
     if method == 'peak':
@@ -1121,7 +1121,7 @@ def normalize_rir(rir: np.ndarray, method: str = 'peak') -> np.ndarray:
         else:
             logger.debug("RIR has zero peak, returning original")
             rir_norm = rir
-    
+
     elif method == 'energy':
         # Normalize by energy (RMS)
         energy = np.sqrt(np.mean(rir ** 2))
@@ -1130,10 +1130,10 @@ def normalize_rir(rir: np.ndarray, method: str = 'peak') -> np.ndarray:
         else:
             logger.debug("RIR has zero energy, returning original")
             rir_norm = rir
-    
+
     else:
         raise ValueError(f"Unknown normalization method: {method}")
-    
+
     return rir_norm
 ```
 
@@ -1160,28 +1160,28 @@ def format_sar_narrative(
     threshold_exceeded: List[str]
 ) -> Dict[str, Any]:
     """Format analysis results as SAR-compliant narrative.
-    
+
     FinCEN requires specific fields and human-readable explanations.
     """
     narrative_parts = []
-    
+
     # CRITICAL: SAR requires "who, what, when, where, why"
     narrative_parts.append(
         f"Voice analysis conducted on {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}. "
     )
-    
+
     # Describe technical findings in plain language
     if 'spectral_anomalies' in threshold_exceeded:
         narrative_parts.append(
             f"Spectral analysis revealed anomalies inconsistent with natural voice production "
             f"(confidence: {analysis_results.get('spectral_confidence', 0):.2%}). "
         )
-    
+
     if 'phase_incoherence' in threshold_exceeded:
         narrative_parts.append(
             f"Phase coherence analysis detected digital manipulation artifacts. "
         )
-    
+
     # CRITICAL: Audit trail - all data sources must be traceable
     sar_output = {
         "sar_narrative": " ".join(narrative_parts),
@@ -1192,7 +1192,7 @@ def format_sar_narrative(
         "thresholds_exceeded": threshold_exceeded,
         "raw_metrics": analysis_results,  # Preserve for audit
     }
-    
+
     return sar_output
 ```
 
@@ -1354,7 +1354,7 @@ def parse_config_good(config_str):
 def debug_processing_bad(data):
     print(f"Processing data: {data}")  # Goes to stdout
     print(f"Data type: {type(data)}")
-    
+
     result = len(data) if hasattr(data, "__len__") else 0
     print(f"Result: {result}")
     return result
@@ -1377,7 +1377,7 @@ def debug_processing_good(data):
     """Debug processing using proper logging."""
     logger.debug(f"Processing data: {data}")
     logger.debug(f"Data type: {type(data)}")
-    
+
     result = len(data) if hasattr(data, "__len__") else 0
     logger.debug(f"Result: {result}")
     return result
@@ -1432,7 +1432,7 @@ def categorize_by_metadata_good(item: Dict[str, Any]) -> str:
             return "medium_priority"
         else:
             return "low_priority"
-    
+
     # Fallback to category metadata
     return item.get("category", "unknown")
 ```
@@ -1458,11 +1458,11 @@ import tempfile
 def write_temp_file_bad(data):
     # BAD: Using deprecated mktemp (insecure)
     path = tempfile.mktemp()
-    
+
     # BAD: No error handling, no cleanup on failure
     with open(path, 'wb') as f:
         f.write(data)
-    
+
     # BAD: File is not cleaned up - left on disk
     return path
 ```
@@ -1488,15 +1488,15 @@ def write_temp_file_good(data: bytes) -> tuple[str, bool]:
     try:
         # GOOD: Use mkstemp which returns both fd and path
         fd, path = tempfile.mkstemp(suffix=".tmp")
-        
+
         # GOOD: Use os.fdopen to convert fd to file object
         with os.fdopen(fd, 'wb') as f:
             f.write(data)
             fd = None  # fd is now managed by the file object
-        
+
         logger.debug(f"Successfully wrote {len(data)} bytes to {path}")
         return path, True
-        
+
     except (IOError, OSError) as e:
         logger.debug(f"Failed to write temp file: {e}")
         # GOOD: Clean up on error
@@ -1545,7 +1545,7 @@ def process_large_file_bad(file_path):
     # This will crash for 800MB files
     with open(file_path, 'rb') as f:
         data = f.read()  # Could cause MemoryError
-    
+
     # BAD: No file size validation
     return {"size": len(data)}
 ```
@@ -1573,22 +1573,22 @@ def process_large_file_good(
     try:
         # GOOD: Check file size before loading
         file_size = os.path.getsize(file_path)
-        
+
         if file_size > max_size_bytes:
             logger.debug(f"File too large: {file_size} > {max_size_bytes}")
             return None
-        
+
         # GOOD: Calculate chunks from file size (efficient)
         # For actual processing, read in chunks to avoid memory exhaustion
         chunks_needed = (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
-        
+
         return {
             "file_path": file_path,
             "size_bytes": int(file_size),  # Ensure Python int for JSON
             "size_mb": float(file_size / (1024 * 1024)),
             "chunks_needed": int(chunks_needed)
         }
-        
+
     except FileNotFoundError:
         logger.debug(f"File not found: {file_path}")
         return None
@@ -1629,12 +1629,12 @@ from fastapi import UploadFile
 async def upload_audio_bad(file: UploadFile):
     # BAD: Loads entire 800MB file into memory at once
     content = await file.read()  # Will crash with MemoryError
-    
+
     # BAD: No size validation
     # BAD: No cleanup of temp files
     with open("/tmp/audio.wav", "wb") as f:
         f.write(content)
-    
+
     return {"size": len(content)}
 ```
 
@@ -1662,30 +1662,30 @@ async def stream_upload_to_disk(
     fd = None
     path = None
     bytes_written = 0
-    
+
     try:
         # GOOD: Secure temp file creation
         fd, path = tempfile.mkstemp(suffix=".tmp")
-        
+
         # GOOD: Stream in chunks
         with os.fdopen(fd, 'wb') as tmp_file:
             fd = None
-            
+
             while True:
                 chunk = await file.read(chunk_size)
                 if not chunk:
                     break
-                
+
                 bytes_written += len(chunk)
-                
+
                 # GOOD: Check size during streaming
                 if bytes_written > max_size_bytes:
                     raise HTTPException(413, "File too large")
-                
+
                 tmp_file.write(chunk)
-        
+
         return path, True
-        
+
     except HTTPException:
         raise
     except (IOError, OSError) as e:
@@ -1711,11 +1711,11 @@ async def stream_upload_to_disk(
 server {
     # CRITICAL: Default is 1MB which blocks large uploads
     client_max_body_size 800M;
-    
+
     # CRITICAL: Increase timeouts for large uploads
     client_body_timeout 300s;
     proxy_read_timeout 300s;
-    
+
     # CRITICAL: Disable buffering for streaming
     proxy_request_buffering off;
 }
@@ -1785,7 +1785,7 @@ def convert_numpy_audio_result(result: Dict[str, Any]) -> Dict[str, Any]:
         elif isinstance(val, list):
             return [convert_value(item) for item in val]
         return val
-    
+
     return convert_value(result)
 
 def analyze_audio_good(samples):
@@ -2135,7 +2135,7 @@ All nine patterns have comprehensive test coverage:
 
 **New Adversarial Tests (Phase 5 from problem statement):**
 - ✅ 800MB silent file (all zeros) handling
-- ✅ White noise file (random data) handling  
+- ✅ White noise file (random data) handling
 - ✅ Client disconnect mid-upload simulation
 - ✅ Disk full error (OSError) during write
 - ✅ NaN and Inf value serialization
@@ -2144,22 +2144,22 @@ All nine patterns have comprehensive test coverage:
 - ✅ Zero-byte file handling
 
 ### Good Results
-✅ **Type Safety**: No runtime JSON serialization errors  
-✅ **Robustness**: Graceful handling of empty lists  
-✅ **Debuggability**: Specific exception messages aid troubleshooting  
-✅ **Observability**: Structured logging enables monitoring  
-✅ **Maintainability**: Metadata-based logic is easy to extend  
-✅ **File Safety**: Proper temp file handling with cleanup  
-✅ **Memory Safety**: Large files processed in chunks  
+✅ **Type Safety**: No runtime JSON serialization errors
+✅ **Robustness**: Graceful handling of empty lists
+✅ **Debuggability**: Specific exception messages aid troubleshooting
+✅ **Observability**: Structured logging enables monitoring
+✅ **Maintainability**: Metadata-based logic is easy to extend
+✅ **File Safety**: Proper temp file handling with cleanup
+✅ **Memory Safety**: Large files processed in chunks
 
 ### Bad Results (Before Improvements)
-❌ **Type Errors**: JSON serialization crashes with NumPy types  
-❌ **Index Errors**: Empty list access crashes services  
-❌ **Silent Failures**: Bare except hides real problems  
-❌ **Poor Logging**: Print statements not captured in production  
-❌ **Fragile Logic**: String matching causes false categorizations  
-❌ **File Leaks**: Temp files left on disk without cleanup  
-❌ **Memory Exhaustion**: Large files loaded entirely into memory  
+❌ **Type Errors**: JSON serialization crashes with NumPy types
+❌ **Index Errors**: Empty list access crashes services
+❌ **Silent Failures**: Bare except hides real problems
+❌ **Poor Logging**: Print statements not captured in production
+❌ **Fragile Logic**: String matching causes false categorizations
+❌ **File Leaks**: Temp files left on disk without cleanup
+❌ **Memory Exhaustion**: Large files loaded entirely into memory
 
 ---
 
@@ -2397,7 +2397,7 @@ def log_audit_event(
     metadata: Dict[str, Any]
 ) -> None:
     """Log audit event for regulatory compliance.
-    
+
     All fields required for reconstruction of decision trail.
     """
     audit_entry = {
@@ -2410,10 +2410,10 @@ def log_audit_event(
         "metadata": metadata,  # Additional context
         "version": "1.0",  # Audit log schema version
     }
-    
+
     # CRITICAL: Structured logging for audit aggregation
     logger.info(f"AUDIT: {json.dumps(audit_entry)}")
-    
+
     # CRITICAL: Also write to append-only audit database
     # (not shown here, but required for compliance)
 ```
@@ -2440,12 +2440,12 @@ def generate_explainable_decision(
     features_used: List[str]
 ) -> Dict[str, Any]:
     """Generate explainable decision for regulatory review.
-    
+
     Regulators require understanding of how decision was made.
     """
     # Calculate feature importance (simplified)
     explanations = []
-    
+
     for feature in features_used:
         contribution = model_output.get(f"{feature}_score", 0.0)
         if abs(contribution) > 0.1:  # Significant contribution
@@ -2454,7 +2454,7 @@ def generate_explainable_decision(
                 "contribution": float(contribution),
                 "interpretation": _interpret_feature(feature, contribution)
             })
-    
+
     return {
         "decision": "SUSPICIOUS" if model_output["score"] > threshold else "CLEAR",
         "confidence": float(model_output["score"]),
@@ -2502,17 +2502,17 @@ logger = logging.getLogger(__name__)
 
 class RetentionPolicy:
     """Enforce data retention and destruction policies.
-    
+
     Different data types have different retention requirements.
     """
-    
+
     RETENTION_PERIODS = {
         "sar_report": timedelta(days=5*365),  # 5 years for SARs
         "audit_log": timedelta(days=7*365),   # 7 years for audit logs
         "customer_data": timedelta(days=5*365),  # 5 years after relationship ends
         "analysis_temp": timedelta(days=90),  # 90 days for working files
     }
-    
+
     @staticmethod
     def should_destroy(
         data_type: str,
@@ -2524,16 +2524,16 @@ class RetentionPolicy:
         if retention_period is None:
             logger.warning(f"Unknown data type: {data_type}, defaulting to no destruction")
             return False
-        
+
         # For customer data, retention starts after relationship ends
         if data_type == "customer_data" and relationship_end_date:
             reference_date = relationship_end_date
         else:
             reference_date = created_date
-        
+
         expiry_date = reference_date + retention_period
         return datetime.utcnow() > expiry_date
-    
+
     @staticmethod
     def destroy_data(
         file_path: str,
@@ -2542,20 +2542,20 @@ class RetentionPolicy:
     ) -> bool:
         """Destroy data and log for audit."""
         import os
-        
+
         try:
             # CRITICAL: Log before destruction (audit trail)
             logger.info(f"DESTRUCTION: type={data_type}, record={record_id}, path={file_path}")
-            
+
             # Secure deletion (overwrite before unlink for sensitive data)
             if os.path.exists(file_path):
                 # For production: use secure deletion library
                 os.unlink(file_path)
-            
+
             # CRITICAL: Log after destruction (confirmation)
             logger.info(f"DESTROYED: type={data_type}, record={record_id}")
             return True
-            
+
         except Exception as e:
             logger.error(f"DESTRUCTION_FAILED: {data_type}/{record_id}: {e}")
             return False
@@ -2587,10 +2587,10 @@ class ConsentRequirement(Enum):
 
 class JurisdictionCompliance:
     """Check compliance across multiple jurisdictions."""
-    
+
     # State-specific requirements
     TWO_PARTY_STATES = {"CA", "FL", "PA", "IL", "MT", "WA", "MD", "MA", "NH", "CT"}
-    
+
     @staticmethod
     def check_recording_consent(
         recording_state: str,
@@ -2598,13 +2598,13 @@ class JurisdictionCompliance:
         consents_obtained: Set[str]
     ) -> tuple[bool, str]:
         """Check if recording consent is legally compliant.
-        
+
         Must comply with MOST RESTRICTIVE jurisdiction involved.
         """
         # Determine most restrictive requirement
         all_states = participant_states.union({recording_state})
         requires_two_party = bool(all_states.intersection(JurisdictionCompliance.TWO_PARTY_STATES))
-        
+
         if requires_two_party:
             # Must have consent from ALL participants
             if consents_obtained == participant_states:
@@ -2618,25 +2618,25 @@ class JurisdictionCompliance:
                 return True, "Compliant: One-party consent obtained"
             else:
                 return False, "Non-compliant: No consent obtained"
-    
+
     @staticmethod
     def check_data_residency(
         data_location: str,
         customer_location: str
     ) -> tuple[bool, str]:
         """Check data residency requirements.
-        
+
         Some jurisdictions require data to stay within borders.
         """
         # EU GDPR: Data must stay in EU unless adequacy decision
         # Note: Abbreviated list for documentation - full list would include all EU member states
         eu_countries = {"DE", "FR", "IT", "ES", "NL", "BE", "AT", "IE", "PT", "GR", "PL"}
-        
+
         if customer_location in eu_countries:
             if data_location not in eu_countries and data_location not in {"US"}:
                 # Simplified: US has adequacy framework
                 return False, f"GDPR violation: EU customer data in {data_location}"
-        
+
         return True, "Data residency compliant"
 ```
 
