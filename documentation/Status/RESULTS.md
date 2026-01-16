@@ -49,18 +49,19 @@ All 9 patterns tested with edge cases:
 
 ```
 feedback-loop/
-├── docs/               # 📘 Organized documentation
+├── documentation/      # 📘 Organized documentation
 │   ├── INDEX.md                  # Navigation guide
 │   ├── GETTING_STARTED.md        # 5-minute intro
 │   ├── QUICK_REFERENCE.md        # One-page lookup
 │   ├── AI_PATTERNS_GUIDE.md      # Complete workflow
 │   ├── METRICS_GUIDE.md          # Metrics system
-│   └── CONTRIBUTING.md           # How to help
+│   └── Status/
+│       └── RESULTS.md            # This file
 ├── examples/           # 💻 Code examples (good & bad)
 ├── metrics/            # 📊 Metrics collection & AI
 ├── tests/              # ✅ 119 tests, 91% coverage
 ├── README.md           # Project overview
-├── RESULTS.md          # This file
+├── CONTRIBUTING.md     # How to help
 └── CHANGELOG.md        # Version history
 ```
 
@@ -112,7 +113,7 @@ The implementation followed the complete cycle:
 4. **ITERATE**: Refined based on testing feedback
 5. **RETROSPECTIVE**: Documented learnings
 
-See [docs/AI_PATTERNS_GUIDE.md](docs/AI_PATTERNS_GUIDE.md) for the complete workflow.
+See [AI_PATTERNS_GUIDE.md](../AI_PATTERNS_GUIDE.md) for the complete workflow.
 
 ## Conclusion
 

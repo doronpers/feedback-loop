@@ -49,7 +49,7 @@ Use patterns whenever you see:
 4. Update the pattern metadata and docs.
 5. Re-run tests and metrics analysis.
 
-For contribution steps, see **[docs/CONTRIBUTING.md](CONTRIBUTING.md)**.
+For contribution steps, see **[CONTRIBUTING.md](../CONTRIBUTING.md)**.
 
 ### Applying patterns in generation
 

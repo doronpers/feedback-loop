@@ -1,6 +1,6 @@
 # feedback-loop
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.13+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Tests](https://img.shields.io/badge/tests-183%20collected-success.svg)
 ![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
@@ -20,16 +20,23 @@ feedback-loop is a production-ready framework that transforms test failures into
 
 ### Installation
 
+**Requirements:** Python 3.13+
+
 ```bash
 # Clone and install
 git clone https://github.com/doronpers/feedback-loop.git
 cd feedback-loop
 
-# Core runtime
-pip install -e .
-
-# Or install with testing extras
+# Recommended: Install with testing extras (includes dev dependencies)
 pip install -e .[test]
+
+# Or install core runtime only
+pip install -e .
+```
+
+**Alternative:** If you prefer using requirements.txt:
+```bash
+pip install -r requirements.txt
 ```
 
 ### 🎯 Cursor Integration (Recommended)

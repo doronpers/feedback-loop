@@ -163,7 +163,7 @@ python examples/fastapi_audio_example.py
 
 ```
 feedback-loop/
-├── docs/                   # Documentation
+├── documentation/          # Documentation
 │   ├── GETTING_STARTED.md
 │   └── QUICK_REFERENCE.md  # ← You are here
 ├── examples/               # Code examples
@@ -179,4 +179,4 @@ feedback-loop/
 - **Full workflow:** [AI Patterns Guide](AI_PATTERNS_GUIDE.md)
 - **Metrics system:** [Metrics Guide](METRICS_GUIDE.md)
 - **API reference:** [metrics/README.md](../metrics/README.md)
-- **Results:** [RESULTS.md](../RESULTS.md)
+- **Results:** [Status/RESULTS.md](Status/RESULTS.md)

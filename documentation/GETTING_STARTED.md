@@ -10,10 +10,18 @@ feedback-loop helps you write better code by learning from mistakes. This guide 
 
 ## Installation
 
+**Requirements:** Python 3.13+
+
 ```bash
+# Clone the repository
 git clone https://github.com/doronpers/feedback-loop.git
 cd feedback-loop
-pip install -r requirements.txt
+
+# Recommended: Install with testing extras (includes dev dependencies)
+pip install -e .[test]
+
+# Alternative: Install from requirements.txt
+# pip install -r requirements.txt
 ```
 
 ### Optional: Set Up API Keys

@@ -2,6 +2,16 @@
 
 **Table of Contents** - Non-redundant navigation to all documentation resources.
 
+## Documentation Root Policy
+
+**All documentation lives in the `documentation/` directory.** Internal links should use `documentation/` paths (not `docs/`). This ensures consistency and prevents broken links. When referencing documentation files:
+
+- Use relative paths from within `documentation/`: `[QUICK_REFERENCE.md](QUICK_REFERENCE.md)`
+- Use relative paths from subdirectories: `[AI_PATTERNS_GUIDE.md](../AI_PATTERNS_GUIDE.md)`
+- Use relative paths from root: `[documentation/INDEX.md](documentation/INDEX.md)`
+
+The `CONTRIBUTING.md` file is at the repository root and should be referenced as `../CONTRIBUTING.md` from within `documentation/`.
+
 ## Start here
 
 1. **[Getting Started](GETTING_STARTED.md)** — install, run demos, understand the loop.
