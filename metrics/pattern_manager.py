@@ -21,7 +21,7 @@ class PatternManager:
 
     def __init__(
         self,
-        pattern_library_path: str = "patterns.json",
+        pattern_library_path: str = "data/patterns.json",
         use_memory: bool = False,
         memory_config: Optional[Dict[str, Any]] = None,
     ):

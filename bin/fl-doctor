@@ -160,7 +160,7 @@ def fix_github_workflow():
 
 def check_metrics_collected():
     """Check if metrics have been collected."""
-    metrics_file = Path("metrics_data.json")
+    metrics_file = Path("data/metrics_data.json")
     if metrics_file.exists():
         import json
         with open(metrics_file) as f:
@@ -174,7 +174,7 @@ def check_metrics_collected():
 
 def check_patterns_exist():
     """Check if patterns have been analyzed."""
-    patterns_file = Path("patterns.json")
+    patterns_file = Path("data/patterns.json")
     if patterns_file.exists():
         import json
         with open(patterns_file) as f:

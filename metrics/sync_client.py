@@ -77,8 +77,8 @@ class LocalSyncClient(SyncClient):
 
     def __init__(
         self,
-        patterns_file: str = "patterns.json",
-        metrics_file: str = "metrics_data.json",
+        patterns_file: str = "data/patterns.json",
+        metrics_file: str = "data/metrics_data.json",
         config_file: str = ".feedback-loop/config.json",
     ):
         """Initialize local sync client.
