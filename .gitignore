@@ -226,3 +226,8 @@ sync_config.json
 .env.local
 .env.*.local
 coverage/
+
+# Agent Reasoning Logs - keep log entries local
+# (templates and READMEs are committed, but actual logs stay private)
+agent_reasoning_logs/logs/*.md
+!agent_reasoning_logs/logs/README.md
