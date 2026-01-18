@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""
+Install dev-cli globally
+
+Installs the dev-cli tool to a location in PATH so it can be used from anywhere.
+"""
+
+import os
+import shutil
+import sys
+from pathlib import Path
+
+# Find installation target
+INSTALL_DIRS = [
+    Path.home() / ".local" / "bin",  # User-local (recommended)
+    Path("/usr/local/bin"),  # System-wide (requires sudo)
+]
+
+# Source script location
+SCRIPT_DIR = Path(__file__).parent
+SOURCE_SCRIPT = SCRIPT_DIR / "dev-cli"
+
+
+def find_install_dir():
+    """Find the best installation directory."""
+    # Prefer user-local
+    user_local = INSTALL_DIRS[0]
+    user_local.mkdir(parents=True, exist_ok=True)
+
+    if os.access(user_local, os.W_OK):
+        return user_local
+
+    # Fall back to system-wide (will need sudo)
+    system_wide = INSTALL_DIRS[1]
+    if os.access(system_wide, os.W_OK):
+        return system_wide
+
+    return None
+
+
+def install():
+    """Install dev-cli globally."""
+    install_dir = find_install_dir()
+
+    if not install_dir:
+        print("Error: No writable installation directory found.")
+        print("Try running with sudo for system-wide installation.")
+        sys.exit(1)
+
+    target = install_dir / "dev-cli"
+
+    # Copy script
+    try:
+        shutil.copy2(SOURCE_SCRIPT, target)
+        os.chmod(target, 0o755)
+
+        print(f"✓ Installed dev-cli to {target}")
+        print()
+        print("You can now use 'dev-cli' from anywhere!")
+        print()
+        print("Examples:")
+        print("  dev-cli fl dashboard")
+        print("  dev-cli fl start --user")
+        print("  dev-cli test run")
+        print("  dev-cli info")
+        print()
+
+        # Check if in PATH
+        path_dirs = os.environ.get("PATH", "").split(":")
+        if str(install_dir) not in path_dirs:
+            print(f"⚠️  {install_dir} is not in your PATH.")
+            print(f"Add this to your ~/.zshrc or ~/.bashrc:")
+            print(f'  export PATH="$HOME/.local/bin:$PATH"')
+            print()
+
+        return 0
+    except PermissionError:
+        print(f"Error: Permission denied. Try running with sudo:")
+        print(f"  sudo {__file__}")
+        return 1
+    except Exception as e:
+        print(f"Error installing: {e}")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(install())
