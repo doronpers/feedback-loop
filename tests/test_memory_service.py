@@ -6,7 +6,7 @@ during test execution, ensuring backward compatibility.
 """
 
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -35,7 +35,7 @@ class TestFeedbackLoopMemory:
 
         memory = FeedbackLoopMemory(storage_type="inmemory")
         assert memory.storage_type == "inmemory"
-        assert memory._initialized == False
+        assert not memory._initialized
 
     @pytest.mark.asyncio
     async def test_initialize_success(self, mock_memu):
@@ -302,9 +302,7 @@ class TestPatternManagerMemoryIntegration:
             f.write('{"patterns": [], "changelog": []}')
 
         try:
-            manager = PatternManager(
-                pattern_library_path=patterns_file, use_memory=False
-            )
+            manager = PatternManager(pattern_library_path=patterns_file, use_memory=False)
             assert manager.memory is None
             assert not manager.use_memory
         finally:
@@ -347,9 +345,7 @@ class TestPatternManagerMemoryIntegration:
             f.write('{"patterns": [], "changelog": []}')
 
         try:
-            manager = PatternManager(
-                pattern_library_path=patterns_file, use_memory=True
-            )
+            manager = PatternManager(pattern_library_path=patterns_file, use_memory=True)
 
             # Mock the memory service
             manager.memory = Mock()
@@ -390,9 +386,7 @@ class TestPatternManagerMemoryIntegration:
             )
 
         try:
-            manager = PatternManager(
-                pattern_library_path=patterns_file, use_memory=False
-            )
+            manager = PatternManager(pattern_library_path=patterns_file, use_memory=False)
 
             # Should use keyword search fallback
             results = await manager.retrieve_similar_patterns("test", limit=5)
@@ -429,9 +423,7 @@ class TestMetricsCollectorMemoryIntegration:
         from metrics.collector import MetricsCollector
 
         mock_memory = Mock()
-        mock_memory.memorize_development_session = AsyncMock(
-            return_value={"success": True}
-        )
+        mock_memory.memorize_development_session = AsyncMock(return_value={"success": True})
 
         collector = MetricsCollector(memory_service=mock_memory)
         collector.log_code_generation(

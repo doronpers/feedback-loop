@@ -1,5 +1,5 @@
 # Feedback Loop - Cursor AI Rules
-# 
+#
 # This file teaches Cursor about the feedback-loop patterns and best practices.
 # Cursor automatically reads this file and applies these rules to all AI interactions.
 
@@ -302,10 +302,10 @@ def test_function_name_scenario():
     """Test function_name with specific scenario."""
     # Arrange - Setup
     data = setup_test_data()
-    
+
     # Act - Execute
     result = function_name(data)
-    
+
     # Assert - Verify
     assert result is not None
     assert isinstance(result, expected_type)

@@ -34,9 +34,7 @@ def check_prerequisites():
     if python_version >= (3, 8):
         print(f"✓ Python {python_version.major}.{python_version.minor} detected")
     else:
-        print(
-            f"✗ Python 3.8+ required (found {python_version.major}.{python_version.minor})"
-        )
+        print(f"✗ Python 3.8+ required (found {python_version.major}.{python_version.minor})")
         checks_passed = False
 
     # Check SQLAlchemy

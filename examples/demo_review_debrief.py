@@ -16,7 +16,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from metrics.code_reviewer import CodeReviewer, display_debrief
+from metrics.code_reviewer import CodeReviewer, display_debrief  # noqa: E402
 
 
 def demo_simple_code():
@@ -37,9 +37,7 @@ def demo_simple_code():
 
     if not reviewer.llm_manager.is_any_available():
         print("⚠️  No LLM providers available!")
-        print(
-            "Set one of these API keys: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY"
-        )
+        print("Set one of these API keys: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY")
         return False
 
     print("🔍 Reviewing code...\n")
@@ -85,9 +83,7 @@ def process_data(data):
     reviewer = CodeReviewer()
 
     print("🔍 Reviewing code...\n")
-    result = reviewer.review_code(
-        code, context="Data processing function that handles JSON input"
-    )
+    result = reviewer.review_code(code, context="Data processing function that handles JSON input")
 
     if "error" in result:
         print(f"❌ Error: {result['error']}")

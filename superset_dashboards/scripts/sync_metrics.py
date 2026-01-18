@@ -27,9 +27,7 @@ sys.path.insert(0, str(database_dir))
 
 from models import Base
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -48,9 +46,7 @@ class MetricsSync:
         self.log_path = Path(config.get("log_path", "sync_log.json"))
 
         if not self.db_uri:
-            raise ValueError(
-                "Database URI not provided (set via config or METRICS_DB_URI env var)"
-            )
+            raise ValueError("Database URI not provided (set via config or METRICS_DB_URI env var)")
 
     def check_for_updates(self) -> bool:
         """Check if metrics file has been updated since last sync.

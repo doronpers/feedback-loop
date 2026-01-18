@@ -6,7 +6,7 @@ Provides LLM-powered code review with pattern suggestions and best practices.
 
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from metrics.config_manager import ConfigManager
 from metrics.llm_providers import get_llm_manager
@@ -57,12 +57,13 @@ class CodeReviewer:
         max_code_size = self.config.get("code_review.max_code_size", 50000)
         if len(code) > max_code_size:
             return {
-                "error": f"Code too large for review (max {max_code_size} bytes). Please review in smaller chunks.",
+                "error": (
+                    f"Code too large for review (max {max_code_size} bytes). "
+                    "Please review in smaller chunks."
+                ),
                 "suggestions": [],
                 "debrief": {
-                    "strategies": [
-                        "Break the code into smaller, logical chunks for review."
-                    ],
+                    "strategies": ["Break the code into smaller, logical chunks for review."],
                     "difficulty": 2,
                     "explanation": "Code exceeded size limit for review.",
                 },
@@ -87,9 +88,7 @@ class CodeReviewer:
         try:
             # Get LLM review
             max_tokens = self.config.get("code_review.max_tokens", 2048)
-            response = self.llm_manager.generate(
-                prompt, max_tokens=max_tokens, fallback=True
-            )
+            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
 
             # Generate debrief
             debrief = self.generate_debrief(code, response.text, context)
@@ -190,9 +189,7 @@ Keep it practical and code-focused."""
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_explain", 1500)
-            response = self.llm_manager.generate(
-                prompt, max_tokens=max_tokens, fallback=True
-            )
+            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
             return response.text
         except Exception as e:
             logger.error(f"Explanation failed: {e}")
@@ -228,9 +225,7 @@ Keep suggestions practical and pattern-aware."""
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_suggest", 2048)
-            response = self.llm_manager.generate(
-                prompt, max_tokens=max_tokens, fallback=True
-            )
+            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
             return response.text
         except Exception as e:
             logger.error(f"Suggestions failed: {e}")
@@ -251,9 +246,7 @@ Keep suggestions practical and pattern-aware."""
         """
         if not self.llm_manager.is_any_available():
             return {
-                "strategies": [
-                    "No LLM providers available. Set API keys to use this feature."
-                ],
+                "strategies": ["No LLM providers available. Set API keys to use this feature."],
                 "difficulty": 5,
                 "explanation": "Cannot generate debrief without LLM access.",
             }
@@ -301,9 +294,7 @@ these improvements more or less challenging]
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_debrief", 1500)
-            response = self.llm_manager.generate(
-                prompt, max_tokens=max_tokens, fallback=True
-            )
+            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
 
             # Parse the response
             debrief_text = response.text
@@ -313,13 +304,9 @@ these improvements more or less challenging]
 
             # Extract strategies
             if "**Improvement Strategies:**" in debrief_text:
-                strategies_section = debrief_text.split("**Improvement Strategies:**")[
-                    1
-                ]
+                strategies_section = debrief_text.split("**Improvement Strategies:**")[1]
                 if "**Difficulty Rating:**" in strategies_section:
-                    strategies_section = strategies_section.split(
-                        "**Difficulty Rating:**"
-                    )[0]
+                    strategies_section = strategies_section.split("**Difficulty Rating:**")[0]
 
                 # Parse numbered list using regex for better handling
                 lines = strategies_section.strip().split("\n")
@@ -368,6 +355,464 @@ these improvements more or less challenging]
                 "difficulty": 5,
                 "explanation": "Error during debrief generation.",
             }
+
+
+class CouncilCodeReviewer:
+    """Multi-perspective code reviewer using Council AI with HTTP fallback."""
+
+    def __init__(
+        self,
+        prefer_local: Optional[bool] = None,
+        http_base_url: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
+        provider: Optional[str] = None,
+    ):
+        self.config = ConfigManager()
+        self.pattern_manager = PatternManager()
+        self.patterns = self.pattern_manager.get_all_patterns()
+
+        self.prefer_local = (
+            prefer_local
+            if prefer_local is not None
+            else self.config.get("council_review.prefer_local", True)
+        )
+        self.http_base_url = http_base_url or self.config.get(
+            "council_review.http_base_url", "http://localhost:8000/api/consult"
+        )
+        self.timeout_seconds = timeout_seconds or self.config.get(
+            "council_review.http_timeout_seconds", 60
+        )
+        self.domain = self.config.get("council_review.domain", "coding")
+        self.mode = self.config.get("council_review.mode", "synthesis")
+        self.temperature = self.config.get("council_review.temperature", 0.4)
+        self.max_tokens = self.config.get("council_review.max_tokens", 1200)
+        self.provider = provider or self.config.get("council_review.provider")
+
+    def review_code(
+        self, code: str, context: Optional[str] = None, api_key: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Review code with Council AI, falling back to HTTP API."""
+        if not code or not code.strip():
+            return {"error": "No code provided for review.", "responses": []}
+
+        prompt = self._build_review_prompt(code, context)
+
+        if self.prefer_local:
+            local_result = self._review_local(prompt, api_key)
+            if local_result:
+                return local_result
+
+        return self._review_http(prompt, api_key)
+
+    def _build_review_prompt(self, code: str, context: Optional[str] = None) -> str:
+        """Build review prompt with pattern context for council review."""
+        prompt = """You are a multi-perspective code reviewer.
+
+Provide:
+1. Security concerns
+2. Design clarity issues
+3. Cognitive load and maintainability concerns
+4. Risk and edge-case warnings
+5. Actionable fixes
+
+Focus on these key patterns:
+"""
+        for pattern in self.patterns[:5]:
+            name = pattern.get("name", "")
+            desc = pattern.get("description", "")
+            prompt += f"- **{name}**: {desc}\n"
+
+        prompt += "\n## Code to Review:\n\n```python\n"
+        prompt += code
+        prompt += "\n```\n"
+
+        if context:
+            prompt += f"\n## Context:\n{context}\n"
+
+        return prompt
+
+    def _review_local(self, prompt: str, api_key: Optional[str]) -> Optional[Dict[str, Any]]:
+        """Attempt local Council AI review."""
+        try:
+            from council_ai import Council
+        except ImportError:
+            return None
+
+        try:
+            council = self._build_local_council(Council, api_key)
+            result = council.consult(prompt)
+            responses = [self._serialize_response(r) for r in result.responses]
+            return {
+                "review": result.synthesis,
+                "responses": responses,
+                "mode": result.mode,
+                "source": "council_local",
+            }
+        except Exception as e:
+            logger.error(f"Council local review failed: {e}")
+            return None
+
+    def _review_http(self, prompt: str, api_key: Optional[str]) -> Dict[str, Any]:
+        """Review code using Council AI HTTP consult endpoint."""
+        try:
+            import requests
+        except ImportError as e:
+            return {"error": f"requests library not available: {e}", "responses": []}
+
+        payload = {
+            "query": prompt,
+            "context": None,
+            "domain": self.domain,
+            "mode": self.mode,
+            "provider": self.provider,
+            "api_key": api_key,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+        try:
+            response = requests.post(self.http_base_url, json=payload, timeout=self.timeout_seconds)
+            if not response.ok:
+                return {
+                    "error": f"HTTP review failed: {response.status_code} - {response.text}",
+                    "responses": [],
+                }
+
+            data = response.json()
+            return {
+                "review": data.get("synthesis"),
+                "responses": data.get("responses", []),
+                "mode": data.get("mode"),
+                "source": "council_http",
+            }
+        except requests.exceptions.Timeout:
+            return {
+                "error": f"HTTP review timeout after {self.timeout_seconds}s",
+                "responses": [],
+            }
+        except requests.exceptions.ConnectionError as e:
+            return {"error": f"HTTP connection error: {e}", "responses": []}
+        except Exception as e:
+            return {"error": f"HTTP review failed: {e}", "responses": []}
+
+    def _build_local_council(self, council_cls: Any, api_key: Optional[str]) -> Any:
+        """Construct Council instance with optional provider override."""
+        if self.provider:
+            try:
+                return council_cls.for_domain(self.domain, api_key=api_key, provider=self.provider)
+            except TypeError:
+                return council_cls.for_domain(self.domain, api_key=api_key)
+        return council_cls.for_domain(self.domain, api_key=api_key)
+
+    def _serialize_response(self, response: Any) -> Dict[str, Any]:
+        """Serialize a Council response for output."""
+        persona = getattr(response, "persona", None)
+        return {
+            "persona": {
+                "id": getattr(persona, "id", None),
+                "name": getattr(persona, "name", None),
+                "title": getattr(persona, "title", None),
+            }
+            if persona
+            else None,
+            "content": getattr(response, "content", None),
+            "error": getattr(response, "error", None),
+        }
+
+    def review_with_visual_diff(self, code: str, context: Optional[str] = None) -> Dict[str, Any]:
+        """Review code and generate visual diff showing pattern applications.
+
+        Args:
+            code: Code to review
+            context: Optional context about the code
+
+        Returns:
+            Dictionary with review results and visual diff information
+        """
+        # First get the regular review
+        review_result = self.review_code(code, context)
+
+        if "error" in review_result:
+            return review_result
+
+        # Generate pattern connections
+        pattern_connections = self.get_pattern_connections(code)
+
+        # Generate visual diff
+        visual_diff = self._generate_visual_diff(code, pattern_connections)
+
+        # Add visual elements to result
+        review_result.update(
+            {
+                "pattern_connections": pattern_connections,
+                "visual_diff": visual_diff,
+                "diff_summary": self._summarize_diff(pattern_connections),
+            }
+        )
+
+        return review_result
+
+    def get_pattern_connections(self, code: str) -> Dict[str, Any]:
+        """Map code sections to relevant patterns.
+
+        Args:
+            code: Code to analyze
+
+        Returns:
+            Dictionary mapping code patterns to relevant feedback-loop patterns
+        """
+        connections: Dict[str, Any] = {
+            "detected_patterns": [],
+            "pattern_matches": {},
+            "confidence_scores": {},
+            "code_sections": [],
+        }
+
+        # Analyze code for pattern violations using regex
+        pattern_checks = {
+            "numpy_json_serialization": {
+                "regex": r"json\.dumps\([^)]*np\.|json\.dumps\([^)]*numpy",
+                "description": "NumPy types in JSON serialization",
+                "severity": "high",
+            },
+            "bounds_checking": {
+                "regex": r"\w+\[0\](?!\s+if\s+\w+)",
+                "description": "List access without bounds checking",
+                "severity": "medium",
+            },
+            "specific_exceptions": {
+                "regex": r"except\s*:",
+                "description": "Bare except clause",
+                "severity": "medium",
+            },
+            "structured_logging": {
+                "regex": r"\bprint\s*\(",
+                "description": "Using print instead of logging",
+                "severity": "low",
+            },
+            "temp_file_handling": {
+                "regex": r"tempfile\.mktemp\(",
+                "description": "Using deprecated mktemp function",
+                "severity": "high",
+            },
+        }
+
+        lines = code.split("\n")
+        for line_num, line in enumerate(lines, 1):
+            for pattern_name, pattern_info in pattern_checks.items():
+                if re.search(pattern_info["regex"], line):
+                    connections["detected_patterns"].append(
+                        {
+                            "pattern": pattern_name,
+                            "line": line_num,
+                            "code": line.strip(),
+                            "description": pattern_info["description"],
+                            "severity": pattern_info["severity"],
+                            "confidence": 0.8,  # Default confidence
+                        }
+                    )
+
+                    if pattern_name not in connections["pattern_matches"]:
+                        connections["pattern_matches"][pattern_name] = []
+
+                    connections["pattern_matches"][pattern_name].append(
+                        {"line": line_num, "code": line.strip()}
+                    )
+
+        # Calculate confidence scores
+        for pattern_name in connections["pattern_matches"]:
+            match_count = len(connections["pattern_matches"][pattern_name])
+            connections["confidence_scores"][pattern_name] = min(0.9, 0.6 + (match_count * 0.1))
+
+        return connections
+
+    def generate_quick_fixes(self, review_result: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Generate actionable quick fixes with explanations.
+
+        Args:
+            review_result: Result from code review
+
+        Returns:
+            List of quick fix suggestions
+        """
+        fixes: List[Dict[str, Any]] = []
+
+        if "pattern_connections" not in review_result:
+            return fixes
+
+        pattern_connections = review_result["pattern_connections"]
+
+        # Generate fixes for each detected pattern
+        fix_templates = {
+            "numpy_json_serialization": {
+                "title": "Convert NumPy types for JSON serialization",
+                "fix": "Use float() and .tolist() for NumPy types",
+                "example": "result = {'mean': float(np.mean(data)), 'values': data.tolist()}",
+            },
+            "bounds_checking": {
+                "title": "Add bounds checking for list access",
+                "fix": "Check list length before accessing elements",
+                "example": "first = items[0] if items else None",
+            },
+            "specific_exceptions": {
+                "title": "Use specific exception handling",
+                "fix": "Catch specific exceptions instead of bare except",
+                "example": "except json.JSONDecodeError as e:",
+            },
+            "structured_logging": {
+                "title": "Replace print with proper logging",
+                "fix": "Use logger instead of proper logging",
+                "example": 'logger.debug(f"Processing {filename}")',
+            },
+            "temp_file_handling": {
+                "title": "Use secure temporary file handling",
+                "fix": "Replace mktemp with NamedTemporaryFile",
+                "example": "with tempfile.NamedTemporaryFile() as tmp:",
+            },
+        }
+
+        for detection in pattern_connections.get("detected_patterns", []):
+            pattern_name = detection["pattern"]
+
+            if pattern_name in fix_templates:
+                template = fix_templates[pattern_name]
+                fixes.append(
+                    {
+                        "pattern": pattern_name,
+                        "title": template["title"],
+                        "line": detection["line"],
+                        "severity": detection["severity"],
+                        "fix_description": template["fix"],
+                        "example": template["example"],
+                        "confidence": detection["confidence"],
+                        "impact": "Improves code reliability and prevents runtime errors",
+                    }
+                )
+
+        return fixes
+
+    def _generate_visual_diff(
+        self, code: str, pattern_connections: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Generate visual diff information for pattern applications.
+
+        Args:
+            code: Original code
+            pattern_connections: Pattern connection analysis
+
+        Returns:
+            Visual diff information
+        """
+        lines = code.split("\n")
+        diff_info: Dict[str, List[Dict[str, Any]]] = {
+            "original_lines": [],
+            "suggested_changes": [],
+            "pattern_highlights": [],
+        }
+
+        for detection in pattern_connections.get("detected_patterns", []):
+            line_num = detection["line"]
+            if 1 <= line_num <= len(lines):
+                original_line = lines[line_num - 1]
+
+                diff_info["original_lines"].append(
+                    {
+                        "line": line_num,
+                        "content": original_line,
+                        "pattern": detection["pattern"],
+                        "severity": detection["severity"],
+                    }
+                )
+
+                # Generate suggested fix
+                suggested_fix = self._generate_line_fix(original_line, detection["pattern"])
+                if suggested_fix:
+                    diff_info["suggested_changes"].append(
+                        {
+                            "line": line_num,
+                            "original": original_line,
+                            "suggested": suggested_fix,
+                            "pattern": detection["pattern"],
+                        }
+                    )
+
+        return diff_info
+
+    def _generate_line_fix(self, line: str, pattern: str) -> Optional[str]:
+        """Generate a suggested fix for a single line.
+
+        Args:
+            line: Original code line
+            pattern: Pattern name
+
+        Returns:
+            Suggested fixed line or None
+        """
+        if pattern == "numpy_json_serialization":
+            # Replace np.mean(data) with float(np.mean(data))
+            line = re.sub(r"(\w+)\s*=\s*np\.(\w+)\(([^)]+)\)", r"\1 = float(np.\2(\3))", line)
+            # Replace data with data.tolist() in JSON contexts
+            line = re.sub(
+                r"json\.dumps\([^)]*(\w+)[^)]*\)", r"json.dumps(..., \1.tolist(), ...)", line
+            )
+
+        elif pattern == "bounds_checking":
+            # Add bounds check before [0] access
+            if "[0]" in line and "if" not in line:
+                # This is a simple heuristic - real implementation would be more sophisticated
+                pass
+
+        elif pattern == "specific_exceptions":
+            if "except:" in line:
+                line = line.replace("except:", "except Exception as e:")
+
+        elif pattern == "structured_logging":
+            if "print(" in line:
+                line = re.sub(r"print\s*\(", "logger.info(", line)
+
+        elif pattern == "temp_file_handling":
+            if "tempfile.mktemp(" in line:
+                line = line.replace(
+                    "tempfile.mktemp(", "tempfile.NamedTemporaryFile(delete=False).name"
+                )
+
+        return line if line != line else None  # Return None if no change
+
+    def _summarize_diff(self, pattern_connections: Dict[str, Any]) -> Dict[str, Any]:
+        """Summarize the diff for display.
+
+        Args:
+            pattern_connections: Pattern connection analysis
+
+        Returns:
+            Summary information
+        """
+        detected = pattern_connections.get("detected_patterns", [])
+
+        summary: Dict[str, Any] = {
+            "total_issues": len(detected),
+            "by_severity": {"high": 0, "medium": 0, "low": 0},
+            "by_pattern": {},
+            "confidence_range": {"min": 1.0, "max": 0.0, "avg": 0.0},
+        }
+
+        confidences = []
+
+        for detection in detected:
+            severity = detection["severity"]
+            pattern = detection["pattern"]
+            confidence = detection["confidence"]
+
+            summary["by_severity"][severity] += 1
+            summary["by_pattern"][pattern] = summary["by_pattern"].get(pattern, 0) + 1
+            confidences.append(confidence)
+
+        if confidences:
+            summary["confidence_range"]["min"] = min(confidences)
+            summary["confidence_range"]["max"] = max(confidences)
+            summary["confidence_range"]["avg"] = sum(confidences) / len(confidences)
+
+        return summary
 
 
 def display_debrief(debrief: Dict[str, Any]) -> None:

@@ -22,8 +22,7 @@ import logging
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
-from examples.fastapi_audio_patterns import (convert_numpy_audio_result,
-                                             safe_audio_upload_workflow)
+from examples.fastapi_audio_patterns import convert_numpy_audio_result, safe_audio_upload_workflow
 
 # Configure logging
 logging.basicConfig(
@@ -41,7 +40,7 @@ app = FastAPI(
 
 @app.post("/api/v1/audio/upload")
 async def upload_audio_file(
-    file: UploadFile = File(
+    file: UploadFile = File(  # noqa: B008
         ..., description="Audio file to process (WAV, MP3, FLAC, OGG)"
     )
 ):
@@ -67,16 +66,12 @@ async def upload_audio_file(
         logger.info(f"Receiving audio upload: {file.filename}")
 
         # Use the safe workflow pattern
-        result = await safe_audio_upload_workflow(
-            file, max_size_bytes=800 * 1024 * 1024  # 800MB
-        )
+        result = await safe_audio_upload_workflow(file, max_size_bytes=800 * 1024 * 1024)  # 800MB
 
         # GOOD: Ensure NumPy types are converted for JSON response
         safe_result = convert_numpy_audio_result(result)
 
-        logger.info(
-            f"Successfully processed {file.filename}: {safe_result['file_size_mb']:.2f} MB"
-        )
+        logger.info(f"Successfully processed {file.filename}: {safe_result['file_size_mb']:.2f} MB")
         return JSONResponse(content=safe_result, status_code=200)
 
     except HTTPException:

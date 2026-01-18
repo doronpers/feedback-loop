@@ -1,0 +1,400 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Interactive Code Review
+
+Enhanced code review with visual diff, pattern connections, and quick fixes.
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load .env file from project root
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
+
+from rich.columns import Columns
+from rich.console import Console
+from rich.layout import Layout
+from rich.panel import Panel
+from rich.prompt import Confirm, Prompt
+from rich.table import Table
+from rich.text import Text
+from rich.theme import Theme
+
+from metrics.code_reviewer import CodeReviewer
+
+# Custom theme
+custom_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold blue",
+        "accent": "magenta",
+        "good": "green",
+        "bad": "red",
+    }
+)
+
+console = Console(theme=custom_theme)
+
+
+class InteractiveCodeReview:
+    """Interactive code review interface."""
+
+    def __init__(self):
+        """Initialize interactive code review."""
+        self.reviewer = CodeReviewer()
+        self.current_file = None
+        self.current_code = None
+
+    def load_file(self, file_path: str) -> bool:
+        """Load code from file.
+
+        Args:
+            file_path: Path to code file
+
+        Returns:
+            True if loaded successfully, False otherwise
+        """
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                self.current_code = f.read()
+                self.current_file = file_path
+
+            console.print(
+                f"✅ Loaded {len(self.current_code)} characters from {file_path}", style="success"
+            )
+            return True
+
+        except Exception as e:
+            console.print(f"❌ Failed to load file: {e}", style="error")
+            return False
+
+    def review_code_interactive(self, code: str, context: str = None) -> None:
+        """Perform interactive code review with visual feedback.
+
+        Args:
+            code: Code to review
+            context: Optional context
+        """
+        console.print("\n🔍 Performing enhanced code review...", style="info")
+
+        # Get enhanced review with visual diff
+        result = self.reviewer.review_with_visual_diff(code, context)
+
+        if "error" in result:
+            console.print(f"❌ Review failed: {result['error']}", style="error")
+            return
+
+        # Display review results
+        self._display_review_results(result)
+
+        # Generate and display quick fixes
+        fixes = self.reviewer.generate_quick_fixes(result)
+        if fixes:
+            self._display_quick_fixes(fixes)
+
+        # Show pattern connections
+        if "pattern_connections" in result:
+            self._display_pattern_connections(result["pattern_connections"])
+
+    def _display_review_results(self, result: dict) -> None:
+        """Display review results in a formatted way.
+
+        Args:
+            result: Review result dictionary
+        """
+        # Header with provider info
+        header = f"Code Review Results - {result.get('provider', 'Unknown')} ({result.get('model', 'Unknown')})"
+        console.print(Panel.fit(header, border_style="blue"))
+
+        # Review text
+        if "review" in result:
+            console.print("\n📝 Review:", style="header")
+            console.print(Panel.fit(result["review"], border_style="cyan"))
+
+        # Diff summary
+        if "diff_summary" in result:
+            summary = result["diff_summary"]
+            console.print("\n📊 Summary:", style="header")
+
+            table = Table(show_header=True, header_style="bold blue")
+            table.add_column("Metric", style="cyan")
+            table.add_column("Value", style="green", justify="right")
+
+            table.add_row("Total Issues", str(summary["total_issues"]))
+            table.add_row("High Severity", str(summary["by_severity"]["high"]))
+            table.add_row("Medium Severity", str(summary["by_severity"]["medium"]))
+            table.add_row("Low Severity", str(summary["by_severity"]["low"]))
+
+            if summary["confidence_range"]["avg"] > 0:
+                table.add_row("Avg Confidence", f"{summary['confidence_range']['avg']:.1%}")
+
+            console.print(table)
+
+        # Debrief
+        if "debrief" in result:
+            from metrics.code_reviewer import display_debrief
+
+            console.print("\n🧠 Debrief:", style="header")
+            display_debrief(result["debrief"])
+
+    def _display_quick_fixes(self, fixes: list) -> dict:
+        """Display quick fixes with options to apply.
+
+        Args:
+            fixes: List of fix suggestions
+
+        Returns:
+            Dictionary with applied fixes information
+        """
+        console.print("\n🔧 Quick Fixes Available:", style="header")
+
+        applied_fixes = []
+
+        for i, fix in enumerate(fixes, 1):
+            # Fix details
+            severity_color = {"high": "red", "medium": "yellow", "low": "green"}.get(
+                fix["severity"], "white"
+            )
+
+            console.print(f"\n{i}. [bold cyan]{fix['title']}[/bold cyan]")
+            console.print(
+                f"   Line {fix['line']} | Severity: [{severity_color}]{fix['severity']}[/{severity_color}] | Confidence: {fix['confidence']:.1%}"
+            )
+            console.print(f"   [yellow]Fix:[/yellow] {fix['fix_description']}")
+            console.print(f"   [green]Example:[/green] {fix['example']}")
+            console.print(f"   [blue]Impact:[/blue] {fix['impact']}")
+
+            # Ask if user wants to apply
+            if Confirm.ask(f"   Apply this fix?", default=False):
+                applied_fixes.append(fix)
+                console.print("   ✅ Marked for application", style="success")
+            else:
+                console.print("   ⏭️  Skipped", style="warning")
+
+        return {"applied": applied_fixes, "total": len(fixes)}
+
+    def _display_pattern_connections(self, connections: dict) -> None:
+        """Display pattern connections visually.
+
+        Args:
+            connections: Pattern connection information
+        """
+        detected = connections.get("detected_patterns", [])
+
+        if not detected:
+            console.print("\n🔗 No pattern connections detected.", style="info")
+            return
+
+        console.print("\n🔗 Pattern Connections:", style="header")
+
+        # Group by pattern
+        pattern_groups = {}
+        for detection in detected:
+            pattern = detection["pattern"]
+            if pattern not in pattern_groups:
+                pattern_groups[pattern] = []
+            pattern_groups[pattern].append(detection)
+
+        for pattern_name, detections in pattern_groups.items():
+            console.print(
+                f"\n[bold magenta]{pattern_name}[/bold magenta] ({len(detections)} occurrences)"
+            )
+
+            for detection in detections:
+                severity_color = {"high": "red", "medium": "yellow", "low": "green"}.get(
+                    detection["severity"], "white"
+                )
+                console.print(
+                    f"  Line {detection['line']}: [{severity_color}]{detection['severity']}[/{severity_color}]"
+                )
+                console.print(f"    {detection['code']}")
+                console.print(f"    [cyan]{detection['description']}[/cyan]")
+
+    def show_visual_diff(self, result: dict) -> None:
+        """Show visual diff of changes.
+
+        Args:
+            result: Review result with visual diff information
+        """
+        if "visual_diff" not in result:
+            console.print("❌ No visual diff available.", style="warning")
+            return
+
+        diff_info = result["visual_diff"]
+
+        console.print("\n📋 Visual Diff:", style="header")
+
+        if not diff_info["suggested_changes"]:
+            console.print("✅ No changes suggested - code looks good!", style="success")
+            return
+
+        # Show changes
+        for change in diff_info["suggested_changes"]:
+            console.print(f"\nLine {change['line']}:", style="cyan")
+
+            # Original
+            console.print("❌ Original:", style="red")
+            console.print(f"   {change['original']}")
+
+            # Suggested
+            console.print("✅ Suggested:", style="green")
+            console.print(f"   {change['suggested']}")
+
+    def run_interactive_mode(self) -> None:
+        """Run interactive review mode."""
+        console.print("[bold blue]🔍 Interactive Code Review[/bold blue]")
+        console.print("Review code with pattern-aware analysis and quick fixes.\n")
+
+        while True:
+            console.print("\n" + "=" * 60, style="header")
+            console.print("Choose an option:", style="header")
+            console.print("=" * 60, style="header")
+
+            options = [
+                "1. 📁 Load file for review",
+                "2. 📝 Paste code for review",
+                "3. 🔍 Review loaded code",
+                "4. 📊 Show visual diff",
+                "5. 📋 Show pattern connections",
+                "6. 🚪 Exit",
+            ]
+
+            for option in options:
+                console.print(option)
+
+            console.print()
+
+            choice = Prompt.ask(
+                "Enter your choice", choices=["1", "2", "3", "4", "5", "6"], default="1"
+            )
+
+            if choice == "1":
+                # Load file
+                file_path = Prompt.ask("Enter file path")
+                if Path(file_path).exists():
+                    self.load_file(file_path)
+                else:
+                    console.print(f"❌ File not found: {file_path}", style="error")
+
+            elif choice == "2":
+                # Paste code
+                console.print("Enter your code (press Enter twice when done):")
+                lines = []
+                while True:
+                    line = input()
+                    if not line and lines and not lines[-1]:  # Double enter
+                        break
+                    lines.append(line)
+
+                self.current_code = "\n".join(lines[:-1])
+                self.current_file = None
+                console.print(
+                    f"✅ Loaded {len(self.current_code)} characters of code", style="success"
+                )
+
+            elif choice == "3":
+                # Review code
+                if not self.current_code:
+                    console.print(
+                        "❌ No code loaded. Load a file or paste code first.", style="warning"
+                    )
+                    continue
+
+                context = None
+                if self.current_file:
+                    context = f"File: {self.current_file}"
+
+                self.review_code_interactive(self.current_code, context)
+
+            elif choice == "4":
+                # Visual diff (if we have review results)
+                console.print(
+                    "❌ Visual diff requires a completed review. Use option 3 first.",
+                    style="warning",
+                )
+
+            elif choice == "5":
+                # Pattern connections (if we have review results)
+                console.print(
+                    "❌ Pattern connections requires a completed review. Use option 3 first.",
+                    style="warning",
+                )
+
+            elif choice == "6":
+                console.print("\n👋 Happy reviewing!", style="success")
+                break
+
+            # Pause before showing menu again
+            if choice in ["1", "2"]:
+                input("\nPress Enter to continue...")
+
+
+def main():
+    """Main entry point."""
+    parser = argparse.ArgumentParser(
+        description="Interactive code review with pattern-aware analysis",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  fl-review                          # Interactive mode
+  fl-review --file my_code.py        # Review a specific file
+  fl-review --paste                  # Paste code for review
+        """,
+    )
+
+    parser.add_argument("--file", help="Path to file to review")
+
+    parser.add_argument("--paste", action="store_true", help="Paste code for review (interactive)")
+
+    parser.add_argument("--context", help="Additional context about the code")
+
+    args = parser.parse_args()
+
+    reviewer = InteractiveCodeReview()
+
+    if args.file:
+        # Review specific file
+        if not reviewer.load_file(args.file):
+            return 1
+
+        reviewer.review_code_interactive(
+            reviewer.current_code, args.context or f"File: {args.file}"
+        )
+
+    elif args.paste:
+        # Paste mode
+        console.print("Enter your code (press Enter twice when done):")
+        lines = []
+        while True:
+            try:
+                line = input()
+                if not line and lines and not lines[-1]:  # Double enter
+                    break
+                lines.append(line)
+            except EOFError:
+                break
+
+        code = "\n".join(lines[:-1])
+        if code.strip():
+            reviewer.review_code_interactive(code, args.context)
+        else:
+            console.print("❌ No code entered.", style="warning")
+            return 1
+
+    else:
+        # Interactive mode
+        reviewer.run_interactive_mode()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

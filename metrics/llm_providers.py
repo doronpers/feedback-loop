@@ -22,9 +22,9 @@ class LLMResponse:
     model: str
     provider: str
     tokens_used: Optional[int] = None
-    metadata: Dict[str, Any] = None
+    metadata: Optional[Dict[str, Any]] = None
 
-    def __post_init__(self):
+    def __post_init__(self):  # noqa: D105
         if self.metadata is None:
             self.metadata = {}
 
@@ -72,9 +72,7 @@ class LLMProvider(ABC):
 class ClaudeProvider(LLMProvider):
     """Anthropic Claude LLM provider."""
 
-    def __init__(
-        self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-5-20250929"
-    ):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-5-20250929"):
         """Initialize Claude provider.
 
         Args:
@@ -175,12 +173,8 @@ class OpenAIProvider(LLMProvider):
                 provider="openai",
                 tokens_used=response.usage.total_tokens if response.usage else None,
                 metadata={
-                    "input_tokens": (
-                        response.usage.prompt_tokens if response.usage else None
-                    ),
-                    "output_tokens": (
-                        response.usage.completion_tokens if response.usage else None
-                    ),
+                    "input_tokens": (response.usage.prompt_tokens if response.usage else None),
+                    "output_tokens": (response.usage.completion_tokens if response.usage else None),
                 },
             )
         except Exception as e:
@@ -208,13 +202,12 @@ class GeminiProvider(LLMProvider):
     to google.generativeai if available.
     """
 
-    def __init__(
-        self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"
-    ):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
         """Initialize Gemini provider.
 
         Args:
-            api_key: Google API key (uses GEMINI_API_KEY env var if not provided, falls back to GOOGLE_API_KEY for backward compatibility)
+            api_key: Google API key (uses GEMINI_API_KEY env var if not provided,
+                     falls back to GOOGLE_API_KEY for backward compatibility)
             model: Gemini model to use
         """
         # Check GEMINI_API_KEY first, then fall back to GOOGLE_API_KEY for backward compatibility
@@ -257,9 +250,7 @@ class GeminiProvider(LLMProvider):
                 "max_output_tokens": max_tokens,
             }
 
-            response = self.client.generate_content(
-                prompt, generation_config=generation_config
-            )
+            response = self.client.generate_content(prompt, generation_config=generation_config)
 
             return LLMResponse(
                 text=response.text,
@@ -268,9 +259,7 @@ class GeminiProvider(LLMProvider):
                 tokens_used=None,  # Gemini doesn't always provide token counts
                 metadata={
                     "finish_reason": (
-                        response.candidates[0].finish_reason
-                        if response.candidates
-                        else None
+                        response.candidates[0].finish_reason if response.candidates else None
                     )
                 },
             )
@@ -313,12 +302,8 @@ class LLMManager:
         self.providers: Dict[str, LLMProvider] = {}
         self._initialize_providers()
 
-        self.preferred_provider = preferred_provider or os.environ.get(
-            "FL_LLM_PROVIDER", "claude"
-        )
-        logger.info(
-            f"LLM Manager initialized with preferred provider: {self.preferred_provider}"
-        )
+        self.preferred_provider = preferred_provider or os.environ.get("FL_LLM_PROVIDER", "claude")
+        logger.info(f"LLM Manager initialized with preferred provider: {self.preferred_provider}")
 
     def _initialize_providers(self):
         """Initialize all available providers."""
@@ -354,9 +339,7 @@ class LLMManager:
             RuntimeError: If no providers are available or all fail
         """
         if not self.providers:
-            raise RuntimeError(
-                "No LLM providers available. Set API keys and install packages."
-            )
+            raise RuntimeError("No LLM providers available. Set API keys and install packages.")
 
         # Determine which provider to use
         target_provider = provider or self.preferred_provider

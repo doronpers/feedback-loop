@@ -147,9 +147,7 @@ class MetricsAnalyzer:
         logger.debug(f"Detected {len(new_patterns)} new patterns")
         return new_patterns
 
-    def calculate_effectiveness(
-        self, time_window_days: int = 30
-    ) -> Dict[str, Dict[str, Any]]:
+    def calculate_effectiveness(self, time_window_days: int = 30) -> Dict[str, Dict[str, Any]]:
         """Calculate pattern effectiveness over time.
 
         Effectiveness is measured by reduction in occurrences over time.
@@ -267,9 +265,7 @@ class MetricsAnalyzer:
 
                 # Update to highest severity seen
                 current_severity, count = pattern_severity[pattern]
-                if severity_weights.get(severity, 0) > severity_weights.get(
-                    current_severity, 0
-                ):
+                if severity_weights.get(severity, 0) > severity_weights.get(current_severity, 0):
                     pattern_severity[pattern] = (severity, count + 1)
                 else:
                     pattern_severity[pattern] = (current_severity, count + 1)
@@ -300,6 +296,29 @@ class MetricsAnalyzer:
         logger.debug(f"Ranked {len(ranked)} patterns by severity")
         return ranked
 
+    def get_summary(self) -> Dict[str, Any]:
+        """Get summary statistics of metrics data.
+
+        Returns:
+            Dictionary containing summary counts
+        """
+        return {
+            "total": sum(
+                [
+                    len(self.metrics_data.get("bugs", [])),
+                    len(self.metrics_data.get("test_failures", [])),
+                    len(self.metrics_data.get("code_reviews", [])),
+                    len(self.metrics_data.get("performance_metrics", [])),
+                    len(self.metrics_data.get("deployment_issues", [])),
+                ]
+            ),
+            "bugs": len(self.metrics_data.get("bugs", [])),
+            "test_failures": len(self.metrics_data.get("test_failures", [])),
+            "code_reviews": len(self.metrics_data.get("code_reviews", [])),
+            "performance_metrics": len(self.metrics_data.get("performance_metrics", [])),
+            "deployment_issues": len(self.metrics_data.get("deployment_issues", [])),
+        }
+
     def generate_report(self) -> Dict[str, Any]:
         """Generate a comprehensive analysis report.
 
@@ -307,17 +326,7 @@ class MetricsAnalyzer:
             Dictionary containing analysis results
         """
         report = {
-            "summary": {
-                "total_bugs": len(self.metrics_data.get("bugs", [])),
-                "total_test_failures": len(self.metrics_data.get("test_failures", [])),
-                "total_code_reviews": len(self.metrics_data.get("code_reviews", [])),
-                "total_performance_metrics": len(
-                    self.metrics_data.get("performance_metrics", [])
-                ),
-                "total_deployment_issues": len(
-                    self.metrics_data.get("deployment_issues", [])
-                ),
-            },
+            "summary": self.get_summary(),
             "high_frequency_patterns": self.get_high_frequency_patterns(),
             "ranked_patterns": self.rank_patterns_by_severity(),
             "generated_at": datetime.now().isoformat(),
@@ -336,12 +345,36 @@ class MetricsAnalyzer:
         ranked = self.rank_patterns_by_severity()
 
         # Get most critical patterns
-        critical_patterns = [
-            p["pattern"] for p in ranked if p["severity"] in ["critical", "high"]
-        ][:5]
+        critical_patterns = [p["pattern"] for p in ranked if p["severity"] in ["critical", "high"]][
+            :5
+        ]
 
         return {
             "high_frequency_patterns": [p["pattern"] for p in high_freq[:10]],
             "critical_patterns": critical_patterns,
             "pattern_counts": {p["pattern"]: p["count"] for p in high_freq},
         }
+
+    def get_severity_distribution(self) -> Dict[str, int]:
+        """Get distribution of issue severities.
+
+        Returns:
+            Dictionary mapping severity levels to counts
+        """
+        severity_counts = {"high": 0, "medium": 0, "low": 0}
+
+        # Count from code reviews
+        for review in self.metrics_data.get("code_reviews", []):
+            severity = review.get("severity", "medium")
+            if severity in severity_counts:
+                severity_counts[severity] += 1
+
+        # Count from bugs (assume medium severity if not specified)
+        bug_count = len(self.metrics_data.get("bugs", []))
+        severity_counts["medium"] += bug_count
+
+        # Count from test failures (assume medium severity)
+        test_failure_count = len(self.metrics_data.get("test_failures", []))
+        severity_counts["medium"] += test_failure_count
+
+        return severity_counts

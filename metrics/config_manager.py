@@ -13,6 +13,7 @@ class ConfigManager:
     """Manages feedback-loop configuration."""
 
     DEFAULT_CONFIG_PATH = ".feedback-loop/config.json"
+    _instance: Optional["ConfigManager"] = None
 
     def __init__(self, config_path: Optional[str] = None):
         """Initialize config manager.
@@ -38,17 +39,11 @@ class ConfigManager:
             logger.warning(f"Failed to load config: {e}, using defaults")
             return self._default_config()
 
-    def _merge_config(
-        self, default: Dict[str, Any], user: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _merge_config(self, default: Dict[str, Any], user: Dict[str, Any]) -> Dict[str, Any]:
         """Merge user config with defaults recursively."""
         result = default.copy()
         for key, value in user.items():
-            if (
-                key in result
-                and isinstance(result[key], dict)
-                and isinstance(value, dict)
-            ):
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
                 result[key] = self._merge_config(result[key], value)
             else:
                 result[key] = value
@@ -97,6 +92,16 @@ class ConfigManager:
                 "max_tokens_suggest": 2048,
                 "max_tokens_debrief": 1500,
             },
+            "council_review": {
+                "prefer_local": True,
+                "http_base_url": "http://localhost:8000/api/consult",
+                "http_timeout_seconds": 60,
+                "domain": "coding",
+                "mode": "synthesis",
+                "temperature": 0.4,
+                "max_tokens": 1200,
+                "provider": None,
+            },
             "analysis": {"time_window_days": 30},
         }
 
@@ -111,7 +116,7 @@ class ConfigManager:
             Config value or default
         """
         keys = key_path.split(".")
-        value = self._config
+        value: Any = self._config
         for key in keys:
             if isinstance(value, dict):
                 value = value.get(key)
@@ -213,6 +218,6 @@ class ConfigManager:
         Returns:
             ConfigManager instance
         """
-        if not hasattr(cls, "_instance"):
+        if not hasattr(cls, "_instance") or cls._instance is None:
             cls._instance = cls(config_path)
         return cls._instance

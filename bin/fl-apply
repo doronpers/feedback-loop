@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Pattern Application
+
+Analyze codebase for pattern violations and apply fixes interactively.
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load .env file from project root
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
+
+from rich.console import Console
+from rich.theme import Theme
+
+from metrics.pattern_applicator import PatternApplicator
+
+# Custom theme
+custom_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold blue",
+        "accent": "magenta",
+    }
+)
+
+console = Console(theme=custom_theme)
+
+
+def main():
+    """Main entry point for fl-apply."""
+    parser = argparse.ArgumentParser(
+        description="Apply pattern fixes to your codebase",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  fl-apply                    # Interactive mode for current directory
+  fl-apply --scan .           # Scan current directory
+  fl-apply --scan src/ --preview  # Preview fixes for src/
+  fl-apply --scan . --apply   # Apply all fixes (use with caution!)
+  fl-apply --patterns numpy_json_serialization,bounds_checking --scan .
+        """,
+    )
+
+    parser.add_argument(
+        "--scan", metavar="DIRECTORY", help="Directory to scan for pattern violations"
+    )
+
+    parser.add_argument(
+        "--patterns", help="Comma-separated list of patterns to fix (default: all available)"
+    )
+
+    parser.add_argument(
+        "--preview", action="store_true", help="Preview fixes without applying them"
+    )
+
+    parser.add_argument(
+        "--apply", action="store_true", help="Apply fixes without confirmation (use with caution!)"
+    )
+
+    parser.add_argument(
+        "--backup",
+        action="store_true",
+        default=True,
+        help="Create backup files before modifying (default: True)",
+    )
+
+    parser.add_argument(
+        "--no-backup", action="store_false", dest="backup", help="Don't create backup files"
+    )
+
+    parser.add_argument("--include", help="File patterns to include (default: *.py)")
+
+    parser.add_argument("--exclude", help="File patterns to exclude (comma-separated)")
+
+    args = parser.parse_args()
+
+    # Initialize applicator
+    applicator = PatternApplicator()
+
+    # Determine directory to scan
+    scan_dir = Path(args.scan) if args.scan else Path.cwd()
+
+    if not scan_dir.exists():
+        console.print(f"❌ Directory not found: {scan_dir}", style="error")
+        return 1
+
+    if not scan_dir.is_dir():
+        console.print(f"❌ Not a directory: {scan_dir}", style="error")
+        return 1
+
+    # Parse patterns
+    selected_patterns = None
+    if args.patterns:
+        selected_patterns = [p.strip() for p in args.patterns.split(",") if p.strip()]
+
+    # Parse include/exclude patterns
+    include_patterns = None
+    if args.include:
+        include_patterns = [p.strip() for p in args.include.split(",") if p.strip()]
+
+    exclude_patterns = None
+    if args.exclude:
+        exclude_patterns = [p.strip() for p in args.exclude.split(",") if p.strip()]
+
+    # Determine mode
+    if args.preview:
+        # Preview mode
+        console.print(f"🔍 Previewing pattern fixes for: {scan_dir}", style="info")
+
+        # Analyze
+        scan_results = applicator.analyze_codebase(scan_dir)
+
+        if scan_results["total_violations"] == 0:
+            console.print("✅ No pattern violations found!", style="success")
+            return 0
+
+        # Preview fixes
+        preview_info = applicator.preview_fixes(scan_results, selected_patterns)
+        applicator.show_preview(preview_info)
+
+        return 0
+
+    elif args.apply:
+        # Apply mode (non-interactive)
+        console.print(f"🔧 Applying pattern fixes to: {scan_dir}", style="warning")
+        console.print("⚠️  This will modify files. Make sure you have backups!", style="warning")
+
+        if not args.scan:
+            console.print("❌ --scan DIRECTORY is required when using --apply", style="error")
+            return 1
+
+        # Analyze
+        scan_results = applicator.analyze_codebase(scan_dir)
+
+        if scan_results["total_violations"] == 0:
+            console.print("✅ No pattern violations found!", style="success")
+            return 0
+
+        # Preview first
+        preview_info = applicator.preview_fixes(scan_results, selected_patterns)
+
+        if preview_info["total_fixes"] == 0:
+            console.print("⚠️  No fixes available for the selected criteria.", style="warning")
+            return 0
+
+        console.print(
+            f"📋 Plan: Apply {preview_info['total_fixes']} fixes to {preview_info['files_to_change']} files"
+        )
+        console.print()
+
+        # Apply fixes
+        results = applicator.apply_fixes(preview_info, backup=args.backup)
+
+        # Show summary
+        console.print("\n📊 Results:", style="header")
+        console.print(f"  Files modified: {results['files_modified']}", style="success")
+        console.print(f"  Fixes applied: {results['total_fixes_applied']}", style="success")
+        console.print(f"  Backups created: {len(results['backups_created'])}", style="info")
+
+        if results["errors"]:
+            console.print(f"  Errors: {len(results['errors'])}", style="error")
+            for error in results["errors"][:3]:
+                console.print(f"    • {error}", style="error")
+
+        return 0
+
+    else:
+        # Interactive mode (default)
+        console.print("[bold blue]🎯 Pattern Application Tool[/bold blue]")
+        console.print("Analyze your codebase and apply pattern fixes interactively.\n")
+
+        # Run interactive workflow
+        applicator.interactive_workflow(scan_dir)
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

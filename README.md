@@ -16,25 +16,58 @@ feedback-loop is a production-ready framework that transforms test failures into
 - **Improves AI outputs**: pattern-aware code generation and review.
 - **Supports teams** (optional): cloud sync and shared configuration.
 
-## Quick start
+## 🚀 Quick Start (30 seconds!)
 
-### Installation
+**Easiest option:** Download and run automatically!
 
-**Requirements:** Python 3.13+
+```bash
+# 🌟 One-liner install + setup + demo + dashboard
+curl -fsSL https://raw.githubusercontent.com/doronpers/feedback-loop/main/install.sh | bash
+```
+
+---
+
+**Already cloned?** Run this single command:
+
+```bash
+# ✨ Auto-setup + interactive demo + dashboard - everything you need!
+fl-start
+```
+
+Both options will:
+- ✅ Auto-detect your environment and install everything
+- 🎭 Launch an interactive demo showing patterns in action
+- 📊 Open the analytics dashboard in your browser
+- 🚀 Get you productive immediately
+
+**First time?** Just run one command and explore!
+
+**[📖 Complete Guide](documentation/QUICKSTART.md)** - For detailed instructions and advanced usage.
+
+## Installation
+
+### Automated Setup (Recommended)
+
+The bootstrap command handles everything automatically:
+
+```bash
+fl-bootstrap
+```
+
+### Manual Installation
+
+**Requirements:** Python 3.8+
 
 ```bash
 # Clone and install
 git clone https://github.com/doronpers/feedback-loop.git
 cd feedback-loop
 
-# Recommended: Install with testing extras (includes dev dependencies)
-pip install -e .[test]
-
-# Or install core runtime only
+# Install with dependencies
 pip install -e .
 ```
 
-**Alternative:** If you prefer using requirements.txt:
+**Alternative:** Using requirements.txt:
 ```bash
 pip install -r requirements.txt
 ```
@@ -50,12 +83,7 @@ pip install -r requirements.txt
 # 4. Start coding with pattern-aware AI assistance!
 ```
 
-See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
-
-- Complete setup instructions
-- Pattern-aware code generation with Cursor Composer
-- Interactive workflows and tasks
-- Language server integration
+See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for complete setup.
 
 ### Desktop Launchers (Easy Mode!)
 
@@ -63,25 +91,6 @@ See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
 **Windows:** Double-click `launch-feedback-loop.bat`
 
 These launchers provide an interactive menu to run any feedback-loop tool. See [DESKTOP_LAUNCHERS.md](DESKTOP_LAUNCHERS.md) for details.
-
-### Interactive setup
-
-```bash
-./bin/fl-setup
-```
-
-### Chat assistant
-
-```bash
-./bin/fl-chat
-```
-
-### See the patterns in action
-
-```bash
-python demo.py
-python demo_metrics.py
-```
 
 ## Common workflows
 
@@ -94,6 +103,9 @@ feedback-loop analyze
 
 # Generate code with pattern awareness
 feedback-loop generate "Create a safe file handler"
+
+# Multi-perspective review with Council AI (local import or HTTP)
+feedback-loop council-review --file path/to/file.py
 ```
 
 ## Documentation

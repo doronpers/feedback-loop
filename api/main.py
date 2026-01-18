@@ -11,7 +11,7 @@ import secrets
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # Load .env file from project root
 project_root = Path(__file__).parent.parent
@@ -25,6 +25,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
+
+# Import dashboard router
+from api.dashboard import router as dashboard_router
+from api.insights import router as insights_router
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +49,16 @@ app = FastAPI(
 # Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
 def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
     """Parse allowed origins from env configuration.
-    
+
     Hardened: Defaults to localhost only for security.
     Raises warning if wildcard detected in production.
     """
     if not raw_value:
         # Strict default - localhost only
         return ["http://localhost:3000"]
-    
+
     origins = [origin.strip() for origin in raw_value.split(",") if origin.strip()]
-    
+
     # Security check: warn if wildcard detected in production
     if "*" in origins:
         env = os.getenv("ENVIRONMENT", "development").lower()
@@ -64,10 +68,8 @@ def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
                 "This is a major security risk. Use specific origins instead."
             )
         else:
-            logger.warning(
-                "Wildcard CORS origin detected. This should not be used in production."
-            )
-    
+            logger.warning("Wildcard CORS origin detected. This should not be used in production.")
+
     return origins
 
 
@@ -83,6 +85,10 @@ app.add_middleware(
 )
 
 security = HTTPBearer()
+
+# Include dashboard router
+app.include_router(dashboard_router)
+app.include_router(insights_router)
 
 
 # ============================================================================
@@ -161,10 +167,10 @@ class ConfigResponse(BaseModel):
 # TODO: PRODUCTION - Replace with PostgreSQL database
 # In-memory dictionaries lose data on restart and don't support concurrent access
 # See Documentation/PRODUCTION_CHECKLIST.md for migration plan
-USERS_DB = {}
-SESSIONS_DB = {}
-PATTERNS_DB = {}
-CONFIG_DB = {}
+USERS_DB: Dict[int, dict] = {}
+SESSIONS_DB: Dict[str, dict] = {}
+PATTERNS_DB: Dict[int, Dict[str, dict]] = {}
+CONFIG_DB: Dict[int, dict] = {}
 
 
 # ============================================================================
@@ -180,7 +186,7 @@ def create_api_key(user_id: int) -> str:
 
 def hash_password(password: str) -> str:
     """Hash password using bcrypt for better GPU-resistance than PBKDF2.
-    
+
     Optimized: Uses bcrypt via passlib CryptContext for standardized,
     production-ready password hashing.
     """
@@ -189,7 +195,7 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify password against bcrypt hash.
-    
+
     Optimized: Standardized on CryptContext; removed legacy SHA-256 fallback
     to prevent downgrade attacks.
     """
@@ -216,9 +222,7 @@ async def get_current_user(
 async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     """Require admin role for endpoint access."""
     if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
 
 
@@ -339,9 +343,7 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     """Get current authenticated user information."""
     user = USERS_DB.get(current_user["user_id"])
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     return UserResponse(
         id=user["id"],
@@ -355,9 +357,7 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
 
 
 @app.post("/api/v1/patterns/sync", response_model=PatternSyncResponse)
-async def sync_patterns(
-    request: PatternSync, current_user: dict = Depends(get_current_user)
-):
+async def sync_patterns(request: PatternSync, current_user: dict = Depends(get_current_user)):
     """
     Sync patterns to cloud storage.
 
@@ -525,16 +525,12 @@ async def list_users(current_user: dict = Depends(require_admin)):
 
 
 @app.delete("/api/v1/admin/patterns/{pattern_name}")
-async def delete_pattern(
-    pattern_name: str, current_user: dict = Depends(require_admin)
-):
+async def delete_pattern(pattern_name: str, current_user: dict = Depends(require_admin)):
     """Delete a pattern (admin only)."""
     org_id = current_user["organization_id"]
 
     if org_id not in PATTERNS_DB or pattern_name not in PATTERNS_DB[org_id]:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Pattern not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pattern not found")
 
     del PATTERNS_DB[org_id][pattern_name]
 

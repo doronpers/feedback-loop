@@ -75,9 +75,7 @@ class PatternAwareGenerator:
                     providers = self.llm_manager.list_available_providers()
                     logger.info(f"LLM manager initialized with providers: {providers}")
                 else:
-                    logger.warning(
-                        "No LLM providers available, falling back to template mode"
-                    )
+                    logger.warning("No LLM providers available, falling back to template mode")
                     self.use_llm = False
             except Exception as e:
                 logger.warning(
@@ -181,29 +179,20 @@ class PatternAwareGenerator:
         prompt_lower = prompt.lower()
 
         indicators = {
-            "numpy": "numpy" in prompt_lower
-            or "np." in prompt_lower
-            or "array" in prompt_lower,
-            "json": "json" in prompt_lower
-            or "api" in prompt_lower
-            or "serialize" in prompt_lower,
+            "numpy": "numpy" in prompt_lower or "np." in prompt_lower or "array" in prompt_lower,
+            "json": "json" in prompt_lower or "api" in prompt_lower or "serialize" in prompt_lower,
             "list_access": "list" in prompt_lower
             or "array" in prompt_lower
             or "first" in prompt_lower,
             "exception": "exception" in prompt_lower
             or "error" in prompt_lower
             or "try" in prompt_lower,
-            "logging": "log" in prompt_lower
-            or "debug" in prompt_lower
-            or "print" in prompt_lower,
-            "file": "file" in prompt_lower
-            or "temp" in prompt_lower
-            or "upload" in prompt_lower,
+            "logging": "log" in prompt_lower or "debug" in prompt_lower or "print" in prompt_lower,
+            "file": "file" in prompt_lower or "temp" in prompt_lower or "upload" in prompt_lower,
             "large_file": "large" in prompt_lower
             or "audio" in prompt_lower
             or "upload" in prompt_lower,
-            "categorization": "categorize" in prompt_lower
-            or "classify" in prompt_lower,
+            "categorization": "categorize" in prompt_lower or "classify" in prompt_lower,
             "fastapi": "fastapi" in prompt_lower
             or "endpoint" in prompt_lower
             or "api" in prompt_lower,
@@ -246,9 +235,7 @@ class PatternAwareGenerator:
             # Calculate match score
             match_score = 0.0
             if rules:
-                matches = sum(
-                    1 for rule in rules if context_indicators.get(rule, False)
-                )
+                matches = sum(1 for rule in rules if context_indicators.get(rule, False))
                 match_score = matches / len(rules)
 
             # Boost score if pattern appears in metrics context
@@ -342,10 +329,11 @@ class PatternAwareGenerator:
         )
 
         try:
+            if not self.llm_manager:
+                raise ValueError("LLM Manager not available")
+
             # Use LLM manager for generation
-            response = self.llm_manager.generate(
-                enriched_prompt, max_tokens=4096, fallback=True
-            )
+            response = self.llm_manager.generate(enriched_prompt, max_tokens=4096, fallback=True)
 
             # Extract code from response
             code = self._extract_code_from_response(response.text)
@@ -551,8 +539,7 @@ class PatternAwareGenerator:
 
         # Check if logger pattern is applied
         uses_logging = any(
-            p["pattern"]["name"]
-            in ["logger_debug", "bounds_checking", "specific_exceptions"]
+            p["pattern"]["name"] in ["logger_debug", "bounds_checking", "specific_exceptions"]
             for p in patterns_to_apply
         )
 
@@ -575,7 +562,8 @@ class PatternAwareGenerator:
                 [
                     "def process_data(data):",
                     '    """Process data according to requirements."""',
-                    "    # Pattern-aware template: Customize the logic below for your specific use case",
+                    "    # Pattern-aware template: Customize the logic below",
+                    "    # for your specific use case",
                     (
                         '    logger.debug(f"Processing data: {data}")'
                         if uses_logging
@@ -661,9 +649,7 @@ class PatternAwareGenerator:
         if syntax_valid:
             # Check for common issues
             if "print(" in code:
-                warnings.append(
-                    "Code contains print() statements - consider using logger.debug()"
-                )
+                warnings.append("Code contains print() statements - consider using logger.debug()")
 
             if "except:" in code and "except Exception:" not in code:
                 warnings.append("Code contains bare except: - use specific exceptions")
@@ -694,9 +680,7 @@ class PatternAwareGenerator:
             return 0.5
 
         # Average of top 3 confidence scores
-        top_scores = sorted([m["confidence"] for m in matched_patterns], reverse=True)[
-            :3
-        ]
+        top_scores = sorted([m["confidence"] for m in matched_patterns], reverse=True)[:3]
 
         return sum(top_scores) / len(top_scores) if top_scores else 0.5
 
@@ -764,9 +748,7 @@ class PatternAwareGenerator:
                 for warning in validation.warnings:
                     lines.append(f"    - {warning}")
 
-            lines.append(
-                f"  Overall: {'✓ Valid' if validation.is_valid else '✗ Issues Found'}"
-            )
+            lines.append(f"  Overall: {'✓ Valid' if validation.is_valid else '✗ Issues Found'}")
 
         lines.append("")
         lines.append("=== End Report ===")

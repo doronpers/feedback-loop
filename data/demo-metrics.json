@@ -1,0 +1,98 @@
+{
+  "bugs": [
+    {
+      "pattern": "numpy_json_serialization",
+      "error": "TypeError: Object of type float64 is not JSON serializable",
+      "code": "result = {'mean': np.mean(data)}",
+      "file_path": "src/processor.py",
+      "line": 42,
+      "count": 5,
+      "timestamp": "2024-01-18T08:00:00Z"
+    },
+    {
+      "pattern": "bounds_checking",
+      "error": "IndexError: list index out of range",
+      "code": "first = items[0]",
+      "file_path": "src/api.py",
+      "line": 15,
+      "count": 3,
+      "timestamp": "2024-01-18T09:00:00Z"
+    },
+    {
+      "pattern": "specific_exceptions",
+      "error": "KeyboardInterrupt caught inappropriately",
+      "code": "try: process()\nexcept: pass",
+      "file_path": "src/main.py",
+      "line": 28,
+      "count": 2,
+      "timestamp": "2024-01-18T10:00:00Z"
+    }
+  ],
+  "test_failures": [
+    {
+      "pattern_violated": "numpy_json_serialization",
+      "test_name": "test_process_data_json_output",
+      "failure_reason": "TypeError in JSON serialization",
+      "count": 4,
+      "timestamp": "2024-01-18T08:30:00Z"
+    },
+    {
+      "pattern_violated": "bounds_checking",
+      "test_name": "test_empty_list_handling",
+      "failure_reason": "IndexError on empty input",
+      "count": 3,
+      "timestamp": "2024-01-18T09:15:00Z"
+    }
+  ],
+  "code_reviews": [
+    {
+      "pattern": "structured_logging",
+      "issue_type": "print_statement",
+      "severity": "low",
+      "count": 1,
+      "timestamp": "2024-01-18T10:30:00Z"
+    },
+    {
+      "pattern": "temp_file_handling",
+      "issue_type": "resource_leak",
+      "severity": "high",
+      "count": 1,
+      "timestamp": "2024-01-18T11:00:00Z"
+    }
+  ],
+  "performance_metrics": [
+    {
+      "operation": "pattern_analysis",
+      "duration_ms": 250,
+      "timestamp": "2024-01-18T08:00:00Z"
+    },
+    {
+      "operation": "code_generation",
+      "duration_ms": 1800,
+      "timestamp": "2024-01-18T09:00:00Z"
+    }
+  ],
+  "deployment_issues": [
+    {
+      "pattern": "numpy_json_serialization",
+      "environment": "production",
+      "error": "JSON serialization failure",
+      "count": 2,
+      "timestamp": "2024-01-18T07:00:00Z"
+    }
+  ],
+  "code_generation": [
+    {
+      "prompt": "Create a safe file handler",
+      "patterns_applied": ["temp_file_handling", "structured_logging"],
+      "confidence": 0.89,
+      "timestamp": "2024-01-18T10:00:00Z"
+    },
+    {
+      "prompt": "Process NumPy array for JSON API",
+      "patterns_applied": ["numpy_json_serialization", "bounds_checking"],
+      "confidence": 0.94,
+      "timestamp": "2024-01-18T11:00:00Z"
+    }
+  ]
+}

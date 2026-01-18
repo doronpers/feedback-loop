@@ -158,9 +158,7 @@ class DataProcessor:
 
             # Log if defaults were used
             if "host" not in config:
-                logger.debug(
-                    "Missing 'host' configuration key, using default: localhost"
-                )
+                logger.debug("Missing 'host' configuration key, using default: localhost")
             if "port" not in config:
                 logger.debug("Missing 'port' configuration key, using default: 5432")
 
@@ -218,7 +216,7 @@ def write_temp_file_good(data: bytes) -> Tuple[str, bool]:
         logger.debug(f"Successfully wrote {len(data)} bytes to {path}")
         return path, True
 
-    except (IOError, OSError) as e:
+    except OSError as e:
         logger.debug(f"Failed to write temp file: {e}")
         # GOOD: Clean up on error
         if fd is not None:
@@ -284,9 +282,7 @@ def process_large_file_good(
 
         # GOOD: Calculate chunks from file size (no need to read entire file)
         # For actual processing, read in chunks to avoid memory exhaustion
-        chunks_needed = (
-            (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
-        )
+        chunks_needed = (file_size + chunk_size - 1) // chunk_size if file_size > 0 else 1
 
         result = {
             "file_path": file_path,
@@ -301,6 +297,6 @@ def process_large_file_good(
     except FileNotFoundError:
         logger.debug(f"File not found: {file_path}")
         return None
-    except (IOError, OSError) as e:
+    except OSError as e:
         logger.debug(f"Error processing file: {e}")
         return None

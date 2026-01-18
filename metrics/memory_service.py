@@ -55,9 +55,7 @@ class FeedbackLoopMemory:
             logger.info("MemU library loaded successfully")
         except ImportError:
             self._memu_available = False
-            logger.warning(
-                "MemU library not available. Install with: pip install memu-py"
-            )
+            logger.warning("MemU library not available. Install with: pip install memu-py")
 
     async def initialize(self) -> bool:
         """Initialize the MemU memory service.
@@ -78,9 +76,7 @@ class FeedbackLoopMemory:
             # Configure storage based on type
             if self.storage_type == "inmemory":
                 # Use in-memory storage (no DB required)
-                self._memory = memu.Memory(
-                    storage="inmemory", api_key=self.openai_api_key
-                )
+                self._memory = memu.Memory(storage="inmemory", api_key=self.openai_api_key)
                 logger.info("Initialized MemU with in-memory storage")
             elif self.storage_type == "postgres":
                 if not self.db_url:
@@ -109,9 +105,7 @@ class FeedbackLoopMemory:
         """
         return self._memu_available and self._initialized
 
-    async def memorize_pattern(
-        self, pattern: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    async def memorize_pattern(self, pattern: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Store a pattern in MemU memory.
 
         Args:
@@ -146,6 +140,7 @@ class FeedbackLoopMemory:
             }
 
             # Store in MemU
+            assert self._memory is not None
             response = await self._memory.memorize(resource)
             logger.debug(f"Stored pattern '{pattern.get('name')}' in MemU")
             return response
@@ -180,9 +175,7 @@ class FeedbackLoopMemory:
                 "content": self._format_session_content(session_data),
                 "metadata": {
                     "session_id": session_data.get("session_id", ""),
-                    "timestamp": session_data.get(
-                        "timestamp", datetime.now().isoformat()
-                    ),
+                    "timestamp": session_data.get("timestamp", datetime.now().isoformat()),
                     "patterns_count": len(session_data.get("patterns_applied", [])),
                     "bugs_count": len(session_data.get("bugs", [])),
                     "test_failures_count": len(session_data.get("test_failures", [])),
@@ -191,6 +184,7 @@ class FeedbackLoopMemory:
                 "tags": ["session", "metrics"],
             }
 
+            assert self._memory is not None
             response = await self._memory.memorize(resource)
             logger.debug("Stored development session in MemU")
             return response
@@ -199,9 +193,7 @@ class FeedbackLoopMemory:
             logger.error(f"Failed to memorize session: {e}")
             return None
 
-    async def memorize_code_review(
-        self, review_data: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    async def memorize_code_review(self, review_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Store code review feedback.
 
         Args:
@@ -233,6 +225,7 @@ class FeedbackLoopMemory:
                 "tags": ["code_review", review_data.get("pattern", "")],
             }
 
+            assert self._memory is not None
             response = await self._memory.memorize(resource)
             logger.debug("Stored code review in MemU")
             return response
@@ -259,6 +252,8 @@ class FeedbackLoopMemory:
 
         try:
             # Query MemU with semantic search
+            assert self._memory is not None
+
             if method == "rag":
                 response = await self._memory.retrieve_rag(
                     query=query, limit=limit, filters={"type": "pattern"}
@@ -310,9 +305,7 @@ class FeedbackLoopMemory:
             for result in response["results"]:
                 recommendations.append(
                     {
-                        "pattern_name": result.get("metadata", {}).get(
-                            "pattern_name", ""
-                        ),
+                        "pattern_name": result.get("metadata", {}).get("pattern_name", ""),
                         "content": result.get("content", ""),
                         "score": result.get("score", 0.0),
                         "metadata": result.get("metadata", {}),
@@ -337,14 +330,13 @@ class FeedbackLoopMemory:
 
         try:
             # Get stats from MemU
+            assert self._memory is not None
             stats = await self._memory.get_stats()
 
             return {
                 "total_memories": stats.get("total_count", 0),
                 "patterns_count": stats.get("type_counts", {}).get("pattern", 0),
-                "sessions_count": stats.get("type_counts", {}).get(
-                    "development_session", 0
-                ),
+                "sessions_count": stats.get("type_counts", {}).get("development_session", 0),
                 "reviews_count": stats.get("type_counts", {}).get("code_review", 0),
                 "storage_type": self.storage_type,
                 "initialized": self._initialized,

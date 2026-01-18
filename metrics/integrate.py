@@ -17,16 +17,16 @@ from typing import Any, Dict, List, Optional
 
 # Load .env file from project root
 project_root = Path(__file__).parent.parent
-from metrics.env_loader import load_env_file
+from metrics.env_loader import load_env_file  # noqa: E402
 
 load_env_file(project_root)
 
-from metrics.analyzer import MetricsAnalyzer
-from metrics.code_generator import PatternAwareGenerator
-from metrics.collector import MetricsCollector
-from metrics.pattern_manager import PatternManager
-from metrics.sync_client import LocalSyncClient, SyncClient
-from metrics.synthesizer import CodeSynthesizer
+from metrics.analyzer import MetricsAnalyzer  # noqa: E402
+from metrics.code_generator import PatternAwareGenerator  # noqa: E402
+from metrics.collector import MetricsCollector  # noqa: E402
+from metrics.pattern_manager import PatternManager  # noqa: E402
+from metrics.sync_client import LocalSyncClient, SyncClient  # noqa: E402
+from metrics.synthesizer import CodeSynthesizer  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -35,27 +35,28 @@ logger = logging.getLogger(__name__)
 # Centralized Memory Service Helper
 # ============================================================================
 
+
 async def _get_memory_service():
     """Centralized helper to reduce redundancy in memory command handlers.
-    
+
     Returns:
         FeedbackLoopMemory instance if enabled and initialized, None otherwise
     """
     from metrics.memory_service import FeedbackLoopMemory
-    
+
     if not os.getenv("FEEDBACK_LOOP_MEMORY_ENABLED"):
         print("⚠ Memory integration is not enabled. Set FEEDBACK_LOOP_MEMORY_ENABLED=true.")
         return None
-    
+
     memory = FeedbackLoopMemory(
         storage_type=os.getenv("FEEDBACK_LOOP_MEMORY_STORAGE", "inmemory"),
         openai_api_key=os.getenv("OPENAI_API_KEY"),
     )
-    
+
     if not await memory.initialize():
         print("✗ Failed to initialize memory service.")
         return None
-    
+
     return memory
 
 
@@ -107,9 +108,7 @@ class MetricsIntegration:
                         if key not in existing_data:
                             existing_data[key] = []
                         elif not isinstance(existing_data[key], list):
-                            logger.debug(
-                                f"Invalid data type for {key}, resetting to empty list"
-                            )
+                            logger.debug(f"Invalid data type for {key}, resetting to empty list")
                             existing_data[key] = []
                     self.collector.data = existing_data
                 logger.debug(f"Loaded existing metrics from {self.metrics_file}")
@@ -175,17 +174,14 @@ class MetricsIntegration:
         # Calculate effectiveness
         effectiveness = analyzer.calculate_effectiveness()
         print("\n✓ Pattern Effectiveness:")
-        for pattern, metrics in list(effectiveness.items())[:5]:
-            print(f"  - {pattern}: {metrics['score']:.2%} ({metrics['trend']})")
+        for pattern_name, metrics in list(effectiveness.items())[:5]:
+            print(f"  - {pattern_name}: {metrics['score']:.2%} ({metrics['trend']})")
 
         # Rank by severity
         ranked = analyzer.rank_patterns_by_severity()
         print("\n✓ Patterns Ranked by Severity:")
         for item in ranked[:5]:
-            print(
-                f"  - {item['pattern']}: {item['severity']} "
-                f"(count: {item['count']})"
-            )
+            print(f"  - {item['pattern']}: {item['severity']} " f"(count: {item['count']})")
 
         # Update patterns if requested
         if update_patterns:
@@ -267,9 +263,7 @@ class MetricsIntegration:
             print(f"\n✓ Code saved to {output_file}")
 
         # Save metadata
-        metadata_file = (
-            output_file + ".meta.json" if output_file else "generated_code.meta.json"
-        )
+        metadata_file = output_file + ".meta.json" if output_file else "generated_code.meta.json"
         with open(metadata_file, "w") as f:
             json.dump(
                 {
@@ -563,21 +557,18 @@ class MetricsIntegration:
                 f"- **Total Bugs:** {report['summary']['total_bugs']}",
                 f"- **Total Test Failures:** {report['summary']['total_test_failures']}",
                 f"- **Total Code Reviews:** {report['summary']['total_code_reviews']}",
-                f"- **Total Performance Metrics:** {report['summary']['total_performance_metrics']}",
+                f"- **Total Performance Metrics:** "
+                f"{report['summary']['total_performance_metrics']}",
                 f"- **Total Deployment Issues:** {report['summary']['total_deployment_issues']}",
                 "",
                 f"## High Frequency Patterns ({len(report['high_frequency_patterns'])})",
             ]
 
             for pattern in report["high_frequency_patterns"][:10]:
-                lines.append(
-                    f"- `{pattern['pattern']}` ({pattern['count']} occurrences)"
-                )
+                lines.append(f"- `{pattern['pattern']}` ({pattern['count']} occurrences)")
 
             lines.append("")
-            lines.append(
-                f"## Patterns Ranked by Severity ({len(report['ranked_patterns'])})"
-            )
+            lines.append(f"## Patterns Ranked by Severity ({len(report['ranked_patterns'])})")
 
             for pattern in report["ranked_patterns"][:10]:
                 lines.append(
@@ -740,9 +731,7 @@ async def _handle_memory_query(query: str, limit: int) -> None:
         for idx, pattern in enumerate(result["results"], 1):
             metadata = pattern.get("metadata", {})
             score = pattern.get("score", 0.0)
-            print(
-                f"{idx}. {metadata.get('pattern_name', 'Unknown')} (score: {score:.2f})"
-            )
+            print(f"{idx}. {metadata.get('pattern_name', 'Unknown')} (score: {score:.2f})")
             print(f"   {pattern.get('content', '')[:100]}...")
             print()
 
@@ -808,13 +797,41 @@ async def _handle_memory_stats() -> None:
         print(f"  Sessions: {stats.get('sessions_count', 0)}")
         print(f"  Reviews: {stats.get('reviews_count', 0)}")
         print(f"  Storage type: {stats.get('storage_type', 'unknown')}")
-        print(
-            f"  Status: {'✓ Initialized' if stats.get('initialized') else '✗ Not initialized'}"
-        )
+        print(f"  Status: {'✓ Initialized' if stats.get('initialized') else '✗ Not initialized'}")
 
     except Exception as e:
         print(f"\n✗ Failed to get statistics: {e}")
         logger.exception("Memory stats failed")
+
+
+def _handle_council_review(
+    file_path: Optional[str],
+    context: Optional[str],
+    api_key: Optional[str],
+    http_base_url: Optional[str],
+    provider: Optional[str],
+    prefer_local: bool,
+) -> None:
+    """Handle council review command."""
+    from metrics.code_reviewer import CouncilCodeReviewer
+
+    if file_path:
+        code = Path(file_path).read_text()
+    else:
+        code = sys.stdin.read()
+
+    reviewer = CouncilCodeReviewer(
+        prefer_local=prefer_local,
+        http_base_url=http_base_url,
+        provider=provider,
+    )
+
+    result = reviewer.review_code(code, context=context, api_key=api_key)
+    if "error" in result:
+        print(f"Error: {result['error']}")
+        return
+
+    print(result.get("review") or "")
 
 
 def main() -> int:
@@ -838,9 +855,7 @@ def main() -> int:
     )
 
     # Analyze command
-    analyze_parser = subparsers.add_parser(
-        "analyze", help="Analyze metrics and update patterns"
-    )
+    analyze_parser = subparsers.add_parser("analyze", help="Analyze metrics and update patterns")
     analyze_parser.add_argument(
         "--metrics-file",
         default="data/metrics_data.json",
@@ -856,9 +871,7 @@ def main() -> int:
     )
 
     # Generate command
-    generate_parser = subparsers.add_parser(
-        "generate", help="Generate pattern-aware code"
-    )
+    generate_parser = subparsers.add_parser("generate", help="Generate pattern-aware code")
     generate_parser.add_argument("prompt", help="Prompt for code generation")
     generate_parser.add_argument("--output", help="Output file for generated code")
     generate_parser.add_argument(
@@ -936,8 +949,29 @@ def main() -> int:
     )
     analyze_commit_parser.add_argument("--base", required=True, help="Base commit SHA")
     analyze_commit_parser.add_argument("--head", required=True, help="Head commit SHA")
-    analyze_commit_parser.add_argument(
-        "--output", help="Output file for analysis results"
+    analyze_commit_parser.add_argument("--output", help="Output file for analysis results")
+
+    # Council review command
+    council_review_parser = subparsers.add_parser(
+        "council-review", help="Review code with Council AI"
+    )
+    council_review_parser.add_argument(
+        "--file",
+        help="Path to file to review (defaults to stdin)",
+    )
+    council_review_parser.add_argument("--context", help="Optional review context")
+    council_review_parser.add_argument("--api-key", help="API key override for Council AI")
+    council_review_parser.add_argument(
+        "--http-base-url",
+        help="Council AI /api/consult endpoint (default from config)",
+    )
+    council_review_parser.add_argument(
+        "--provider", help="LLM provider override (e.g., openai, anthropic)"
+    )
+    council_review_parser.add_argument(
+        "--http-only",
+        action="store_true",
+        help="Use HTTP only (skip local import even if available)",
     )
 
     # Sync patterns command
@@ -957,12 +991,8 @@ def main() -> int:
     )
 
     # Memory commands (for MemU integration)
-    memory_parser = subparsers.add_parser(
-        "memory", help="Memory operations (MemU integration)"
-    )
-    memory_subparsers = memory_parser.add_subparsers(
-        dest="memory_command", help="Memory command"
-    )
+    memory_parser = subparsers.add_parser("memory", help="Memory operations (MemU integration)")
+    memory_subparsers = memory_parser.add_subparsers(dest="memory_command", help="Memory command")
 
     # memory sync - Sync patterns to memory
     memory_sync_parser = memory_subparsers.add_parser(
@@ -1014,9 +1044,7 @@ def main() -> int:
 
     # Configure logging
     # Use DEBUG level if --verbose flag is present, else INFO
-    log_level = (
-        logging.DEBUG if "--verbose" in sys.argv or "-v" in sys.argv else logging.INFO
-    )
+    log_level = logging.DEBUG if "--verbose" in sys.argv or "-v" in sys.argv else logging.INFO
     logging.basicConfig(
         level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
@@ -1070,6 +1098,16 @@ def main() -> int:
                 base_sha=args.base, head_sha=args.head, output_file=args.output
             )
 
+        elif args.command == "council-review":
+            _handle_council_review(
+                file_path=args.file,
+                context=args.context,
+                api_key=args.api_key,
+                http_base_url=args.http_base_url,
+                provider=args.provider,
+                prefer_local=not args.http_only,
+            )
+
         elif args.command == "sync-to-markdown":
             integration = MetricsIntegration(
                 patterns_file=args.patterns_file, ai_patterns_md=args.markdown_file
@@ -1081,9 +1119,7 @@ def main() -> int:
 
         elif args.command == "memory":
             if not args.memory_command:
-                print(
-                    "Error: memory command requires a subcommand (sync, query, recommend, stats)"
-                )
+                print("Error: memory command requires a subcommand (sync, query, recommend, stats)")
                 return 1
 
             import asyncio

@@ -29,6 +29,7 @@ def _ensure_venv():
         except OSError:
             pass
 
+
 _ensure_venv()
 
 # Add parent directory to path
@@ -48,7 +49,7 @@ def load_metrics(metrics_file: str = "data/metrics_data.json") -> Dict[str, List
     if not Path(metrics_file).exists():
         return {}
 
-    with open(metrics_file, 'r') as f:
+    with open(metrics_file, "r") as f:
         return json.load(f)
 
 
@@ -57,18 +58,18 @@ def load_patterns(patterns_file: str = "data/patterns.json") -> List[Dict[str, A
     if not Path(patterns_file).exists():
         return []
 
-    with open(patterns_file, 'r') as f:
+    with open(patterns_file, "r") as f:
         data = json.load(f)
         return data.get("patterns", [])
 
 
 def print_header():
     """Print dashboard header."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🔄 FEEDBACK LOOP DASHBOARD")
-    print("="*70)
+    print("=" * 70)
     print(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
 
 def print_metrics_summary(metrics: Dict[str, List[Any]]):
@@ -116,11 +117,7 @@ def print_patterns_overview(patterns: List[Dict[str, Any]]):
         return
 
     # Sort by frequency
-    sorted_patterns = sorted(
-        patterns,
-        key=lambda p: p.get("occurrence_frequency", 0),
-        reverse=True
-    )
+    sorted_patterns = sorted(patterns, key=lambda p: p.get("occurrence_frequency", 0), reverse=True)
 
     print(f"  Total Patterns: {len(patterns)}")
     print()
@@ -173,10 +170,7 @@ def print_recommendations(metrics: Dict[str, List[Any]], patterns: List[Dict[str
             )
 
     # Check pattern effectiveness
-    low_effectiveness = [
-        p for p in patterns
-        if p.get("effectiveness_score", 1.0) < 0.5
-    ]
+    low_effectiveness = [p for p in patterns if p.get("effectiveness_score", 1.0) < 0.5]
     if low_effectiveness:
         recommendations.append(
             f"⚠️  {len(low_effectiveness)} patterns have low effectiveness. "
@@ -185,9 +179,7 @@ def print_recommendations(metrics: Dict[str, List[Any]], patterns: List[Dict[str
 
     # Check if patterns need sync
     if patterns and not Path("AI_PATTERNS.md").exists():
-        recommendations.append(
-            "💡 Sync patterns to documentation: feedback-loop sync-to-markdown"
-        )
+        recommendations.append("💡 Sync patterns to documentation: feedback-loop sync-to-markdown")
 
     if not recommendations:
         recommendations.append("✅ Everything looks good! Keep up the great work.")
@@ -208,11 +200,7 @@ def print_recent_activity(metrics: Dict[str, List[Any]]):
     for category, items in metrics.items():
         for item in items:
             if "timestamp" in item:
-                events.append({
-                    "category": category,
-                    "timestamp": item["timestamp"],
-                    "data": item
-                })
+                events.append({"category": category, "timestamp": item["timestamp"], "data": item})
 
     if not events:
         print("  No recent activity")
@@ -269,7 +257,7 @@ def main():
     print_recent_activity(metrics)
     print_quick_actions()
 
-    print("="*70)
+    print("=" * 70)
     print()
 
 

@@ -1,0 +1,73 @@
+{
+  "patterns": [
+    {
+      "name": "numpy_json_serialization",
+      "description": "NumPy types are not JSON serializable - convert to Python types first",
+      "severity": "high",
+      "category": "serialization",
+      "problem": "Using np.float64, np.int64, etc. directly in JSON serialization causes TypeError",
+      "solution": "Convert NumPy types to Python native types before JSON operations",
+      "good_example": "result = {'mean': float(np.mean(data)), 'values': data.tolist()}",
+      "bad_example": "result = {'mean': np.mean(data), 'values': data}  # TypeError!",
+      "frequency": 15,
+      "success_rate": 0.85
+    },
+    {
+      "name": "bounds_checking",
+      "description": "Check array/list bounds before accessing elements",
+      "severity": "medium",
+      "category": "defensive_programming",
+      "problem": "Accessing list elements without checking length causes IndexError",
+      "solution": "Always validate bounds before accessing list/array elements",
+      "good_example": "first = items[0] if items else None",
+      "bad_example": "first = items[0]  # IndexError if empty!",
+      "frequency": 12,
+      "success_rate": 0.92
+    },
+    {
+      "name": "specific_exceptions",
+      "description": "Catch specific exceptions instead of bare except",
+      "severity": "medium",
+      "category": "error_handling",
+      "problem": "Bare except: catches KeyboardInterrupt and other system exceptions",
+      "solution": "Catch only the specific exceptions you expect",
+      "good_example": "try:\n    data = json.loads(text)\nexcept json.JSONDecodeError as e:\n    logger.debug(f\"Invalid JSON: {e}\")\n    return None",
+      "bad_example": "try:\n    data = json.loads(text)\nexcept:\n    print(\"Error\")\n    return None",
+      "frequency": 8,
+      "success_rate": 0.88
+    },
+    {
+      "name": "structured_logging",
+      "description": "Use proper logging instead of print statements",
+      "severity": "low",
+      "category": "production_readiness",
+      "problem": "print() statements don't work in production environments",
+      "solution": "Use the logging module for structured, configurable output",
+      "good_example": "logger.debug(f\"Processing file: {filename}\")",
+      "bad_example": "print(f\"Processing file: {filename}\")  # Won't be captured!",
+      "frequency": 10,
+      "success_rate": 0.95
+    },
+    {
+      "name": "temp_file_handling",
+      "description": "Proper cleanup of temporary files and descriptors",
+      "severity": "high",
+      "category": "resource_management",
+      "problem": "Temporary files not cleaned up, file descriptor leaks",
+      "solution": "Use context managers and proper cleanup for temp files",
+      "good_example": "with tempfile.NamedTemporaryFile() as tmp:\n    tmp.write(data)\n    process_file(tmp.name)",
+      "bad_example": "path = tempfile.mktemp()\nwith open(path, 'wb') as f:\n    f.write(data)\n# File never deleted!",
+      "frequency": 6,
+      "success_rate": 0.78
+    }
+  ],
+  "changelog": [
+    {
+      "timestamp": "2024-01-18T10:00:00Z",
+      "action": "initialized",
+      "patterns_added": 5,
+      "patterns_removed": 0
+    }
+  ],
+  "last_updated": "2024-01-18T10:00:00Z"
+}

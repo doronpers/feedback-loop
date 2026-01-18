@@ -28,6 +28,7 @@ def _ensure_venv():
         except OSError:
             pass
 
+
 _ensure_venv()
 
 # Add parent directory to path
@@ -124,10 +125,7 @@ Be conversational, friendly, and practical. Use examples from the pattern librar
 
         try:
             # Generate response
-            response = self.llm_manager.generate(
-                full_prompt,
-                max_tokens=2048
-            )
+            response = self.llm_manager.generate(full_prompt, max_tokens=2048)
 
             # Store in history
             self.conversation_history.append(f"User: {user_message}")
@@ -175,9 +173,9 @@ Keep it conversational and practical."""
 
     def interactive_mode(self):
         """Run interactive chat mode."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("🤖 Feedback Loop Chat Assistant")
-        print("="*70)
+        print("=" * 70)
         print()
         print("I'm here to help you learn patterns and write better code!")
         print()
@@ -206,7 +204,7 @@ Keep it conversational and practical."""
         print("  • /help - Show this help")
         print("  • /quit or Ctrl+C - Exit")
         print()
-        print("="*70)
+        print("=" * 70)
         print()
 
         while True:
@@ -251,10 +249,7 @@ Keep it conversational and practical."""
                         print("\n🤖 Generating code...\n")
 
                         # Use code generator
-                        generator = PatternAwareGenerator(
-                            self.patterns,
-                            use_llm=True
-                        )
+                        generator = PatternAwareGenerator(self.patterns, use_llm=True)
 
                         try:
                             result = generator.generate(description)
@@ -264,7 +259,9 @@ Keep it conversational and practical."""
                             print()
                             print(f"Confidence: {result.confidence:.0%}")
                             if result.patterns_applied:
-                                print(f"Patterns applied: {', '.join(p['pattern']['name'] for p in result.patterns_applied)}")
+                                print(
+                                    f"Patterns applied: {', '.join(p['pattern']['name'] for p in result.patterns_applied)}"
+                                )
                             print()
                         except Exception as e:
                             print(f"Error generating code: {e}\n")

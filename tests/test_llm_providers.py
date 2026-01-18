@@ -5,13 +5,19 @@ Tests multi-LLM support, provider abstraction, and fallback logic.
 """
 
 import os
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
-from metrics.llm_providers import (ClaudeProvider, GeminiProvider, LLMManager,
-                                   LLMProvider, LLMResponse, OpenAIProvider,
-                                   get_llm_manager)
+from metrics.llm_providers import (
+    ClaudeProvider,
+    GeminiProvider,
+    LLMManager,
+    LLMProvider,
+    LLMResponse,
+    OpenAIProvider,
+    get_llm_manager,
+)
 
 
 class TestLLMResponse:
@@ -201,13 +207,13 @@ class TestLLMManagerGeneration:
         mock_provider = Mock(spec=LLMProvider)
         mock_provider.provider_name = "provider1"
         mock_provider.generate.side_effect = Exception("API error")
-
+        # noqa: E501
         # Add to manager
         manager.providers = {"provider1": mock_provider}
         manager.preferred_provider = "provider1"
 
         # Should raise exception
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="API error"):
             manager.generate("test prompt", fallback=False)
 
 

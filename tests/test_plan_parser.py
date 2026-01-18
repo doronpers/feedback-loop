@@ -1,8 +1,5 @@
-"""
-Tests for Plan Parser Module
-"""
+"""Tests for Plan Parser Module."""
 
-from pathlib import Path
 
 import pytest
 

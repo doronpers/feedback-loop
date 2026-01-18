@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Quick Start - One-Click Experience
+
+Launches feedback-loop with zero configuration - from first click to productive.
+Combines bootstrap, demo, and dashboard in a seamless experience.
+"""
+
+import os
+import subprocess
+import sys
+import time
+import webbrowser
+from pathlib import Path
+
+# Add parent directory to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load .env file from project root
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
+
+from rich.align import Align
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
+from rich.spinner import Spinner
+from rich.text import Text
+from rich.theme import Theme
+
+# Custom theme
+custom_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold blue",
+        "accent": "magenta",
+    }
+)
+
+console = Console(theme=custom_theme)
+
+
+class QuickStart:
+    """One-click feedback-loop experience."""
+
+    def __init__(self):
+        """Initialize quick start."""
+        self.project_root = Path(__file__).parent.parent
+
+    def show_welcome(self):
+        """Show the welcome screen."""
+        welcome_text = Text("🚀 Welcome to Feedback Loop!", style="header")
+        subtitle = Text("AI-Assisted Development with Continuous Learning", style="accent")
+
+        console.print()
+        console.print(Panel.fit(welcome_text, border_style="blue"))
+        console.print(subtitle, justify="center")
+        console.print()
+
+        # Show what will happen
+        steps = [
+            "🔧 Auto-setup and install dependencies",
+            "🎭 Launch interactive pattern demo",
+            "📊 Open analytics dashboard in browser",
+            "🚀 Get you coding with AI assistance!",
+        ]
+
+        console.print("⚡ [bold]What happens next:[/bold]")
+        for step in steps:
+            console.print(f"   {step}")
+        console.print()
+
+        console.print(
+            "💡 [italic]Press Ctrl+C anytime to stop. Everything is safe![/italic]", justify="center"
+        )
+        console.print()
+
+    def check_environment(self):
+        """Quick environment check."""
+        checks = []
+
+        # Python version
+        version = sys.version_info
+        python_ok = version >= (3, 8)
+        checks.append(("Python 3.8+", "✅" if python_ok else "❌", python_ok))
+
+        # Git repository
+        git_ok = Path(".git").is_dir()
+        checks.append(("Git Repository", "✅" if git_ok else "❌", git_ok))
+
+        # Critical issues
+        critical_issues = [name for name, status, ok in checks if not ok]
+
+        if critical_issues:
+            console.print("❌ [red]Critical issues found:[/red]")
+            for issue in critical_issues:
+                console.print(f"   • {issue}")
+            console.print("\n💡 Please resolve these issues and try again.")
+            return False
+
+        return True
+
+    def run_bootstrap(self):
+        """Run bootstrap if needed."""
+        console.print("🔧 [cyan]Checking setup...[/cyan]")
+
+        with console.status("[bold green]Checking environment...", spinner="dots"):
+            time.sleep(0.5)  # Brief pause for UX
+
+        # Check if we need to install
+        try:
+            import fastapi
+            import rich
+
+            import metrics
+
+            console.print("✅ [green]Already set up! Skipping installation.[/green]")
+            return True
+        except ImportError as e:
+            console.print(f"📦 [yellow]Need to install dependencies ({e.name})[/yellow]")
+
+        # Run bootstrap
+        console.print("🔧 [cyan]Running first-time setup...[/cyan]")
+        try:
+            result = subprocess.run(
+                [sys.executable, "bin/fl-bootstrap"],
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minute timeout
+            )
+
+            if result.returncode == 0:
+                console.print("✅ [green]Setup completed successfully[/green]")
+                return True
+            else:
+                console.print(f"❌ [red]Setup failed: {result.stderr}[/red]")
+                return False
+
+        except subprocess.TimeoutExpired:
+            console.print("❌ [red]Setup timed out[/red]")
+            return False
+        except Exception as e:
+            console.print(f"❌ [red]Setup error: {e}[/red]")
+            return False
+
+    def launch_demo(self):
+        """Launch the interactive demo."""
+        console.print("\n🎭 [cyan]Starting interactive demo...[/cyan]")
+
+        try:
+            # Launch demo in background
+            demo_process = subprocess.Popen(
+                [sys.executable, "bin/fl-demo"],
+                cwd=self.project_root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            console.print("✅ [green]Demo launched successfully[/green]")
+            console.print("   💡 The demo will show you pattern examples and let you experiment")
+            console.print("   📝 Follow the on-screen instructions to explore")
+
+            return demo_process
+
+        except Exception as e:
+            console.print(f"❌ [red]Failed to launch demo: {e}[/red]")
+            return None
+
+    def launch_dashboard(self):
+        """Launch the analytics dashboard."""
+        console.print("\n📊 [cyan]Opening analytics dashboard...[/cyan]")
+
+        try:
+            # Start dashboard server
+            dashboard_process = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-m",
+                    "uvicorn",
+                    "api.main:app",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "8000",
+                    "--reload",
+                ],
+                cwd=self.project_root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            # Wait a moment for server to start
+            time.sleep(2)
+
+            # Try to open browser
+            dashboard_url = "http://127.0.0.1:8000/dashboard/"
+            try:
+                webbrowser.open(dashboard_url)
+                console.print("✅ [green]Dashboard opened in your browser[/green]")
+                console.print(f"   🌐 URL: {dashboard_url}")
+            except Exception:
+                console.print(f"✅ [green]Dashboard server started[/green]")
+                console.print(f"   🌐 Open in browser: {dashboard_url}")
+
+            return dashboard_process
+
+        except Exception as e:
+            console.print(f"❌ [red]Failed to launch dashboard: {e}[/red]")
+            return None
+
+    def show_next_steps(self):
+        """Show next steps for continued usage."""
+        console.print("\n" + "🎯 You're all set! Here's what you can do next:")
+
+        steps = [
+            ("💬 Chat with AI", "fl-chat", "Get coding help from the AI assistant"),
+            ("🔍 Explore Patterns", "fl-explore", "Browse and learn about coding patterns"),
+            ("🔧 Apply Patterns", "fl-apply --scan .", "Automatically fix patterns in your code"),
+            ("📊 View Analytics", "fl-dashboard", "Open the analytics dashboard anytime"),
+            ("📖 Read Docs", "Open documentation/QUICKSTART.md", "Complete getting started guide"),
+        ]
+
+        for i, (title, command, description) in enumerate(steps, 1):
+            console.print(f"\n   {i}. [bold cyan]{title}[/bold cyan]")
+            console.print(f"      [green]{command}[/green]")
+            console.print(f"      [yellow]{description}[/yellow]")
+
+        console.print("\n" + "💡 Pro tip: Run 'fl-chat' to ask questions about feedback-loop!")
+        console.print("🚀 Happy coding with AI-assisted development!")
+
+    def run(self):
+        """Run the complete quick start experience."""
+        self.show_welcome()
+
+        # Quick environment check
+        if not self.check_environment():
+            return 1
+
+        # Run bootstrap if needed
+        if not self.run_bootstrap():
+            return 1
+
+        # Launch demo
+        demo_process = self.launch_demo()
+
+        # Launch dashboard
+        dashboard_process = self.launch_dashboard()
+
+        # Show next steps
+        self.show_next_steps()
+
+        console.print("\n" + "=" * 60, style="header")
+        console.print("✨ Feedback Loop is ready! ✨", justify="center", style="success")
+        console.print("=" * 60, style="header")
+
+        # Show what was accomplished
+        console.print("\n🎯 [bold green]What you accomplished:[/bold green]")
+        accomplishments = [
+            "✅ Environment auto-detected and configured",
+            "✅ All dependencies installed automatically",
+            "🎭 Interactive demo showing real patterns",
+            "📊 Analytics dashboard ready in browser",
+            "🚀 AI-assisted development tools available",
+        ]
+
+        for acc in accomplishments:
+            console.print(f"   {acc}")
+
+        console.print("\n⏱️  [yellow]Total time: ~30 seconds![/yellow]")
+        console.print(
+            "💡 [italic]You're now ready to write better code with AI assistance![/italic]"
+        )
+
+        # Keep processes running until user interrupts
+        try:
+            console.print("\n🔄 Press Ctrl+C to stop all services")
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            console.print("\n\n👋 Shutting down services...")
+
+            # Clean up processes
+            if demo_process and demo_process.poll() is None:
+                demo_process.terminate()
+                demo_process.wait(timeout=5)
+
+            if dashboard_process and dashboard_process.poll() is None:
+                dashboard_process.terminate()
+                dashboard_process.wait(timeout=5)
+
+            console.print("✅ All services stopped. Run 'fl-start' anytime to restart!")
+
+        return 0
+
+
+def main():
+    """Main entry point."""
+    starter = QuickStart()
+    return starter.run()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

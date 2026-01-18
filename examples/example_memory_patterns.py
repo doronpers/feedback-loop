@@ -16,8 +16,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from metrics.memory_service import FeedbackLoopMemory
-from metrics.pattern_manager import PatternManager
+from metrics.memory_service import FeedbackLoopMemory  # noqa: E402
+from metrics.pattern_manager import PatternManager  # noqa: E402
 
 
 async def demo_basic_memory():
@@ -294,7 +294,7 @@ async def main():
 
     # Check if MemU is available
     try:
-        import memu
+        import memu  # noqa: F401
 
         print("✓ MemU library is available\n")
     except ImportError:
@@ -331,14 +331,10 @@ async def main():
     print("=" * 60 + "\n")
 
     print("Next steps:")
-    print(
-        "  1. Enable memory in your project: export FEEDBACK_LOOP_MEMORY_ENABLED=true"
-    )
+    print("  1. Enable memory in your project: export FEEDBACK_LOOP_MEMORY_ENABLED=true")
     print("  2. Sync patterns: feedback-loop memory sync")
     print("  3. Query patterns: feedback-loop memory query 'your question'")
-    print(
-        "  4. Get recommendations: feedback-loop memory recommend --context 'your context'"
-    )
+    print("  4. Get recommendations: feedback-loop memory recommend --context 'your context'")
     print()
 
 

@@ -1,6 +1,4 @@
-"""
-Tests for Pattern Suggester Module
-"""
+"""Tests for Pattern Suggester Module."""
 
 import pytest
 
@@ -63,18 +61,14 @@ class TestPatternSuggester:
         assert "numpy_json_serialization" in pattern_names
 
         # Should have confidence > 0
-        numpy_suggestion = next(
-            s for s in suggestions if s["name"] == "numpy_json_serialization"
-        )
+        numpy_suggestion = next(s for s in suggestions if s["name"] == "numpy_json_serialization")
         assert numpy_suggestion["confidence"] > 0
 
     def test_suggest_patterns_for_task_ranks_by_relevance(self, pattern_manager):
         """Test that suggestions are ranked by confidence."""
         suggester = PatternSuggester(pattern_manager)
 
-        suggestions = suggester.suggest_patterns_for_task(
-            "Serialize NumPy array to JSON format"
-        )
+        suggestions = suggester.suggest_patterns_for_task("Serialize NumPy array to JSON format")
 
         # Should be sorted by confidence (descending)
         confidences = [s["confidence"] for s in suggestions]

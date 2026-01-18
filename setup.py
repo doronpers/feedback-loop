@@ -47,6 +47,8 @@ setup(
         "memu-py>=0.1.0",  # Agentic memory framework for pattern learning
         "python-dotenv>=1.0.0",  # Load .env files automatically
         "passlib[bcrypt]>=1.7.4",  # Secure password hashing with bcrypt
+        "rich>=13.0.0",  # Terminal UI and formatting
+        "ast-comments>=1.1.0",  # AST parsing for code analysis
     ],
     extras_require={
         "test": test_requires,

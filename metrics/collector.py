@@ -160,9 +160,7 @@ class MetricsCollector:
 
         logger.debug(f"Logged test failure: {test_name}")
 
-    def _find_similar_test_failure(
-        self, failure: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    def _find_similar_test_failure(self, failure: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find a similar test failure entry.
 
         Args:
@@ -309,9 +307,7 @@ class MetricsCollector:
         }
 
         self.data["code_generation"].append(generation_entry)
-        logger.debug(
-            f"Logged code generation: {len(patterns_applied)} patterns applied"
-        )
+        logger.debug(f"Logged code generation: {len(patterns_applied)} patterns applied")
 
     def log_from_plan_file(
         self, plan_file: str, section_heading: str = "Patterns to Apply"
@@ -339,12 +335,8 @@ class MetricsCollector:
 
         plan_path = plan_path.resolve()
 
-        if not any(
-            self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS
-        ):
-            raise ValueError(
-                f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}"
-            )
+        if not any(self._is_within_root(plan_path, root) for root in self.ALLOWED_PLAN_ROOTS):
+            raise ValueError(f"Plan file must be within allowed roots: {self.ALLOWED_PLAN_ROOTS}")
 
         if not plan_path.exists():
             raise FileNotFoundError(f"Plan file not found: {plan_path}")
@@ -375,9 +367,7 @@ class MetricsCollector:
         except ValueError:
             return False
 
-    def _extract_patterns_from_plan(
-        self, content: str, section_heading: str
-    ) -> List[str]:
+    def _extract_patterns_from_plan(self, content: str, section_heading: str) -> List[str]:
         """Extract patterns from a Planning-with-Files style checklist section."""
         patterns: List[str] = []
         in_section = False
@@ -474,9 +464,7 @@ class MetricsCollector:
                 "metrics": self.get_summary(),
             }
 
-            result = await self.memory_service.memorize_development_session(
-                session_data
-            )
+            result = await self.memory_service.memorize_development_session(session_data)
             if result:
                 logger.debug(f"Stored session to memory: {session_data['session_id']}")
                 return True
@@ -539,9 +527,7 @@ class MetricsCollector:
         self.data = normalized_data
         logger.info("Loaded metrics from JSON")
 
-    def _normalize_loaded_data(
-        self, loaded_data: Any
-    ) -> Dict[str, List[Dict[str, Any]]]:
+    def _normalize_loaded_data(self, loaded_data: Any) -> Dict[str, List[Dict[str, Any]]]:
         """Normalize loaded JSON data to ensure expected structure.
 
         Args:
@@ -554,9 +540,7 @@ class MetricsCollector:
             ValueError: If the payload cannot be normalized into the expected structure.
         """
         if not isinstance(loaded_data, dict):
-            raise ValueError(
-                "Metrics payload must be a JSON object containing metric categories."
-            )
+            raise ValueError("Metrics payload must be a JSON object containing metric categories.")
 
         normalized: Dict[str, List[Dict[str, Any]]] = {}
         for category in self.METRIC_CATEGORIES:
@@ -580,9 +564,7 @@ class MetricsCollector:
                 )
 
             if not all(isinstance(item, dict) for item in value):
-                raise ValueError(
-                    f"All items in category '{category}' must be dictionaries."
-                )
+                raise ValueError(f"All items in category '{category}' must be dictionaries.")
 
             normalized[category] = value
 

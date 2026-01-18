@@ -92,7 +92,7 @@ async def stream_upload_to_disk(
     except HTTPException:
         # Re-raise HTTP exceptions
         raise
-    except (IOError, OSError) as e:
+    except OSError as e:
         logger.debug(f"Failed to stream file: {e}")
         raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
     finally:
@@ -149,7 +149,7 @@ async def process_audio_file_chunked(
     except FileNotFoundError:
         logger.debug(f"File not found: {file_path}")
         raise HTTPException(status_code=404, detail="File not found")
-    except (IOError, OSError) as e:
+    except OSError as e:
         logger.debug(f"Error processing file: {e}")
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
@@ -270,13 +270,12 @@ async def validate_audio_file_header(
 
         return True
 
-    except (IOError, OSError) as e:
+    except OSError as e:
         logger.debug(f"Error validating file header: {e}")
         return False
 
 
 # Example Pydantic models for FastAPI endpoints
-from typing import Optional as OptionalType
 
 
 class AudioUploadResponse:
@@ -288,7 +287,7 @@ class AudioUploadResponse:
         file_size_mb: float,
         chunks_processed: int,
         total_bytes_processed: int,
-        file_path: OptionalType[str] = None,
+        file_path: Optional[str] = None,
     ):
         self.file_size_bytes = file_size_bytes
         self.file_size_mb = file_size_mb

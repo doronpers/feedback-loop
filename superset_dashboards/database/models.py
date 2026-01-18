@@ -8,8 +8,7 @@ that can be visualized in Apache Superset dashboards.
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import (JSON, Boolean, Column, DateTime, Float, Index, Integer,
-                        String, Text)
+from sqlalchemy import JSON, Boolean, Column, DateTime, Float, Index, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -52,9 +51,7 @@ class MetricsTestFailure(Base):
     code_snippet = Column(Text)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
 
-    __table_args__ = (
-        Index("idx_test_pattern_timestamp", "pattern_violated", "timestamp"),
-    )
+    __table_args__ = (Index("idx_test_pattern_timestamp", "pattern_violated", "timestamp"),)
 
     def __repr__(self):
         return f"<MetricsTestFailure(test={self.test_name}, pattern={self.pattern_violated})>"
@@ -168,9 +165,7 @@ class PatternEffectiveness(Base):
     period_start = Column(DateTime, nullable=False)
     period_end = Column(DateTime, nullable=False)
 
-    __table_args__ = (
-        Index("idx_pattern_eff_name_period", "pattern_name", "period_start"),
-    )
+    __table_args__ = (Index("idx_pattern_eff_name_period", "pattern_name", "period_start"),)
 
     def __repr__(self):
         return f"<PatternEffectiveness(pattern={self.pattern_name}, score={self.effectiveness_score:.2f})>"

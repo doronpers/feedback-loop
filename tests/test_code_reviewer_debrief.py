@@ -1,10 +1,6 @@
-"""
-Tests for the code reviewer debrief feature.
-"""
+"""Tests for the code reviewer debrief feature."""
 
 from unittest.mock import Mock, patch
-
-import pytest
 
 from metrics.code_reviewer import CodeReviewer
 from metrics.llm_providers import LLMResponse
@@ -28,7 +24,8 @@ class TestCodeReviewerDebrief:
 **Difficulty Rating:** 4
 
 **Explanation:**
-These improvements are moderate in difficulty, requiring some refactoring but no major architectural changes.""",
+These improvements are moderate in difficulty,
+requiring some refactoring but no major architectural changes.""",
             model="test-model",
             provider="test-provider",
         )
@@ -188,7 +185,7 @@ Moderate difficulty with given context""",
 
         reviewer = CodeReviewer()
         context = "This is a web API endpoint"
-        debrief = reviewer.generate_debrief("code", "review", context)
+        reviewer.generate_debrief("code", "review", context)
 
         # Verify that generate was called
         assert mock_llm.generate.called

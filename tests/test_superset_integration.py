@@ -7,18 +7,15 @@ Tests the database export functionality and model integrity.
 import json
 import os
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
 
 # Add superset-dashboards to path
-superset_dir = Path(__file__).parent.parent / "superset-dashboards"
+superset_dir = Path(__file__).parent.parent / "superset_dashboards"
 sys.path.insert(0, str(superset_dir / "database"))
 
-from models import (Base, MetricsBug, MetricsCodeGeneration, MetricsCodeReview,
-                    MetricsDeployment, MetricsPerformance, MetricsTestFailure,
-                    get_all_models)
+from models import MetricsBug, MetricsCodeGeneration, get_all_models  # noqa: E402
 
 
 class TestSupersetModels:
@@ -83,10 +80,7 @@ class TestDatabaseExport:
     def test_export_script_exists(self):
         """Test that export script exists and is executable."""
         export_script = (
-            Path(__file__).parent.parent
-            / "superset-dashboards"
-            / "scripts"
-            / "export_to_db.py"
+            Path(__file__).parent.parent / "superset-dashboards" / "scripts" / "export_to_db.py"
         )
         assert export_script.exists(), "Export script not found"
         # Check if file is executable (on Unix systems)
@@ -96,18 +90,13 @@ class TestDatabaseExport:
     def test_sync_script_exists(self):
         """Test that sync script exists."""
         sync_script = (
-            Path(__file__).parent.parent
-            / "superset-dashboards"
-            / "scripts"
-            / "sync_metrics.py"
+            Path(__file__).parent.parent / "superset-dashboards" / "scripts" / "sync_metrics.py"
         )
         assert sync_script.exists(), "Sync script not found"
 
     def test_dashboard_configs_exist(self):
         """Test that dashboard configuration files exist."""
-        dashboards_dir = (
-            Path(__file__).parent.parent / "superset-dashboards" / "dashboards"
-        )
+        dashboards_dir = Path(__file__).parent.parent / "superset-dashboards" / "dashboards"
 
         expected_dashboards = [
             "code_quality_dashboard.json",
@@ -132,9 +121,7 @@ class TestIntegrationDocumentation:
 
     def test_superset_integration_doc_exists(self):
         """Test that Superset integration documentation exists."""
-        doc_path = (
-            Path(__file__).parent.parent / "documentation" / "SUPERSET_INTEGRATION.md"
-        )
+        doc_path = Path(__file__).parent.parent / "documentation" / "SUPERSET_INTEGRATION.md"
         assert doc_path.exists(), "SUPERSET_INTEGRATION.md not found"
 
         # Check documentation contains key sections

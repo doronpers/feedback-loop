@@ -11,10 +11,8 @@ Demonstrates the full system workflow:
 6. Displays improvement report
 """
 
-import json
 import logging
 import os
-from datetime import datetime, timedelta
 
 from metrics.analyzer import MetricsAnalyzer
 from metrics.code_generator import PatternAwareGenerator
@@ -174,8 +172,8 @@ def demo_metrics_analysis(collector: MetricsCollector):
     print("\n📊 Calculating pattern effectiveness...")
     effectiveness = analyzer.calculate_effectiveness(time_window_days=30)
     if effectiveness:
-        print(f"\nEffectiveness scores:")
-        for pattern, metrics in list(effectiveness.items())[:5]:
+        print("\nEffectiveness scores:")
+        for pattern, metrics in list(effectiveness.items())[:5]:  # type: ignore
             print(f"   • {pattern}: {metrics['score']:.1%} ({metrics['trend']})")
     else:
         print("   (Insufficient data for effectiveness calculation)")
@@ -183,7 +181,7 @@ def demo_metrics_analysis(collector: MetricsCollector):
     # Rank by severity
     print("\n⚠️  Ranking patterns by severity...")
     ranked = analyzer.rank_patterns_by_severity()
-    print(f"\nTop patterns by severity:")
+    print("\nTop patterns by severity:")
     for item in ranked[:5]:
         print(f"   • {item['pattern']}: {item['severity']} (count: {item['count']})")
 
@@ -235,7 +233,7 @@ def demo_pattern_management(high_freq, new_patterns):
     # Save patterns
     print("\n💾 Saving pattern library...")
     manager.save_patterns()
-    print(f"   Saved to demo_patterns.json")
+    print("   Saved to demo_patterns.json")
 
     # Display changelog
     changelog = manager.get_changelog()
@@ -287,9 +285,7 @@ def demo_code_generation_after(manager: PatternManager, analyzer: MetricsAnalyze
     metrics_context = analyzer.get_context()
 
     # Create generator
-    generator = PatternAwareGenerator(
-        manager.get_all_patterns(), pattern_library_version="1.0.0"
-    )
+    generator = PatternAwareGenerator(manager.get_all_patterns(), pattern_library_version="1.0.0")
 
     # Generate code
     prompt = "Create function to process NumPy array and return JSON"

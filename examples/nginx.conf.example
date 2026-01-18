@@ -33,7 +33,7 @@ server {
 
         # CRITICAL: Disable buffering for streaming uploads
         proxy_request_buffering off;
-        
+
         # Allow large request bodies
         proxy_max_temp_file_size 0;
     }
