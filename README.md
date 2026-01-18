@@ -27,14 +27,15 @@ curl -fsSL https://raw.githubusercontent.com/doronpers/feedback-loop/main/instal
 
 ---
 
-**Already cloned?** Run this single command:
+**Already cloned?** Run this single command (from the repo root):
 
 ```bash
 # ✨ Auto-setup + interactive demo + dashboard - everything you need!
-fl-start
+python3 bin/fl-start
 ```
 
 Both options will:
+
 - ✅ Auto-detect your environment and install everything
 - 🎭 Launch an interactive demo showing patterns in action
 - 📊 Open the analytics dashboard in your browser
@@ -51,12 +52,12 @@ Both options will:
 The bootstrap command handles everything automatically:
 
 ```bash
-fl-bootstrap
+python3 bin/fl-bootstrap
 ```
 
 ### Manual Installation
 
-**Requirements:** Python 3.8+
+**Requirements:** Python 3.13+
 
 ```bash
 # Clone and install
@@ -68,6 +69,7 @@ pip install -e .
 ```
 
 **Alternative:** Using requirements.txt:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -113,6 +115,7 @@ feedback-loop council-review --file path/to/file.py
 **Start here:** See **[documentation/INDEX.md](documentation/INDEX.md)** for a complete table of contents.
 
 **Key guides:**
+
 - **[Getting Started](documentation/GETTING_STARTED.md)** - Installation and first steps
 - **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)** - Living pattern library philosophy
 - **[Cursor Integration](CURSOR_INTEGRATION.md)** - IDE setup with pattern-aware AI
@@ -121,7 +124,7 @@ feedback-loop council-review --file path/to/file.py
 
 ## Memory-Enhanced Patterns (Optional)
 
-feedback-loop now supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
+feedback-loop supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
 
 ✨ **Semantic Search**: Query patterns by concept, not just name
 🧠 **Self-Evolving**: Patterns improve based on usage over time
@@ -131,20 +134,17 @@ feedback-loop now supports intelligent pattern memory via [MemU](https://github.
 ### Quick Setup
 
 ```bash
-# 1. Install MemU
-pip install memu-py
-
-# 2. Enable memory (optional)
+# 1. Enable memory (optional)
 export FEEDBACK_LOOP_MEMORY_ENABLED=true
 export OPENAI_API_KEY=sk-...  # For embeddings
 
-# 3. Sync patterns to memory
+# 2. Sync patterns to memory
 feedback-loop memory sync
 
-# 4. Query semantically
+# 3. Query semantically
 feedback-loop memory query "How do I handle JSON serialization with NumPy?"
 
-# 5. Get recommendations
+# 4. Get recommendations
 feedback-loop memory recommend --context "Building FastAPI file upload endpoint"
 ```
 

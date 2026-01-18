@@ -7,6 +7,7 @@
 ## The 9 Patterns
 
 ### 1. NumPy Type Conversion
+
 ```python
 # ❌ BAD: Crashes on JSON serialization
 result = {"mean": np.mean(data)}
@@ -16,6 +17,7 @@ result = {"mean": float(np.mean(data))}
 ```
 
 ### 2. Bounds Checking
+
 ```python
 # ❌ BAD: Crashes on empty list
 first = items[0]
@@ -25,6 +27,7 @@ first = items[0] if items else None
 ```
 
 ### 3. Specific Exceptions
+
 ```python
 # ❌ BAD: Catches everything including Ctrl+C
 try:
@@ -41,6 +44,7 @@ except json.JSONDecodeError as e:
 ```
 
 ### 4. Structured Logging
+
 ```python
 # ❌ BAD: Not captured in production
 print(f"Processing {file}")
@@ -50,6 +54,7 @@ logger.debug(f"Processing {file}")
 ```
 
 ### 5. Metadata-Based Logic
+
 ```python
 # ❌ BAD: Fragile string matching
 if "urgent" in name.lower():
@@ -60,6 +65,7 @@ priority = item.get("priority_level", "normal")
 ```
 
 ### 6. Temp File Handling
+
 ```python
 # ❌ BAD: No cleanup
 path = tempfile.mktemp()
@@ -76,6 +82,7 @@ finally:
 ```
 
 ### 7. Large File Processing
+
 ```python
 # ❌ BAD: Loads entire file into memory
 with open(path, 'rb') as f:
@@ -88,6 +95,7 @@ with open(path, 'rb') as f:
 ```
 
 ### 8. FastAPI Streaming
+
 ```python
 # ❌ BAD: Loads entire upload into memory
 content = await file.read()
@@ -98,6 +106,7 @@ while chunk := await file.read(1024 * 1024):
 ```
 
 ### 9. NumPy NaN/Inf Handling
+
 ```python
 # ❌ BAD: NaN/Inf causes invalid JSON
 result = {"value": np.sqrt(-1)}  # NaN
@@ -110,6 +119,7 @@ result = {"value": None if np.isnan(val) else float(val)}
 ## Common Commands
 
 ### Run Demos
+
 ```bash
 python demo.py              # Core patterns
 python demo_metrics.py      # Metrics system
@@ -117,6 +127,7 @@ python demo_fastapi.py      # FastAPI patterns
 ```
 
 ### Run Tests
+
 ```bash
 pytest tests/ -v                        # All tests
 pytest tests/test_good_patterns.py -v   # Core patterns only
@@ -124,22 +135,24 @@ pytest --cov=. --cov-report=html        # With coverage
 ```
 
 ### Metrics System
+
 ```bash
 # Collect metrics from tests
 pytest --enable-metrics
 
 # Analyze patterns
-python -m metrics.integrate analyze
+feedback-loop analyze
 
 # Generate code
-python -m metrics.integrate generate "your prompt here"
+feedback-loop generate "your prompt here"
 
 # View report (text or markdown)
-python -m metrics.integrate report --format text
-python -m metrics.integrate report --format markdown > report.md
+feedback-loop report --format text
+feedback-loop report --format markdown > report.md
 ```
 
 ### FastAPI Server
+
 ```bash
 python examples/fastapi_audio_example.py
 # Visit http://localhost:8000/docs

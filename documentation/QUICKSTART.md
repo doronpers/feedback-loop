@@ -16,10 +16,11 @@ Select your role to get personalized guidance:
 
 ```bash
 # 🚀 One-click: setup + demo + dashboard + AI assistance
-fl-start
+python3 bin/fl-start
 ```
 
 **What happens:**
+
 - 🔧 Auto-detects your environment and installs everything
 - 🎭 Launches interactive demo showing real patterns in action
 - 📊 Opens analytics dashboard in your browser
@@ -33,12 +34,13 @@ fl-start
 
 ```bash
 # Auto-detects your OS, checks Python, installs dependencies
-fl-bootstrap
+python3 bin/fl-bootstrap
 ```
 
 **What it does:**
+
 - ✅ Detects macOS/Windows/Linux automatically
-- ✅ Validates Python 3.8+ compatibility
+- ✅ Validates Python compatibility
 - ✅ Checks virtual environment status
 - ✅ Installs all required dependencies
 - ✅ Sets up project configuration
@@ -48,10 +50,11 @@ fl-bootstrap
 Experience feedback-loop with the interactive demo:
 
 ```bash
-fl-demo
+python3 bin/fl-demo
 ```
 
 **What you'll see:**
+
 - 📊 Pattern before/after examples
 - 🎯 Interactive pattern playground
 - 📈 Sample metrics and analytics
@@ -65,19 +68,20 @@ Start exploring and applying patterns:
 
 ```bash
 # Browse the pattern catalog
-fl-explore
+python3 bin/fl-explore
 
 # Apply patterns to your code
-fl-apply --scan .
+python3 bin/fl-apply --scan .
 
 # Review code with AI assistance
-fl-review my_code.py
+python3 bin/fl-review my_code.py
 
 # Chat with the AI assistant
-fl-chat
+python3 bin/fl-chat
 ```
 
 **Quick wins:**
+
 - Run `pytest --enable-metrics` to collect test data
 - Use `fl-apply` to automatically fix pattern violations
 - Ask the AI assistant: "How do I handle NumPy serialization?"
@@ -98,6 +102,7 @@ feedback-loop report --format markdown
 ```
 
 **Team features:**
+
 - Cloud sync for shared patterns
 - Team analytics and insights
 - Automated code reviews
@@ -108,7 +113,7 @@ Monitor development effectiveness:
 
 ```bash
 # Launch analytics dashboard
-fl-dashboard
+python3 bin/fl-dashboard
 
 # View pattern adoption metrics
 # Monitor bug reduction trends
@@ -116,6 +121,7 @@ fl-dashboard
 ```
 
 **Key metrics:**
+
 - Pattern adoption rates
 - Bug reduction over time
 - Code quality improvements
@@ -124,12 +130,14 @@ fl-dashboard
 ## Next Steps
 
 **Learn more:**
+
 - [AI Patterns Guide](AI_PATTERNS_GUIDE.md) - Deep dive into pattern philosophy
 - [Quick Reference](QUICK_REFERENCE.md) - Pattern cheat sheet
 - [Cursor Integration](../CURSOR_INTEGRATION.md) - IDE integration
 
 **Get help:**
-- `fl-chat` - Interactive AI assistant
+
+- `python3 bin/fl-chat` - Interactive AI assistant
 - [Documentation Index](INDEX.md) - Complete guides
 - [GitHub Issues](https://github.com/doronpers/feedback-loop/issues) - Report problems
 

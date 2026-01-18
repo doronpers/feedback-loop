@@ -2,6 +2,8 @@
 
 **Table of Contents** - Non-redundant navigation to all documentation resources.
 
+If you prefer a shorter starting point, see the [Documentation Hub](README.md).
+
 ## Documentation Root Policy
 
 **All documentation lives in the `documentation/` directory.** Internal links should use `documentation/` paths (not `docs/`). This ensures consistency and prevents broken links. When referencing documentation files:

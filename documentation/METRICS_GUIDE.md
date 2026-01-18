@@ -62,9 +62,10 @@ The Metrics Integration System provides a feedback loop for continuous code qual
 
 ### Installation
 
-See [README.md](README.md) for installation instructions.
+See [README.md](../README.md) for installation instructions.
 
 Quick start for metrics system:
+
 ```bash
 python demo_metrics.py
 ```
@@ -72,15 +73,17 @@ python demo_metrics.py
 ### Initial Setup
 
 1. **Initialize Pattern Library**:
+
 ```python
 from metrics.pattern_manager import PatternManager
 
-manager = PatternManager("patterns.json")
-manager.load_from_ai_patterns_md("AI_PATTERNS.md")
+manager = PatternManager("data/patterns.json")
+manager.load_from_ai_patterns_md("documentation/AI_PATTERNS_GUIDE.md")
 manager.save_patterns()
 ```
 
-2. **Set Up Metrics Collection**:
+1. **Set Up Metrics Collection**:
+
 ```python
 from metrics.collector import MetricsCollector
 
@@ -88,7 +91,8 @@ collector = MetricsCollector()
 # Start collecting metrics (see section 4)
 ```
 
-3. **Run First Analysis**:
+1. **Run First Analysis**:
+
 ```bash
 python -m metrics.integrate collect
 python -m metrics.integrate analyze
@@ -118,6 +122,7 @@ collector.log_bug(
 ```
 
 **When to log bugs:**
+
 - Exception handlers catch known issues
 - CI/CD detects failures
 - Production error monitoring alerts
@@ -137,6 +142,7 @@ collector.log_test_failure(
 ```
 
 **Integration points:**
+
 - pytest hooks
 - unittest tearDown methods
 - CI/CD test runners
@@ -158,6 +164,7 @@ collector.log_code_review_issue(
 ```
 
 **Sources:**
+
 - Manual code reviews
 - Automated linting tools
 - Static analysis results
@@ -272,6 +279,7 @@ for pattern, metrics in effectiveness.items():
 ```
 
 **Effectiveness Trends:**
+
 - `improving`: Occurrences decreasing over time (pattern is working)
 - `stable`: Occurrences steady (pattern maintains quality)
 - `worsening`: Occurrences increasing (pattern needs review)
@@ -643,17 +651,18 @@ class CustomGenerator(PatternAwareGenerator):
 
 ### 9.1 Common Issues
 
-**Issue: Pattern library not loading from AI_PATTERNS.md**
+**Issue: Pattern library not loading from the patterns guide**
 
 Solution:
+
 ```python
 # Check file exists
 import os
-assert os.path.exists("AI_PATTERNS.md"), "File not found"
+assert os.path.exists("documentation/AI_PATTERNS_GUIDE.md"), "File not found"
 
 # Load with error handling
 try:
-    manager.load_from_ai_patterns_md("AI_PATTERNS.md")
+    manager.load_from_ai_patterns_md("documentation/AI_PATTERNS_GUIDE.md")
 except Exception as e:
     print(f"Error loading patterns: {e}")
     # Use default patterns or manual creation
@@ -662,6 +671,7 @@ except Exception as e:
 **Issue: Low coverage in pattern detection**
 
 Solution:
+
 - Lower the threshold: `get_high_frequency_patterns(threshold=1)`
 - Collect more metrics over time
 - Check that pattern names match between metrics and library
@@ -669,6 +679,7 @@ Solution:
 **Issue: Generated code doesn't include expected patterns**
 
 Solution:
+
 ```python
 # Check context indicators
 indicators = generator._analyze_prompt(prompt)
@@ -738,7 +749,7 @@ A: Export metrics to JSON and send to your monitoring service. See section 7.4 f
 A: Yes! The metrics collector is lightweight. Code generation is best used in development. See production monitoring section.
 
 **Q: How do I contribute new patterns?**
-A: Add to `AI_PATTERNS.md` following existing format. System will auto-load on next analysis.
+A: Update `documentation/AI_PATTERNS_GUIDE.md` and keep examples/tests in sync. See `CONTRIBUTING.md`.
 
 **Q: What's the performance impact?**
 A: Metrics collection: <1ms per operation. Analysis: ~100ms for 1000 entries. Generation: ~500ms per request.
@@ -747,7 +758,7 @@ A: Metrics collection: <1ms per operation. Analysis: ~100ms for 1000 entries. Ge
 
 ## Need Help?
 
-- 📖 See [metrics/README.md](metrics/README.md) for API documentation
+- 📖 See [metrics/README.md](../metrics/README.md) for API documentation
 - 🎮 Run `python demo_metrics.py` for interactive demonstration
 - 🐛 Check [GitHub Issues](https://github.com/doronpers/feedback-loop/issues) for known problems
 - 💬 Ask questions in discussions
@@ -755,6 +766,7 @@ A: Metrics collection: <1ms per operation. Analysis: ~100ms for 1000 entries. Ge
 ## Contributing
 
 Contributions welcome! Please:
+
 1. Add tests for new features
 2. Update documentation
 3. Follow existing code patterns
