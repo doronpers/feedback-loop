@@ -216,16 +216,23 @@ class PatternAwareGenerator:
         """
         matched = []
 
-        # Pattern matching rules
-        pattern_rules = {
-            "numpy_json_serialization": ["numpy", "json"],
-            "bounds_checking": ["list_access"],
-            "specific_exceptions": ["exception"],
-            "logger_debug": ["logging"],
-            "metadata_categorization": ["categorization"],
-            "temp_file_handling": ["file"],
-            "large_file_processing": ["large_file", "file"],
-        }
+        # Pattern matching rules - can be overridden via config
+        # Default rules are defined here, but can be customized via ConfigManager
+        from metrics.config_manager import ConfigManager
+
+        config = ConfigManager()
+        pattern_rules = config.get(
+            "pattern_matching.rules",
+            {
+                "numpy_json_serialization": ["numpy", "json"],
+                "bounds_checking": ["list_access"],
+                "specific_exceptions": ["exception"],
+                "logger_debug": ["logging"],
+                "metadata_categorization": ["categorization"],
+                "temp_file_handling": ["file"],
+                "large_file_processing": ["large_file", "file"],
+            },
+        )
 
         # Check each pattern
         for pattern in self.pattern_library:

@@ -116,17 +116,23 @@ class PatternSuggester:
 
         score = 0.0
 
-        # Keyword matching rules
-        keyword_rules = {
-            "numpy_json_serialization": ["numpy", "json", "serialize", "array", "api"],
-            "bounds_checking": ["list", "array", "index", "first", "last", "access"],
-            "specific_exceptions": ["exception", "error", "try", "catch", "handle"],
-            "logger_debug": ["log", "debug", "print", "logging"],
-            "metadata_categorization": ["categorize", "classify", "metadata", "type"],
-            "temp_file_handling": ["temp", "file", "temporary", "cleanup"],
-            "large_file_processing": ["large", "file", "upload", "stream", "memory"],
-            "fastapi": ["fastapi", "endpoint", "api", "route", "upload"],
-        }
+        # Keyword matching rules - can be overridden via config
+        from metrics.config_manager import ConfigManager
+
+        config = ConfigManager()
+        keyword_rules = config.get(
+            "pattern_matching.keyword_rules",
+            {
+                "numpy_json_serialization": ["numpy", "json", "serialize", "array", "api"],
+                "bounds_checking": ["list", "array", "index", "first", "last", "access"],
+                "specific_exceptions": ["exception", "error", "try", "catch", "handle"],
+                "logger_debug": ["log", "debug", "print", "logging"],
+                "metadata_categorization": ["categorize", "classify", "metadata", "type"],
+                "temp_file_handling": ["temp", "file", "temporary", "cleanup"],
+                "large_file_processing": ["large", "file", "upload", "stream", "memory"],
+                "fastapi": ["fastapi", "endpoint", "api", "route", "upload"],
+            },
+        )
 
         # Check pattern-specific keywords
         keywords = keyword_rules.get(pattern_name, [])

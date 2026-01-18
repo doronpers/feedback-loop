@@ -103,6 +103,27 @@ class ConfigManager:
                 "provider": None,
             },
             "analysis": {"time_window_days": 30},
+            "pattern_matching": {
+                "rules": {
+                    "numpy_json_serialization": ["numpy", "json"],
+                    "bounds_checking": ["list_access"],
+                    "specific_exceptions": ["exception"],
+                    "logger_debug": ["logging"],
+                    "metadata_categorization": ["categorization"],
+                    "temp_file_handling": ["file"],
+                    "large_file_processing": ["large_file", "file"],
+                },
+                "keyword_rules": {
+                    "numpy_json_serialization": ["numpy", "json", "serialize", "array", "api"],
+                    "bounds_checking": ["list", "array", "index", "first", "last", "access"],
+                    "specific_exceptions": ["exception", "error", "try", "catch", "handle"],
+                    "logger_debug": ["log", "debug", "print", "logging"],
+                    "metadata_categorization": ["categorize", "classify", "metadata", "type"],
+                    "temp_file_handling": ["temp", "file", "temporary", "cleanup"],
+                    "large_file_processing": ["large", "file", "upload", "stream", "memory"],
+                    "fastapi": ["fastapi", "endpoint", "api", "route", "upload"],
+                },
+            },
         }
 
     def get(self, key_path: str, default: Any = None) -> Any:
