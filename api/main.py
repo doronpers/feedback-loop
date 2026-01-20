@@ -13,6 +13,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional
 
+from sqlalchemy.orm import Session as DbSession
+from sqlalchemy import or_
+
 # Load .env file from project root
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -25,6 +28,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
+
+from api.db import models
+from api.deps import get_db
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +51,16 @@ app = FastAPI(
 # Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
 def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
     """Parse allowed origins from env configuration.
-    
+
     Hardened: Defaults to localhost only for security.
     Raises warning if wildcard detected in production.
     """
     if not raw_value:
         # Strict default - localhost only
         return ["http://localhost:3000"]
-    
+
     origins = [origin.strip() for origin in raw_value.split(",") if origin.strip()]
-    
+
     # Security check: warn if wildcard detected in production
     if "*" in origins:
         env = os.getenv("ENVIRONMENT", "development").lower()
@@ -67,7 +73,7 @@ def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
             logger.warning(
                 "Wildcard CORS origin detected. This should not be used in production."
             )
-    
+
     return origins
 
 
@@ -155,67 +161,56 @@ class ConfigResponse(BaseModel):
 
 
 # ============================================================================
-# In-Memory Storage (Replace with database in production)
-# ============================================================================
-
-# TODO: PRODUCTION - Replace with PostgreSQL database
-# In-memory dictionaries lose data on restart and don't support concurrent access
-# See Documentation/PRODUCTION_CHECKLIST.md for migration plan
-USERS_DB = {}
-SESSIONS_DB = {}
-PATTERNS_DB = {}
-CONFIG_DB = {}
-
-
-# ============================================================================
 # Authentication & Authorization
 # ============================================================================
 
 
-def create_api_key(user_id: int) -> str:
-    """Generate a secure API key."""
+def create_token_str(user_id: int) -> str:
+    """Generate a secure API key/token."""
     random_str = secrets.token_urlsafe(32)
     return f"fl_{user_id}_{random_str}"
 
 
 def hash_password(password: str) -> str:
-    """Hash password using bcrypt for better GPU-resistance than PBKDF2.
-    
-    Optimized: Uses bcrypt via passlib CryptContext for standardized,
-    production-ready password hashing.
-    """
+    """Hash password using bcrypt."""
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against bcrypt hash.
-    
-    Optimized: Standardized on CryptContext; removed legacy SHA-256 fallback
-    to prevent downgrade attacks.
-    """
+    """Verify password against bcrypt hash."""
     return pwd_context.verify(plain_password, hashed_password)
 
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> dict:
+    db: DbSession = Depends(get_db),
+) -> models.User:
     """Verify API key and return current user."""
-    api_key = credentials.credentials
+    token = credentials.credentials
 
-    # Look up user by API key
-    user = SESSIONS_DB.get(api_key)
-    if not user:
+    # Look up session by token
+    session = db.query(models.Session).filter(models.Session.token == token).first()
+    if not session:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired API key",
         )
 
-    return user
+    # Check expiration if applicable (optional, not implemented in models yet fully/enforced)
+    if session.expires_at and session.expires_at < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired",
+        )
+
+    return session.user
 
 
-async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+async def require_admin(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
     """Require admin role for endpoint access."""
-    if current_user.get("role") != "admin":
+    if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
@@ -228,28 +223,32 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
 
 
 @app.get("/api/v1/health")
-async def health_check():
+async def health_check(db: DbSession = Depends(get_db)):
     """Health check endpoint."""
+    try:
+        # Simple DB check
+        db.execute("SELECT 1")
+        db_status = "connected"
+    except Exception:
+        db_status = "disconnected"
+
     return {
         "status": "healthy",
+        "database": db_status,
         "timestamp": datetime.utcnow().isoformat(),
         "version": "0.1.0",
     }
 
 
 @app.post("/api/v1/auth/login", response_model=LoginResponse)
-async def login(request: LoginRequest):
+async def login(request: LoginRequest, db: DbSession = Depends(get_db)):
     """
     Authenticate user and return API key.
 
     This endpoint supports the 'feedback-loop login' command in the CLI.
     """
     # Find user by email
-    user = None
-    for uid, u in USERS_DB.items():
-        if u["email"] == request.email:
-            user = u
-            break
+    user = db.query(models.User).filter(models.User.email == request.email).first()
 
     if not user:
         raise HTTPException(
@@ -257,149 +256,206 @@ async def login(request: LoginRequest):
         )
 
     # Verify password
-    if not verify_password(request.password, user["hashed_password"]):
+    if not verify_password(request.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
 
     # Generate API key
-    api_key = create_api_key(user["id"])
+    token_str = create_token_str(user.id)
 
-    # Store session
-    SESSIONS_DB[api_key] = {
-        "user_id": user["id"],
-        "username": user["username"],
-        "email": user["email"],
-        "role": user["role"],
-        "organization_id": user["organization_id"],
-        "created_at": datetime.utcnow().isoformat(),
-    }
+    # Store session in DB
+    session = models.Session(
+        token=token_str,
+        user_id=user.id,
+        created_at=datetime.utcnow(),
+        # Optional: set expires_at
+    )
+    db.add(session)
 
     # Update last login
-    user["last_login"] = datetime.utcnow().isoformat()
+    user.last_login = datetime.utcnow()
+    db.commit()
+    db.refresh(session)
 
     return LoginResponse(
-        access_token=api_key,
-        user_id=user["id"],
-        organization_id=user["organization_id"],
-        username=user["username"],
-        role=user["role"],
+        access_token=token_str,
+        user_id=user.id,
+        organization_id=user.organization_id,
+        username=user.username,
+        role=user.role,
     )
 
 
 @app.post("/api/v1/auth/register", response_model=UserResponse)
-async def register(request: UserCreate):
+async def register(request: UserCreate, db: DbSession = Depends(get_db)):
     """Register a new user and organization."""
-    # Check if email already exists
-    for user in USERS_DB.values():
-        if user["email"] == request.email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
+    # Check if email or username already exists
+    existing_user = (
+        db.query(models.User)
+        .filter(
+            or_(
+                models.User.email == request.email,
+                models.User.username == request.username,
             )
-        if user["username"] == request.username:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken"
-            )
+        )
+        .first()
+    )
 
-    # Create organization if provided
-    org_id = 1  # Default org
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or Username already registered",
+        )
+
+    # Create organization if provided or default
+    # If explicit name provided, try to find or create
+    org = None
     if request.organization_name:
-        org_id = len(USERS_DB) + 1  # Simple ID generation
+        org = (
+            db.query(models.Organization)
+            .filter(models.Organization.name == request.organization_name)
+            .first()
+        )
+        if not org:
+            org = models.Organization(name=request.organization_name)
+            db.add(org)
+            db.commit()
+            db.refresh(org)
+    else:
+        # Default org logic (e.g. "Default Org" or create one per user?)
+        # For simple migration, let's look for "Default Organization" or create it
+        org = (
+            db.query(models.Organization)
+            .filter(models.Organization.name == "Default Organization")
+            .first()
+        )
+        if not org:
+            org = models.Organization(name="Default Organization")
+            db.add(org)
+            db.commit()
+            db.refresh(org)
 
     # Create user
-    user_id = len(USERS_DB) + 1
-    user = {
-        "id": user_id,
-        "email": request.email,
-        "username": request.username,
-        "full_name": request.full_name,
-        "hashed_password": hash_password(request.password),
-        "role": "admin" if not USERS_DB else "developer",  # First user is admin
-        "organization_id": org_id,
-        "is_active": True,
-        "created_at": datetime.utcnow().isoformat(),
-    }
+    # Check if it's the first user ever?
+    user_count = db.query(models.User).count()
+    role = "admin" if user_count == 0 else "developer"
 
-    USERS_DB[user_id] = user
+    user = models.User(
+        email=request.email,
+        username=request.username,
+        full_name=request.full_name,
+        hashed_password=hash_password(request.password),
+        role=role,
+        organization_id=org.id,
+        is_active=True,
+    )
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
 
     return UserResponse(
-        id=user["id"],
-        username=user["username"],
-        email=user["email"],
-        full_name=user["full_name"],
-        role=user["role"],
-        organization_id=user["organization_id"],
-        created_at=datetime.utcnow(),
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role,
+        organization_id=user.organization_id,
+        created_at=user.created_at,
     )
 
 
 @app.get("/api/v1/auth/me", response_model=UserResponse)
-async def get_current_user_info(current_user: dict = Depends(get_current_user)):
+async def get_current_user_info(current_user: models.User = Depends(get_current_user)):
     """Get current authenticated user information."""
-    user = USERS_DB.get(current_user["user_id"])
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-
     return UserResponse(
-        id=user["id"],
-        username=user["username"],
-        email=user["email"],
-        full_name=user.get("full_name"),
-        role=user["role"],
-        organization_id=user["organization_id"],
-        created_at=datetime.fromisoformat(user["created_at"]),
+        id=current_user.id,
+        username=current_user.username,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        role=current_user.role,
+        organization_id=current_user.organization_id,
+        created_at=current_user.created_at,
     )
 
 
 @app.post("/api/v1/patterns/sync", response_model=PatternSyncResponse)
 async def sync_patterns(
-    request: PatternSync, current_user: dict = Depends(get_current_user)
+    request: PatternSync,
+    current_user: models.User = Depends(get_current_user),
+    db: DbSession = Depends(get_db),
 ):
     """
     Sync patterns to cloud storage.
 
     Implements bi-directional sync with conflict resolution.
     """
-    org_id = current_user["organization_id"]
-    user_id = current_user["user_id"]
-
-    # Initialize organization patterns if not exists
-    if org_id not in PATTERNS_DB:
-        PATTERNS_DB[org_id] = {}
+    org_id = current_user.organization_id
+    user_id = current_user.id
 
     conflicts = []
     synced_count = 0
 
-    for pattern in request.patterns:
-        pattern_name = pattern.get("name")
+    for pattern_data in request.patterns:
+        pattern_name = pattern_data.get("name")
         if not pattern_name:
             continue
 
-        # Check for conflicts
-        existing = PATTERNS_DB[org_id].get(pattern_name)
+        # Check for existing
+        existing = (
+            db.query(models.Pattern)
+            .filter(
+                models.Pattern.organization_id == org_id,
+                models.Pattern.name == pattern_name,
+            )
+            .first()
+        )
+
         if existing:
-            # Simple conflict detection - check last modified
-            if existing.get("version", 0) != pattern.get("version", 0):
+            # Simple conflict detection - check version
+            if existing.version != pattern_data.get("version", 0):
                 conflicts.append(
                     {
                         "pattern": pattern_name,
                         "reason": "Version mismatch",
-                        "server_version": existing.get("version"),
-                        "client_version": pattern.get("version"),
+                        "server_version": existing.version,
+                        "client_version": pattern_data.get("version"),
                     }
                 )
                 continue
 
-        # Store pattern with metadata
-        pattern["last_modified_by"] = user_id
-        pattern["last_modified_at"] = datetime.utcnow().isoformat()
-        pattern["version"] = pattern.get("version", 1) + 1
+            # Update existing
+            existing.description = pattern_data.get("description")
+            existing.bad_example = pattern_data.get("bad_example")
+            existing.good_example = pattern_data.get("good_example")
+            existing.severity = pattern_data.get("severity", "medium")
+            existing.occurrence_frequency = pattern_data.get("occurrence_frequency", 0)
+            existing.effectiveness_score = pattern_data.get("effectiveness_score", 0.5)
+            existing.version = pattern_data.get("version", 1) + 1
+            existing.last_modified_by = user_id
+            existing.last_modified_at = datetime.utcnow()
 
-        PATTERNS_DB[org_id][pattern_name] = pattern
+        else:
+            # Create new
+            new_pattern = models.Pattern(
+                name=pattern_name,
+                description=pattern_data.get("description"),
+                bad_example=pattern_data.get("bad_example"),
+                good_example=pattern_data.get("good_example"),
+                severity=pattern_data.get("severity", "medium"),
+                occurrence_frequency=pattern_data.get("occurrence_frequency", 0),
+                effectiveness_score=pattern_data.get("effectiveness_score", 0.5),
+                version=pattern_data.get("version", 1) + 1,
+                last_modified_by=user_id,
+                last_modified_at=datetime.utcnow(),
+                organization_id=org_id,
+            )
+            db.add(new_pattern)
+
         synced_count += 1
+
+    db.commit()
 
     return PatternSyncResponse(
         status="success",
@@ -410,64 +466,109 @@ async def sync_patterns(
 
 
 @app.get("/api/v1/patterns/pull")
-async def pull_patterns(current_user: dict = Depends(get_current_user)):
+async def pull_patterns(
+    current_user: models.User = Depends(get_current_user),
+    db: DbSession = Depends(get_db),
+):
     """
     Pull patterns from cloud storage.
 
     Returns all patterns for the user's organization.
     """
-    org_id = current_user["organization_id"]
+    patterns = (
+        db.query(models.Pattern)
+        .filter(models.Pattern.organization_id == current_user.organization_id)
+        .all()
+    )
 
-    patterns = list(PATTERNS_DB.get(org_id, {}).values())
+    # Convert to dicts for simple response
+    # (In a real app, use a proper Pydantic scheme Response model with orm_mode=True)
+    # But for now matching the manual dict structure
+    pattern_list = []
+    for p in patterns:
+        pattern_list.append(
+            {
+                "name": p.name,
+                "description": p.description,
+                "bad_example": p.bad_example,
+                "good_example": p.good_example,
+                "severity": p.severity,
+                "occurrence_frequency": p.occurrence_frequency,
+                "effectiveness_score": p.effectiveness_score,
+                "version": p.version,
+            }
+        )
 
     return {
-        "patterns": patterns,
-        "count": len(patterns),
-        "organization_id": org_id,
+        "patterns": pattern_list,
+        "count": len(pattern_list),
+        "organization_id": current_user.organization_id,
         "timestamp": datetime.utcnow().isoformat(),
     }
 
 
 @app.get("/api/v1/config", response_model=ConfigResponse)
-async def get_config(current_user: dict = Depends(get_current_user)):
+async def get_config(
+    current_user: models.User = Depends(get_current_user),
+    db: DbSession = Depends(get_db),
+):
     """
     Get team configuration.
 
     Returns enforced settings and team-specific configuration.
     """
-    org_id = current_user["organization_id"]
+    org_id = current_user.organization_id
 
     # Get organization config
-    config = CONFIG_DB.get(
-        org_id,
-        {
+    config_obj = (
+        db.query(models.Config).filter(models.Config.organization_id == org_id).first()
+    )
+
+    config_data = (
+        config_obj.settings
+        if config_obj
+        else {
             "min_confidence_threshold": 0.8,
             "security_checks_required": True,
             "auto_sync_enabled": True,
-        },
+        }
     )
 
-    # List enforced settings (cannot be overridden by users)
-    enforced_settings = ["security_checks_required", "min_confidence_threshold"]
+    enforced = (
+        config_obj.enforced_settings
+        if config_obj
+        else ["security_checks_required", "min_confidence_threshold"]
+    )
 
     return ConfigResponse(
-        config=config,
-        enforced_settings=enforced_settings,
-        team_id=None,  # TODO: Implement team selection
+        config=config_data,
+        enforced_settings=enforced,
+        team_id=None,
         organization_id=org_id,
     )
 
 
 @app.post("/api/v1/config")
-async def update_config(config: dict, current_user: dict = Depends(require_admin)):
+async def update_config(
+    config: dict,
+    current_user: models.User = Depends(require_admin),
+    db: DbSession = Depends(get_db),
+):
     """
     Update team configuration (admin only).
-
-    Allows team leads to enforce specific settings across all team members.
     """
-    org_id = current_user["organization_id"]
+    org_id = current_user.organization_id
 
-    CONFIG_DB[org_id] = config
+    config_obj = (
+        db.query(models.Config).filter(models.Config.organization_id == org_id).first()
+    )
+    if not config_obj:
+        config_obj = models.Config(organization_id=org_id, settings=config)
+        db.add(config_obj)
+    else:
+        config_obj.settings = config
+
+    db.commit()
 
     return {
         "status": "success",
@@ -478,23 +579,22 @@ async def update_config(config: dict, current_user: dict = Depends(require_admin
 
 
 @app.post("/api/v1/metrics")
-async def submit_metrics(metrics: dict, current_user: dict = Depends(get_current_user)):
+async def submit_metrics(
+    metrics: dict,
+    current_user: models.User = Depends(get_current_user),
+    db: DbSession = Depends(get_db),
+):
     """
     Submit metrics for analytics.
-
-    Used for ROI calculations and team analytics dashboard.
     """
-    org_id = current_user["organization_id"]
-    user_id = current_user["user_id"]
-
-    # TODO: Store metrics in database for analytics
+    # TODO: Store metrics in database for analytics (Phase 3)
     # For now, just acknowledge receipt
 
     return {
         "status": "success",
         "message": "Metrics received",
-        "organization_id": org_id,
-        "user_id": user_id,
+        "organization_id": current_user.organization_id,
+        "user_id": current_user.id,
         "timestamp": datetime.utcnow().isoformat(),
     }
 
@@ -505,38 +605,58 @@ async def submit_metrics(metrics: dict, current_user: dict = Depends(get_current
 
 
 @app.get("/api/v1/admin/users")
-async def list_users(current_user: dict = Depends(require_admin)):
+async def list_users(
+    current_user: models.User = Depends(require_admin), db: DbSession = Depends(get_db)
+):
     """List all users in organization (admin only)."""
-    org_id = current_user["organization_id"]
+    users_list = (
+        db.query(models.User)
+        .filter(models.User.organization_id == current_user.organization_id)
+        .all()
+    )
 
     users = [
         {
-            "id": u["id"],
-            "username": u["username"],
-            "email": u["email"],
-            "role": u["role"],
-            "is_active": u.get("is_active", True),
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "role": u.role,
+            "is_active": u.is_active,
         }
-        for u in USERS_DB.values()
-        if u["organization_id"] == org_id
+        for u in users_list
     ]
 
-    return {"users": users, "count": len(users), "organization_id": org_id}
+    return {
+        "users": users,
+        "count": len(users),
+        "organization_id": current_user.organization_id,
+    }
 
 
 @app.delete("/api/v1/admin/patterns/{pattern_name}")
 async def delete_pattern(
-    pattern_name: str, current_user: dict = Depends(require_admin)
+    pattern_name: str,
+    current_user: models.User = Depends(require_admin),
+    db: DbSession = Depends(get_db),
 ):
     """Delete a pattern (admin only)."""
-    org_id = current_user["organization_id"]
 
-    if org_id not in PATTERNS_DB or pattern_name not in PATTERNS_DB[org_id]:
+    pattern = (
+        db.query(models.Pattern)
+        .filter(
+            models.Pattern.organization_id == current_user.organization_id,
+            models.Pattern.name == pattern_name,
+        )
+        .first()
+    )
+
+    if not pattern:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Pattern not found"
         )
 
-    del PATTERNS_DB[org_id][pattern_name]
+    db.delete(pattern)
+    db.commit()
 
     return {
         "status": "success",
