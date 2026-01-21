@@ -479,6 +479,15 @@ feedback-loop/
 └── CURSOR_INTEGRATION.md # Cursor setup guide
 ```
 
+## Reasoning Logs
+
+After completing significant tasks (complex problem-solving, architectural decisions, refactoring, non-obvious bug fixes), create a reasoning log entry:
+
+**Location**: `agent_reasoning_logs/logs/YYYY-MM-DD_feedback-loop_task.md`
+**Template**: `agent_reasoning_logs/templates/reasoning_entry.md`
+
+This helps build institutional knowledge and improves the pattern library.
+
 ## Final Notes
 
 **Remember:** These patterns exist because they've prevented real bugs in production. Apply them consistently, and the feedback loop will continue learning and improving.

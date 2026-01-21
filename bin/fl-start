@@ -22,27 +22,80 @@ from metrics.env_loader import load_env_file
 
 load_env_file(project_root)
 
-from rich.align import Align
-from rich.console import Console
-from rich.live import Live
-from rich.panel import Panel
-from rich.spinner import Spinner
-from rich.text import Text
-from rich.theme import Theme
+# Try to import rich, but handle gracefully if not available
+try:
+    from rich.align import Align
+    from rich.console import Console
+    from rich.live import Live
+    from rich.panel import Panel
+    from rich.spinner import Spinner
+    from rich.text import Text
+    from rich.theme import Theme
 
-# Custom theme
-custom_theme = Theme(
-    {
-        "info": "cyan",
-        "warning": "yellow",
-        "error": "red",
-        "success": "green",
-        "header": "bold blue",
-        "accent": "magenta",
-    }
-)
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
 
-console = Console(theme=custom_theme)
+    # Fallback: use basic print if rich not available
+    class Console:
+        def __init__(self, theme=None, **kwargs):
+            # Accept theme parameter but ignore it
+            pass
+
+        def print(self, *args, **kwargs):
+            # Strip rich markup tags for cleaner output
+            import re
+
+            text = " ".join(str(arg) for arg in args)
+            # Remove rich markup like [cyan], [bold], etc.
+            text = re.sub(r"\[[^\]]+\]", "", text)
+            print(text)
+
+        def status(self, *args, **kwargs):
+            return self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+    class Panel:
+        @staticmethod
+        def fit(text, **kwargs):
+            return text
+
+    class Text:
+        def __init__(self, text, **kwargs):
+            self.text = text
+
+        def __str__(self):
+            return self.text
+
+    class Theme:
+        def __init__(self, *args, **kwargs):
+            pass
+
+    Align = None
+    Live = None
+    Spinner = None
+
+# Custom theme (only if rich available)
+if RICH_AVAILABLE:
+    custom_theme = Theme(
+        {
+            "info": "cyan",
+            "warning": "yellow",
+            "error": "red",
+            "success": "green",
+            "header": "bold blue",
+            "accent": "magenta",
+        }
+    )
+    console = Console(theme=custom_theme)
+else:
+    custom_theme = None
+    console = Console()
 
 
 class QuickStart:
@@ -107,22 +160,82 @@ class QuickStart:
 
     def run_bootstrap(self):
         """Run bootstrap if needed."""
-        console.print("🔧 [cyan]Checking setup...[/cyan]")
-
-        with console.status("[bold green]Checking environment...", spinner="dots"):
-            time.sleep(0.5)  # Brief pause for UX
+        if RICH_AVAILABLE:
+            console.print("🔧 [cyan]Checking setup...[/cyan]")
+            with console.status("[bold green]Checking environment...", spinner="dots"):
+                time.sleep(0.5)  # Brief pause for UX
+        else:
+            print("🔧 Checking setup...")
 
         # Check if we need to install
         try:
             import fastapi
+            import passlib  # Required for api.main
             import rich
+            import uvicorn  # Required for server
 
             import metrics
 
-            console.print("✅ [green]Already set up! Skipping installation.[/green]")
+            if RICH_AVAILABLE:
+                console.print("✅ [green]Already set up! Skipping installation.[/green]")
+            else:
+                print("✅ Already set up! Skipping installation.")
             return True
         except ImportError as e:
-            console.print(f"📦 [yellow]Need to install dependencies ({e.name})[/yellow]")
+            missing_module = e.name if hasattr(e, "name") else str(e)
+
+            # If critical dependencies are missing, install them directly
+            critical_modules = ["rich", "passlib", "uvicorn"]
+            if missing_module in critical_modules:
+                module_name = missing_module
+                if RICH_AVAILABLE:
+                    console.print(
+                        f"📦 [yellow]Installing {module_name} (required dependency)...[/yellow]"
+                    )
+                else:
+                    print(f"📦 Installing {module_name} (required dependency)...")
+
+                try:
+                    result = subprocess.run(
+                        [sys.executable, "-m", "pip", "install", module_name],
+                        cwd=self.project_root,
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
+                    )
+
+                    if result.returncode == 0:
+                        if RICH_AVAILABLE:
+                            console.print(f"✅ [green]{module_name} installed successfully[/green]")
+                        else:
+                            print(f"✅ {module_name} installed successfully")
+
+                        # Retry the import check after installation
+                        # This handles the case where we install a module and need to verify all dependencies
+                        # Recursively call run_bootstrap to check all dependencies again
+                        return self.run_bootstrap()
+                    else:
+                        if RICH_AVAILABLE:
+                            console.print(
+                                f"❌ [red]Failed to install {module_name}: {result.stderr[:200]}[/red]"
+                            )
+                        else:
+                            print(f"❌ Failed to install {module_name}: {result.stderr[:200]}")
+                        return False
+                except Exception as install_error:
+                    if RICH_AVAILABLE:
+                        console.print(
+                            f"❌ [red]Error installing {module_name}: {install_error}[/red]"
+                        )
+                    else:
+                        print(f"❌ Error installing {module_name}: {install_error}")
+                    return False
+
+            # If we get here, missing_module is not in critical_modules, so we need to run bootstrap
+            if RICH_AVAILABLE:
+                console.print(f"📦 [yellow]Need to install dependencies ({missing_module})[/yellow]")
+            else:
+                print(f"📦 Need to install dependencies ({missing_module})")
 
         # Run bootstrap
         console.print("🔧 [cyan]Running first-time setup...[/cyan]")
@@ -174,10 +287,258 @@ class QuickStart:
 
     def launch_dashboard(self):
         """Launch the analytics dashboard."""
-        console.print("\n📊 [cyan]Opening analytics dashboard...[/cyan]")
+        if RICH_AVAILABLE:
+            console.print("\n📊 [cyan]Opening analytics dashboard...[/cyan]")
+        else:
+            print("\n📊 Opening analytics dashboard...")
+
+        # Get local IP address for network access
+        def get_local_ip():
+            """Get the local IP address for network access."""
+            try:
+                import socket
+
+                # Connect to a remote address to determine local IP
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                ip = s.getsockname()[0]
+                s.close()
+                return ip
+            except Exception:
+                return None
+
+        local_ip = get_local_ip()
 
         try:
+            # Check if port 8000 is already in use
+            import socket
+
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            port_in_use = sock.connect_ex(("127.0.0.1", 8000)) == 0
+            sock.close()
+
+            if port_in_use:
+                # Check if the existing server has the dashboard route
+                import urllib.request
+
+                try:
+                    test_url = "http://127.0.0.1:8000/dashboard/"
+                    req = urllib.request.Request(test_url)
+                    req.add_header("User-Agent", "feedback-loop-check")
+                    with urllib.request.urlopen(req, timeout=2) as response:
+                        if response.status == 200:
+                            # Dashboard route exists
+
+                            if RICH_AVAILABLE:
+                                console.print(
+                                    "✅ [green]Dashboard already running on port 8000[/green]"
+                                )
+                            else:
+                                print("✅ Dashboard already running on port 8000")
+                            dashboard_url = "http://127.0.0.1:8000/dashboard/"
+                            network_url = f"http://{local_ip}:8000/dashboard/" if local_ip else None
+                            if RICH_AVAILABLE:
+                                console.print(f"   🌐 Local: {dashboard_url}")
+                                if network_url:
+                                    console.print(f"   🌐 Network: {network_url}")
+                            else:
+                                print(f"   🌐 Local: {dashboard_url}")
+                                if network_url:
+                                    print(f"   🌐 Network: {network_url}")
+                            try:
+                                webbrowser.open(dashboard_url)
+                            except Exception:
+                                pass
+                            return None
+                except urllib.error.HTTPError as e:
+                    if e.code == 404:
+                        if RICH_AVAILABLE:
+                            console.print(
+                                "⚠️ [yellow]Port 8000 is in use, but dashboard route not found.[/yellow]"
+                            )
+                            console.print(
+                                "   [yellow]This may be a different server. Trying a different port...[/yellow]"
+                            )
+                        else:
+                            print("⚠️ Port 8000 is in use, but dashboard route not found.")
+                            print("   This may be a different server. Trying a different port...")
+                        # Fall through to start on different port
+                    else:
+                        # Other error - assume server is different
+                        if RICH_AVAILABLE:
+                            console.print(
+                                "⚠️ [yellow]Port 8000 is in use by a different server.[/yellow]"
+                            )
+                            console.print("   [yellow]Trying a different port...[/yellow]")
+                        else:
+                            print("⚠️ Port 8000 is in use by a different server.")
+                            print("   Trying a different port...")
+                        # Fall through to start on different port
+                except Exception as e:
+                    if RICH_AVAILABLE:
+                        console.print(f"⚠️ [yellow]Could not check existing server: {e}[/yellow]")
+                        console.print("   [yellow]Trying a different port...[/yellow]")
+                    else:
+                        print(f"⚠️ Could not check existing server: {e}")
+                        print("   Trying a different port...")
+                    # Fall through to start on different port
+
+                # Try alternative ports
+                for alt_port in [8001, 8002, 8003]:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    port_available = sock.connect_ex(("127.0.0.1", alt_port)) != 0
+                    sock.close()
+
+                    if port_available:
+                        if RICH_AVAILABLE:
+                            console.print(
+                                f"📊 [cyan]Starting dashboard on port {alt_port}...[/cyan]"
+                            )
+                        else:
+                            print(f"📊 Starting dashboard on port {alt_port}...")
+
+                        dashboard_process = subprocess.Popen(
+                            [
+                                sys.executable,
+                                "-m",
+                                "uvicorn",
+                                "api.main:app",
+                                "--host",
+                                "0.0.0.0",
+                                "--port",
+                                str(alt_port),
+                                "--reload",
+                            ],
+                            cwd=self.project_root,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                        )
+
+                        # Check if process crashed immediately
+                        time.sleep(1)
+                        if dashboard_process.poll() is not None:
+                            stderr_output = (
+                                dashboard_process.stderr.read().decode("utf-8", errors="ignore")
+                                if dashboard_process.stderr
+                                else "No stderr"
+                            )
+                            stdout_output = (
+                                dashboard_process.stdout.read().decode("utf-8", errors="ignore")
+                                if dashboard_process.stdout
+                                else "No stdout"
+                            )
+
+                            if RICH_AVAILABLE:
+                                console.print(
+                                    f"❌ [red]Dashboard failed to start on port {alt_port}:[/red]"
+                                )
+                                console.print(f"   [red]{stderr_output[:300]}[/red]")
+                            else:
+                                print(f"❌ Dashboard failed to start on port {alt_port}:")
+                                print(f"   {stderr_output[:300]}")
+                            continue  # Try next port
+
+                        # Wait for server to be ready and verify
+                        dashboard_url = f"http://127.0.0.1:{alt_port}/dashboard/"
+                        max_wait = 10
+                        waited = 0
+                        server_ready = False
+
+                        while waited < max_wait:
+                            time.sleep(1)
+                            waited += 1
+                            try:
+                                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                                sock.settimeout(1)
+                                result = sock.connect_ex(("127.0.0.1", alt_port))
+                                sock.close()
+                                if result == 0:
+                                    # Also verify HTTP response
+                                    try:
+                                        import urllib.request
+
+                                        response = urllib.request.urlopen(
+                                            f"http://127.0.0.1:{alt_port}/", timeout=2
+                                        )
+                                        status_code = response.getcode()
+                                        server_ready = True
+                                        break
+                                    except Exception as http_err:
+                                        continue
+                            except Exception as sock_err:
+                                pass
+
+                        if not server_ready:
+                            # Check if process crashed during wait
+                            if dashboard_process.poll() is not None:
+                                stderr_output = (
+                                    dashboard_process.stderr.read().decode("utf-8", errors="ignore")
+                                    if dashboard_process.stderr
+                                    else "No stderr"
+                                )
+
+                                if RICH_AVAILABLE:
+                                    console.print(
+                                        f"❌ [red]Dashboard crashed on port {alt_port}: {stderr_output[:200]}[/red]"
+                                    )
+                                else:
+                                    print(
+                                        f"❌ Dashboard crashed on port {alt_port}: {stderr_output[:200]}"
+                                    )
+                                continue
+                            else:
+                                if RICH_AVAILABLE:
+                                    console.print(
+                                        f"⚠️ [yellow]Dashboard on port {alt_port} not responding after {max_wait}s[/yellow]"
+                                    )
+                                else:
+                                    print(
+                                        f"⚠️ Dashboard on port {alt_port} not responding after {max_wait}s"
+                                    )
+                                continue
+
+                        try:
+                            webbrowser.open(f"http://127.0.0.1:{alt_port}/")
+                            if RICH_AVAILABLE:
+                                console.print(
+                                    f"✅ [green]Dashboard opened on port {alt_port}[/green]"
+                                )
+                                console.print(f"   🌐 Local: {dashboard_url}")
+                                if local_ip:
+                                    console.print(
+                                        f"   🌐 Network: http://{local_ip}:{alt_port}/dashboard/"
+                                    )
+                            else:
+                                print(f"✅ Dashboard opened on port {alt_port}")
+                                print(f"   🌐 Local: {dashboard_url}")
+                                if local_ip:
+                                    print(f"   🌐 Network: http://{local_ip}:{alt_port}/dashboard/")
+                        except Exception:
+                            if RICH_AVAILABLE:
+                                console.print(
+                                    f"✅ [green]Dashboard started on port {alt_port}[/green]"
+                                )
+                                console.print(f"   🌐 Local: {dashboard_url}")
+                                if local_ip:
+                                    console.print(
+                                        f"   🌐 Network: http://{local_ip}:{alt_port}/dashboard/"
+                                    )
+                            else:
+                                print(f"✅ Dashboard started on port {alt_port}")
+                                print(f"   🌐 Local: {dashboard_url}")
+                                if local_ip:
+                                    print(f"   🌐 Network: http://{local_ip}:{alt_port}/dashboard/")
+                        return dashboard_process
+
+                # No available ports
+                if RICH_AVAILABLE:
+                    console.print("❌ [red]No available ports found (8000-8003 all in use)[/red]")
+                else:
+                    print("❌ No available ports found (8000-8003 all in use)")
+                return None
+
             # Start dashboard server
+
             dashboard_process = subprocess.Popen(
                 [
                     sys.executable,
@@ -185,7 +546,7 @@ class QuickStart:
                     "uvicorn",
                     "api.main:app",
                     "--host",
-                    "127.0.0.1",
+                    "0.0.0.0",
                     "--port",
                     "8000",
                     "--reload",
@@ -195,23 +556,111 @@ class QuickStart:
                 stderr=subprocess.PIPE,
             )
 
-            # Wait a moment for server to start
-            time.sleep(2)
+            # Check immediately if process crashed
+            time.sleep(1)  # Give it a moment to start or fail
+            if dashboard_process.poll() is not None:
+                # Process already exited - read stderr
+                stderr_output = (
+                    dashboard_process.stderr.read().decode("utf-8", errors="ignore")
+                    if dashboard_process.stderr
+                    else "No stderr available"
+                )
+                stdout_output = (
+                    dashboard_process.stdout.read().decode("utf-8", errors="ignore")
+                    if dashboard_process.stdout
+                    else "No stdout available"
+                )
 
-            # Try to open browser
+                if RICH_AVAILABLE:
+                    console.print(f"❌ [red]Dashboard server failed to start:[/red]")
+                    console.print(f"   [red]Error: {stderr_output[:300]}[/red]")
+                else:
+                    print(f"❌ Dashboard server failed to start:")
+                    print(f"   Error: {stderr_output[:300]}")
+                return None
+
+            # Wait for server to start and verify it's responding
             dashboard_url = "http://127.0.0.1:8000/dashboard/"
+            max_wait = 10  # Wait up to 10 seconds
+            waited = 0
+            server_ready = False
+
+            while waited < max_wait:
+                time.sleep(1)
+                waited += 1
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(1)
+                    result = sock.connect_ex(("127.0.0.1", 8000))
+                    sock.close()
+                    if result == 0:
+                        server_ready = True
+                        break
+                except Exception:
+                    pass
+
+            if not server_ready:
+                # Check if process crashed
+                if dashboard_process.poll() is not None:
+                    # Process exited - read stderr to see why
+                    stderr_output = (
+                        dashboard_process.stderr.read().decode("utf-8", errors="ignore")
+                        if dashboard_process.stderr
+                        else "No stderr available"
+                    )
+                    if RICH_AVAILABLE:
+                        console.print(
+                            f"❌ [red]Dashboard server failed to start: {stderr_output[:200]}[/red]"
+                        )
+                    else:
+                        print(f"❌ Dashboard server failed to start: {stderr_output[:200]}")
+                    return None
+                else:
+                    if RICH_AVAILABLE:
+                        console.print(
+                            "⚠️ [yellow]Dashboard server starting (may take a moment)...[/yellow]"
+                        )
+                    else:
+                        print("⚠️ Dashboard server starting (may take a moment)...")
+
+            # Try to open browser - use root URL which redirects to dashboard
+            root_url = "http://127.0.0.1:8000/"
+            network_url = f"http://{local_ip}:8000/" if local_ip else None
             try:
-                webbrowser.open(dashboard_url)
-                console.print("✅ [green]Dashboard opened in your browser[/green]")
-                console.print(f"   🌐 URL: {dashboard_url}")
-            except Exception:
-                console.print(f"✅ [green]Dashboard server started[/green]")
-                console.print(f"   🌐 Open in browser: {dashboard_url}")
+                webbrowser.open(root_url)
+                if RICH_AVAILABLE:
+                    console.print("✅ [green]Dashboard opened in your browser[/green]")
+                    console.print(f"   🌐 Local: {root_url} (redirects to {dashboard_url})")
+                    if network_url:
+                        console.print(
+                            f"   🌐 Network: {network_url} (accessible from other devices)"
+                        )
+                else:
+                    print("✅ Dashboard opened in your browser")
+                    print(f"   🌐 Local: {root_url} (redirects to {dashboard_url})")
+                    if network_url:
+                        print(f"   🌐 Network: {network_url} (accessible from other devices)")
+            except Exception as e:
+                if RICH_AVAILABLE:
+                    console.print(f"✅ [green]Dashboard server started[/green]")
+                    console.print(f"   🌐 Local: {root_url} or {dashboard_url}")
+                    if network_url:
+                        console.print(
+                            f"   🌐 Network: {network_url} (accessible from other devices)"
+                        )
+                else:
+                    print("✅ Dashboard server started")
+                    print(f"   🌐 Local: {root_url} or {dashboard_url}")
+                    if network_url:
+                        print(f"   🌐 Network: {network_url} (accessible from other devices)")
 
             return dashboard_process
 
         except Exception as e:
-            console.print(f"❌ [red]Failed to launch dashboard: {e}[/red]")
+            if RICH_AVAILABLE:
+                console.print(f"❌ [red]Failed to launch dashboard: {e}[/red]")
+            else:
+                print(f"❌ Failed to launch dashboard: {e}")
             return None
 
     def show_next_steps(self):

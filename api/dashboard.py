@@ -79,13 +79,103 @@ def get_metrics_analyzer(metrics_file: str = "data/metrics_data.json") -> Option
 @router.get("/", response_class=HTMLResponse)
 async def dashboard_home():
     """Serve the main dashboard HTML page."""
+    # #region agent log
+    import json
+
+    log_path = "/Volumes/Treehorn/Gits/sono-platform/.cursor/debug.log"
+    try:
+        with open(log_path, "a") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "sessionId": "debug-session",
+                        "runId": "run1",
+                        "hypothesisId": "H5",
+                        "location": "dashboard.py:79",
+                        "message": "dashboard_home route called",
+                        "data": {"route": "/dashboard/"},
+                        "timestamp": int(__import__("time").time() * 1000),
+                    }
+                )
+                + "\n"
+            )
+    except Exception:
+        pass
+    # #endregion
+
     template_path = Path(__file__).parent / "templates" / "dashboard.html"
 
+    # #region agent log
+    try:
+        with open(log_path, "a") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "sessionId": "debug-session",
+                        "runId": "run1",
+                        "hypothesisId": "H5",
+                        "location": "dashboard.py:87",
+                        "message": "Template path check",
+                        "data": {
+                            "template_path": str(template_path),
+                            "exists": template_path.exists(),
+                            "parent": str(Path(__file__).parent),
+                        },
+                        "timestamp": int(__import__("time").time() * 1000),
+                    }
+                )
+                + "\n"
+            )
+    except Exception:
+        pass
+    # #endregion
+
     if not template_path.exists():
+        # #region agent log
+        try:
+            with open(log_path, "a") as f:
+                f.write(
+                    json.dumps(
+                        {
+                            "sessionId": "debug-session",
+                            "runId": "run1",
+                            "hypothesisId": "H5",
+                            "location": "dashboard.py:92",
+                            "message": "Template not found",
+                            "data": {"template_path": str(template_path)},
+                            "timestamp": int(__import__("time").time() * 1000),
+                        }
+                    )
+                    + "\n"
+                )
+        except Exception:
+            pass
+        # #endregion
         raise HTTPException(status_code=404, detail="Dashboard template not found")
 
     with open(template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
+
+    # #region agent log
+    try:
+        with open(log_path, "a") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "sessionId": "debug-session",
+                        "runId": "run1",
+                        "hypothesisId": "H5",
+                        "location": "dashboard.py:100",
+                        "message": "Template loaded successfully",
+                        "data": {"content_length": len(html_content)},
+                        "timestamp": int(__import__("time").time() * 1000),
+                    }
+                )
+                + "\n"
+            )
+    except Exception:
+        pass
+    # #endregion
 
     return HTMLResponse(content=html_content)
 

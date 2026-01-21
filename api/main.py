@@ -231,6 +231,14 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
 # ============================================================================
 
 
+@app.get("/")
+async def root():
+    """Root endpoint - redirect to dashboard."""
+    from fastapi.responses import RedirectResponse
+
+    return RedirectResponse(url="/dashboard/")
+
+
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint."""
