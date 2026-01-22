@@ -59,8 +59,8 @@ test = [
 ]
 
 [project.scripts]
-feedback-loop = "feedback_loop.api.main:main"  # Updated entry point
-fl = "feedback_loop.api.main:main"
+feedback-loop = "feedback_loop.cli.main:cli"
+fl = "feedback_loop.cli.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]
