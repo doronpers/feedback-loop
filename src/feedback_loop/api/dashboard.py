@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 from metrics.analyzer import MetricsAnalyzer
-from metrics.insights_engine import InsightsEngine
+from shared_ai_utils import InsightsEngine
 
 # Create router
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -58,7 +58,9 @@ def get_insights_engine() -> InsightsEngine:
     """Get or create insights engine instance."""
     global _insights_engine
     if _insights_engine is None:
-        _insights_engine = InsightsEngine()
+        # Dashboard already has get_metrics_analyzer()
+        analyzer = get_metrics_analyzer()
+        _insights_engine = InsightsEngine(analyzer=analyzer)
     return _insights_engine
 
 

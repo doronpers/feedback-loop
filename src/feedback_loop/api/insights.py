@@ -9,7 +9,8 @@ from typing import Any, Dict, List
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from metrics.insights_engine import InsightsEngine
+from shared_ai_utils import InsightsEngine
+from metrics.analyzer import MetricsAnalyzer
 
 # Create router
 router = APIRouter(prefix="/insights", tags=["insights"])
@@ -22,7 +23,19 @@ def get_insights_engine() -> InsightsEngine:
     """Get or create insights engine instance."""
     global _insights_engine
     if _insights_engine is None:
-        _insights_engine = InsightsEngine()
+        # Load local metrics analyzer to pass to shared engine
+        from pathlib import Path
+        metrics_file = Path("data/metrics_data.json")
+        analyzer = None
+        if metrics_file.exists():
+            import json
+            try:
+                with open(metrics_file, "r") as f:
+                    metrics_data = json.load(f)
+                analyzer = MetricsAnalyzer(metrics_data)
+            except Exception:
+                pass
+        _insights_engine = InsightsEngine(analyzer=analyzer)
     return _insights_engine
 
 
