@@ -9,16 +9,9 @@ import logging
 import os
 import secrets
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-
-# Load .env file from project root
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-from metrics.env_loader import load_env_file
-
-load_env_file(project_root)
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,9 +19,15 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 
-# Import dashboard router
-from api.dashboard import router as dashboard_router
-from api.insights import router as insights_router
+# Load .env file from project root
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+from api.dashboard import router as dashboard_router  # noqa: E402
+from api.insights import router as insights_router  # noqa: E402
+
+from metrics.env_loader import load_env_file  # noqa: E402
+
+load_env_file(project_root)
 
 logger = logging.getLogger(__name__)
 
@@ -258,7 +257,7 @@ async def login(request: LoginRequest):
     """
     # Find user by email
     user = None
-    for uid, u in USERS_DB.items():
+    for _uid, u in USERS_DB.items():
         if u["email"] == request.email:
             user = u
             break

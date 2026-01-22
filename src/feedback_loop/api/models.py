@@ -7,7 +7,7 @@ Uses SQLAlchemy for ORM and supports both SQLite (local) and PostgreSQL (product
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, Column, DateTime
 from sqlalchemy import Enum as SQLEnum
@@ -269,4 +269,7 @@ class Metric(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
     def __repr__(self):
-        return f"<Metric(id={self.id}, type='{self.metric_type}', time_saved={self.time_saved_seconds}s)>"
+        return (
+            f"<Metric(id={self.id}, type='{self.metric_type}', "
+            f"time_saved={self.time_saved_seconds}s)>"
+        )

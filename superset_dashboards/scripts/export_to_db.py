@@ -19,7 +19,6 @@ Usage:
 import argparse
 import json
 import logging
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -40,9 +39,7 @@ from models import (
     MetricsCodeReview,
     MetricsDeployment,
     MetricsPerformance,
-    MetricsSummary,
     MetricsTestFailure,
-    PatternEffectiveness,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

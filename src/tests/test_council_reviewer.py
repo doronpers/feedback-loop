@@ -109,16 +109,16 @@ def test_council_review_local_import_error(monkeypatch):
 def test_council_review_http_timeout(monkeypatch):
     """Test HTTP timeout handling."""
 
-    class FakeTimeout(Exception):
+    class FakeTimeoutError(Exception):
         """Fake timeout exception."""
 
     class FakeRequests:
-        class exceptions:
-            Timeout = FakeTimeout
+        class Exceptions:
+            Timeout = FakeTimeoutError
 
         @staticmethod
         def post(*_args, **_kwargs):
-            raise FakeTimeout("Request timed out")
+            raise FakeTimeoutError("Request timed out")
 
     monkeypatch.setitem(sys.modules, "requests", FakeRequests)
 
@@ -136,7 +136,7 @@ def test_council_review_http_connection_error(monkeypatch):
         """Fake connection error exception."""
 
     class FakeRequests:
-        class exceptions:
+        class Exceptions:
             ConnectionError = FakeConnectionError
 
         @staticmethod

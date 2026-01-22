@@ -1,10 +1,6 @@
 """Tests for Council AI reviewer CLI integration."""
 
-import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from metrics.integrate import _handle_council_review
 

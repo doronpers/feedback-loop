@@ -4,7 +4,6 @@ This module demonstrates antipatterns that should be avoided in production code.
 """
 
 import json
-import os
 import tempfile
 
 import numpy as np

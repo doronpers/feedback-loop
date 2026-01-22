@@ -6,7 +6,6 @@ Serves data for charts, metrics, and insights visualization.
 """
 
 import json
-import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -504,7 +503,10 @@ async def export_metrics(format: str = Query("json", description="Export format 
 
         for category, items in analyzer.metrics_data.items():
             for item in items:
-                csv_content += f"{category},{item.get('pattern', '')},{item.get('count', 1)},{item.get('timestamp', '')}\n"
+                csv_content += (
+                    f"{category},{item.get('pattern', '')},"
+                    f"{item.get('count', 1)},{item.get('timestamp', '')}\n"
+                )
 
         from fastapi.responses import Response
 

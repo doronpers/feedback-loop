@@ -5,17 +5,12 @@ Provides interactive testing and experimentation with patterns.
 Allows users to apply patterns to sample code and see results in real-time.
 """
 
-import ast
-import sys
-import tempfile
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
-from rich.prompt import Confirm, Prompt
-from rich.text import Text
+from rich.prompt import Prompt
 from rich.theme import Theme
 
 # Custom theme

@@ -6,7 +6,6 @@ This plugin automatically collects test failures and logs them to the metrics sy
 
 import logging
 import os
-import re
 from pathlib import Path
 from typing import Optional
 
@@ -262,7 +261,6 @@ class MetricsPlugin:
         # Save metrics to file
         if self.metrics_output:
             try:
-                import json
 
                 with open(self.metrics_output, "w") as f:
                     f.write(self.collector.export_json())

@@ -12,12 +12,9 @@ Usage:
 import argparse
 import asyncio
 import io
-import json
 import logging
 import os
 import sys
-import tempfile
-from pathlib import Path
 
 import numpy as np
 
@@ -38,14 +35,10 @@ def print_step(text):
 
 async def run_patterns_demo():
     from examples.good_patterns import (
-        DataProcessor,
-        categorize_by_metadata_good,
         cleanup_temp_file_good,
-        debug_processing_good,
         get_first_item_good,
         parse_config_good,
         process_data_good,
-        process_large_file_good,
         write_temp_file_good,
     )
 
@@ -72,11 +65,7 @@ async def run_patterns_demo():
 async def run_fastapi_demo():
     from fastapi import UploadFile
 
-    from examples.fastapi_audio_patterns import (
-        process_audio_file_chunked,
-        safe_audio_upload_workflow,
-        stream_upload_to_disk,
-    )
+    from examples.fastapi_audio_patterns import process_audio_file_chunked, stream_upload_to_disk
 
     print_header("FastAPI Audio Workflow (800MB Safe)")
 
@@ -98,7 +87,6 @@ async def run_workflow_demo():
     from metrics.analyzer import MetricsAnalyzer
     from metrics.code_generator import PatternAwareGenerator
     from metrics.collector import MetricsCollector
-    from metrics.pattern_manager import PatternManager
 
     print_header("Full Metrics Feedback Loop")
 
@@ -111,7 +99,7 @@ async def run_workflow_demo():
         file_path="src/api.py",
         line=42,
     )
-    print(f"  Collected bug report for 'numpy_json_serialization' ✅")
+    print("  Collected bug report for 'numpy_json_serialization' ✅")
 
     print_step("2. Pattern Analysis")
     analyzer = MetricsAnalyzer(collector.export_dict())
@@ -121,7 +109,7 @@ async def run_workflow_demo():
     print_step("3. Pattern-Aware Generation")
     generator = PatternAwareGenerator([], "1.0.0")
     result = generator.generate("Process NumPy array", metrics_context=analyzer.get_context())
-    print(f"  Generated code with pattern awareness ✅")
+    print("  Generated code with pattern awareness ✅")
     print(f"\033[92m{result.code[:150]}...\033[0m")
 
 
