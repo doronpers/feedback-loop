@@ -1,1918 +1,382 @@
 [
   {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 161,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 121,
-    "pattern": "bare_except",
-    "description": "Bare except clause catches all exceptions",
-    "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
-    "code_snippet": "except:"
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 39,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 131,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 143,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 337,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "bin/feedback_loop_lsp.py",
-    "line": 338,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "conftest.py",
-    "line": 276,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "conftest.py",
-    "line": 298,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "conftest.py",
-    "line": 305,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "conftest.py",
-    "line": 324,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 27,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 28,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 29,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 33,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 50,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 53,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 56,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 60,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 62,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 79,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 83,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 105,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 110,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 115,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 116,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 126,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 134,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 135,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "demo.py",
-    "line": 163,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 27,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 80,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 36,
-    "pattern": "bare_except",
-    "description": "Bare except clause catches all exceptions",
-    "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
-    "code_snippet": "except:"
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 73,
-    "pattern": "bare_except",
-    "description": "Bare except clause catches all exceptions",
-    "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
-    "code_snippet": "except:"
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 37,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 43,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 44,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 45,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 48,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 74,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "examples/bad_patterns.py",
-    "line": 81,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 74,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "1[0]"
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 120,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 281,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 304,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 311,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 321,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 322,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 329,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 330,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 331,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 332,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 336,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 346,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 347,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 351,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 356,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 357,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 361,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 362,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 365,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 370,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 371,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 379,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 380,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 383,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 387,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 390,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 394,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 397,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 399,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 400,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 405,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 408,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 409,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 412,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 414,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 415,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 430,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 433,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 437,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 440,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 444,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 450,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 455,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 465,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 466,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 467,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 470,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 471,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 474,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 476,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 478,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_applicator.py",
-    "line": 479,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 65,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 66,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 71,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 199,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 240,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 256,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 257,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 263,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 270,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 275,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 302,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 309,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 332,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 339,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 364,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
+    "file": "metrics/code_reviewer.py",
     "line": 378,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 382,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 383,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 388,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 392,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 397,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 398,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 399,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 400,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 401,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 402,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 403,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 404,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 405,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 435,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 441,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 444,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 452,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 454,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 466,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 469,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 493,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_explorer.py",
-    "line": 495,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 82,
     "pattern": "bounds_checking",
     "description": "List access without bounds checking",
     "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
+    "code_snippet": "numbers[0]"
   },
   {
-    "file": "metrics/pattern_playground.py",
-    "line": 92,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 110,
+    "file": "metrics/code_reviewer.py",
+    "line": 809,
     "pattern": "bare_except",
     "description": "Bare except clause catches all exceptions",
     "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
     "code_snippet": "except:"
   },
   {
-    "file": "metrics/pattern_playground.py",
-    "line": 111,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 185,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 186,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 192,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 199,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 203,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 204,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 206,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 212,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 219,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 222,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 235,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 240,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 241,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 244,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 245,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 252,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 254,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 256,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 259,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 260,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 267,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 269,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 308,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 323,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 327,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 328,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 330,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 342,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 345,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 348,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 353,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 355,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 357,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 358,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_playground.py",
-    "line": 388,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "metrics/pattern_scanner.py",
-    "line": 191,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_auto_analysis.py",
-    "line": 16,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "src/tests/test_code_reviewer_debrief.py",
-    "line": 194,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "call_args[0]"
-  },
-  {
-    "file": "src/tests/test_council_review_cli.py",
-    "line": 33,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "call_args[0]"
-  },
-  {
-    "file": "src/tests/test_council_review_cli.py",
-    "line": 63,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "call_args[0]"
-  },
-  {
-    "file": "src/tests/test_council_review_cli.py",
-    "line": 11,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_review_cli.py",
-    "line": 39,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 30,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 70,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 103,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 126,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 149,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 171,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 203,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_council_reviewer.py",
-    "line": 219,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_fastapi_audio_patterns.py",
-    "line": 452,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "result[0]"
-  },
-  {
-    "file": "src/tests/test_good_patterns.py",
-    "line": 68,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "result[0]"
-  },
-  {
-    "file": "src/tests/test_good_patterns.py",
-    "line": 71,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "result[0]"
-  },
-  {
-    "file": "src/tests/test_good_patterns.py",
-    "line": 80,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "result[0]"
-  },
-  {
-    "file": "src/tests/test_good_patterns.py",
-    "line": 81,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "result[0]"
-  },
-  {
-    "file": "src/tests/test_good_patterns.py",
-    "line": 162,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/tests/test_memory_service.py",
-    "line": 237,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "recommendations[0]"
-  },
-  {
-    "file": "src/tests/test_memory_service.py",
-    "line": 238,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "recommendations[0]"
-  },
-  {
-    "file": "src/tests/test_memory_service.py",
-    "line": 442,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "call_args[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 306,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "high_freq[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 307,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "high_freq[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 326,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "new_patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 327,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "new_patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 372,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "ranked[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 373,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "ranked[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 478,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 492,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 493,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 511,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 512,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 545,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 615,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "matched[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 616,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "matched[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 627,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 634,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "to_apply[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 666,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 712,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "high_freq[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 713,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "high_freq[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 728,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 751,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_metrics.py",
-    "line": 752,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "patterns[0]"
-  },
-  {
-    "file": "src/tests/test_pattern_suggester.py",
-    "line": 24,
-    "pattern": "numpy_json_serialization",
-    "description": "NumPy types may not be JSON serializable",
-    "suggestion": "Convert NumPy types to Python types: float(np_value)",
-    "code_snippet": "json.dumps({'val': np."
-  },
-  {
-    "file": "src/tests/test_pattern_suggester.py",
-    "line": 25,
-    "pattern": "numpy_json_serialization",
-    "description": "NumPy types may not be JSON serializable",
-    "suggestion": "Convert NumPy types to Python types: float(np_value)",
-    "code_snippet": "json.dumps({'val': float(np."
-  },
-  {
-    "file": "src/tests/test_pattern_suggester.py",
-    "line": 33,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "items[0]"
-  },
-  {
-    "file": "src/tests/test_pattern_suggester.py",
-    "line": 42,
+    "file": "metrics/code_reviewer.py",
+    "line": 810,
     "pattern": "bare_except",
     "description": "Bare except clause catches all exceptions",
     "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
     "code_snippet": "except:"
   },
   {
-    "file": "src/tests/test_plan_parser.py",
-    "line": 51,
+    "file": "metrics/code_reviewer.py",
+    "line": 813,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 867,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 868,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 869,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 870,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 873,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 874,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 876,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 877,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 881,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 886,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 902,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 903,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 906,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 910,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 911,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 913,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 918,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 919,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 920,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 921,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 926,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 927,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 928,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 929,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 930,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 931,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 932,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 936,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 937,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 938,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 939,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 955,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 958,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 964,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 966,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 967,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 973,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 974,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/code_reviewer.py",
+    "line": 975,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 483,
     "pattern": "bounds_checking",
     "description": "List access without bounds checking",
     "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "phases[0]"
+    "code_snippet": "items[0]"
   },
   {
-    "file": "src/tests/test_sync_client.py",
-    "line": 47,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "saved_patterns[0]"
-  },
-  {
-    "file": "src/tests/test_sync_client.py",
-    "line": 65,
-    "pattern": "bounds_checking",
-    "description": "List access without bounds checking",
-    "suggestion": "Check list length before accessing: if items: first = items[0]",
-    "code_snippet": "pulled_patterns[0]"
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 20,
+    "file": "metrics/integrate.py",
+    "line": 49,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 21,
+    "file": "metrics/integrate.py",
+    "line": 58,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 22,
+    "file": "metrics/integrate.py",
+    "line": 124,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 34,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 36,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 43,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 45,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 46,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 53,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 55,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 56,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 57,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 94,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 97,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 122,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 125,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -1920,7 +384,23 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
+    "line": 126,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 127,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
     "line": 128,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -1928,63 +408,31 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 136,
+    "file": "metrics/integrate.py",
+    "line": 129,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 137,
+    "file": "metrics/integrate.py",
+    "line": 130,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 138,
+    "file": "metrics/integrate.py",
+    "line": 131,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 139,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 140,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 141,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 142,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 143,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -1992,7 +440,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 144,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2000,55 +448,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 145,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 147,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 148,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 149,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 151,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 152,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 153,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2056,15 +456,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 155,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 156,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2072,47 +464,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 158,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 159,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 160,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 162,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 163,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 164,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2120,55 +472,23 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 165,
+    "file": "metrics/integrate.py",
+    "line": 166,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 167,
+    "file": "metrics/integrate.py",
+    "line": 171,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 168,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 169,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 170,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 172,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 173,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2176,23 +496,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 174,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 175,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 177,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2200,15 +504,7 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 178,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 179,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2216,15 +512,15 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 180,
+    "file": "metrics/integrate.py",
+    "line": 183,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
     "line": 185,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -2232,72 +528,824 @@
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 186,
+    "file": "metrics/integrate.py",
+    "line": 189,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 187,
+    "file": "metrics/integrate.py",
+    "line": 200,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 191,
+    "file": "metrics/integrate.py",
+    "line": 204,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 192,
+    "file": "metrics/integrate.py",
+    "line": 251,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 198,
+    "file": "metrics/integrate.py",
+    "line": 252,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 203,
+    "file": "metrics/integrate.py",
+    "line": 253,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "metrics/integrate.py",
+    "line": 254,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 255,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 256,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 257,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 258,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 264,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 279,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 319,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 328,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 336,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 337,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 338,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 339,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 340,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 341,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 342,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 343,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 349,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 355,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 374,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 388,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 394,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 442,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 443,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 444,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 447,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 449,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 455,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 458,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 532,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 534,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 622,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 623,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 659,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 660,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 661,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 662,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 663,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 664,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 665,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 666,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 667,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 670,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 673,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 674,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 676,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 685,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 696,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 699,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 700,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 703,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 714,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 715,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 716,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 724,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 728,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 731,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 735,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 736,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 737,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 740,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 751,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 752,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 753,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 761,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 765,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 768,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 770,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 771,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 772,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 775,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 781,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 792,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 795,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 796,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 797,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 798,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 799,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 800,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 801,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 804,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 833,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 836,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 1124,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "metrics/integrate.py",
+    "line": 1141,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/persistence/__init__.py",
+    "line": 222,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "row[0]"
+  },
+  {
+    "file": "src/feedback_loop/persistence/__init__.py",
+    "line": 241,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "row[0]"
+  },
+  {
+    "file": "src/feedback_loop/persistence/__init__.py",
+    "line": 460,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "row[0]"
+  },
+  {
+    "file": "src/feedback_loop/persistence/__init__.py",
+    "line": 485,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "row[0]"
+  },
+  {
+    "file": "src/tests/test_llm.py",
+    "line": 33,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "telemetry_events[0]"
+  },
+  {
+    "file": "src/tests/test_llm.py",
+    "line": 70,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "telemetry_events[0]"
+  },
+  {
+    "file": "src/tests/test_persistence.py",
     "line": 209,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "metrics[0]"
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
+    "file": "src/tests/test_persistence.py",
     "line": 210,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "metrics[0]"
   },
   {
-    "file": "superset_dashboards/quickstart_superset.py",
-    "line": 211,
+    "file": "src/tests/test_persistence.py",
+    "line": 235,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "metrics[0]"
+  },
+  {
+    "file": "src/tests/test_persistence.py",
+    "line": 299,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "metrics[0]"
+  },
+  {
+    "file": "src/tests/test_persistence.py",
+    "line": 300,
+    "pattern": "bounds_checking",
+    "description": "List access without bounds checking",
+    "suggestion": "Check list length before accessing: if items: first = items[0]",
+    "code_snippet": "metrics[0]"
+  },
+  {
+    "file": "src/tests/test_telemetry_bridge.py",
+    "line": 36,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
