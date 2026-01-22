@@ -26,6 +26,8 @@ from api.dashboard import router as dashboard_router  # noqa: E402
 from api.insights import router as insights_router  # noqa: E402
 
 from metrics.env_loader import load_env_file  # noqa: E402
+from config import FeedbackLoopConfig, get_config  # noqa: E402
+from persistence import get_backend, PersistenceBackend  # noqa: E402
 
 load_env_file(project_root)
 
@@ -33,6 +35,20 @@ logger = logging.getLogger(__name__)
 
 # Password hashing context - using bcrypt for better GPU-resistance than PBKDF2
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Global persistence backend (initialized on startup)
+_persistence_backend: Optional[PersistenceBackend] = None
+
+
+def get_persistence() -> PersistenceBackend:
+    """Get the global persistence backend instance."""
+    global _persistence_backend
+    if _persistence_backend is None:
+        raise RuntimeError(
+            "Persistence backend not initialized. "
+            "This should only happen if the startup event failed."
+        )
+    return _persistence_backend
 
 
 app = FastAPI(
@@ -84,6 +100,58 @@ app.add_middleware(
 )
 
 security = HTTPBearer()
+
+
+# ============================================================================
+# Startup & Shutdown Events
+# ============================================================================
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database connection and run migrations on startup."""
+    global _persistence_backend
+
+    try:
+        # Load configuration
+        config = get_config()
+
+        logger.info(f"Initializing persistence backend: {config.database.type.value}")
+        logger.info(f"Database URI: {config.get_db_uri()}")
+
+        # Create backend
+        _persistence_backend = get_backend(config.get_db_uri())
+
+        # Connect to database
+        _persistence_backend.connect()
+
+        # Run migrations if configured
+        if config.database.auto_migrate:
+            logger.info("Running database migrations...")
+            _persistence_backend.migrate()
+            logger.info("Database migrations completed")
+
+        # Log health check
+        health = _persistence_backend.health_check()
+        logger.info(f"Persistence health: {health['status']}")
+
+    except Exception as e:
+        logger.error(f"Failed to initialize persistence backend: {e}")
+        raise
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close database connection on shutdown."""
+    global _persistence_backend
+
+    if _persistence_backend:
+        try:
+            _persistence_backend.disconnect()
+            logger.info("Persistence backend disconnected")
+        except Exception as e:
+            logger.error(f"Error disconnecting from database: {e}")
+
 
 # Include dashboard router
 app.include_router(dashboard_router)
@@ -240,12 +308,32 @@ async def root():
 
 @app.get("/api/v1/health")
 async def health_check():
-    """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "0.1.0",
-    }
+    """Health check endpoint with persistence backend diagnostics."""
+    try:
+        persistence = get_persistence()
+        if persistence:
+            db_health = persistence.health_check()
+            return {
+                "status": "healthy",
+                "timestamp": datetime.utcnow().isoformat(),
+                "version": "0.1.0",
+                "database": db_health,
+            }
+        else:
+            return {
+                "status": "warning",
+                "timestamp": datetime.utcnow().isoformat(),
+                "version": "0.1.0",
+                "message": "Persistence backend not initialized",
+            }
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return {
+            "status": "unhealthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "version": "0.1.0",
+            "error": str(e),
+        }
 
 
 @app.post("/api/v1/auth/login", response_model=LoginResponse)
@@ -490,20 +578,41 @@ async def submit_metrics(metrics: dict, current_user: dict = Depends(get_current
     Submit metrics for analytics.
 
     Used for ROI calculations and team analytics dashboard.
+    Metrics are persisted to the configured database backend (SQLite/PostgreSQL).
     """
     org_id = current_user["organization_id"]
     user_id = current_user["user_id"]
 
-    # TODO: Store metrics in database for analytics
-    # For now, just acknowledge receipt
+    try:
+        # Add metadata to metrics
+        metrics_with_meta = {
+            "data": metrics,
+            "user_id": user_id,
+            "organization_id": org_id,
+            "submitted_at": datetime.utcnow().isoformat(),
+        }
 
-    return {
-        "status": "success",
-        "message": "Metrics received",
-        "organization_id": org_id,
-        "user_id": user_id,
-        "timestamp": datetime.utcnow().isoformat(),
-    }
+        # Store in persistence backend
+        persistence = get_persistence()
+        if persistence:
+            persistence.store_metric("user_metrics", metrics_with_meta)
+            logger.info(f"Metrics stored for user {user_id} in org {org_id}")
+        else:
+            logger.warning("Persistence backend not available, metrics not stored")
+
+        return {
+            "status": "success",
+            "message": "Metrics received and stored",
+            "organization_id": org_id,
+            "user_id": user_id,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    except Exception as e:
+        logger.error(f"Failed to store metrics: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to store metrics"
+        )
 
 
 # ============================================================================

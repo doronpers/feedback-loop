@@ -18,20 +18,63 @@ logger = logging.getLogger(__name__)
 class CodeReviewer:
     """Interactive code reviewer with LLM assistance."""
 
-    def __init__(self, llm_provider: Optional[str] = None):
+    def __init__(self, llm_provider: Optional[str] = None, llm_client: Optional[object] = None, metrics_collector: Optional[object] = None):
         """Initialize code reviewer.
 
         Args:
             llm_provider: Preferred LLM provider
+            llm_client: Optional `LLMClient` instance to use instead of the legacy
+                provider manager. This allows tests to inject a `MockProvider`.
+            metrics_collector: Optional `MetricsCollector` instance; if provided,
+                its telemetry callback will be attached to the `LLMClient` created
+                by this component so LLM call telemetry is recorded.
         """
         self.config = ConfigManager()
         self.llm_manager = get_llm_manager()
         if llm_provider:
             self.llm_manager.preferred_provider = llm_provider
 
+        # Prefer an injected llm_client (new style). If a metrics_collector is
+        # supplied and no client was injected, create a client with telemetry.
+        self.llm_client = llm_client
+        if self.llm_client is None and metrics_collector is not None:
+            try:
+                # Local import to avoid import cycles in tests
+                from feedback_loop.llm import get_llm_client
+
+                telemetry_cb = metrics_collector.get_telemetry_callback()
+                self.llm_client = get_llm_client(telemetry_callback=telemetry_cb)
+            except Exception:
+                # Fall back to legacy manager if anything goes wrong
+                logger.exception("Failed to initialize LLM client with telemetry; falling back to LLM manager")
+                self.llm_client = None
+
         self.pattern_manager = PatternManager()
         self.patterns = self.pattern_manager.get_all_patterns()
+    def _call_llm(self, prompt: str, max_tokens: int) -> Dict[str, Any]:
+        """Unified call helper that supports both the legacy LLMManager and the
+        new `LLMClient` interface. Returns a dict with at least the `text`
+        key and optional `provider` and `model` keys.
+        """
+        # Prefer LLMClient if available
+        if getattr(self, "llm_client", None) is not None:
+            result = self.llm_client.call(prompt, max_tokens=max_tokens)
+            if isinstance(result, dict):
+                return {
+                    "text": result.get("text"),
+                    "provider": result.get("provider"),
+                    "model": result.get("model"),
+                }
+            # Fallback to attribute access
+            return {
+                "text": getattr(result, "text", None),
+                "provider": getattr(result, "provider", None),
+                "model": getattr(result, "model", None),
+            }
 
+        # Legacy manager path
+        response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
+        return {"text": response.text, "provider": response.provider, "model": response.model}
     def review_code(self, code: str, context: Optional[str] = None) -> Dict[str, Any]:
         """Review code with pattern awareness.
 
@@ -69,7 +112,7 @@ class CodeReviewer:
                 },
             }
 
-        if not self.llm_manager.is_any_available():
+        if not (getattr(self, "llm_client", None) is not None or self.llm_manager.is_any_available()):
             return {
                 "error": "No LLM providers available. Set API keys to use code review.",
                 "suggestions": [],
@@ -88,16 +131,16 @@ class CodeReviewer:
         try:
             # Get LLM review
             max_tokens = self.config.get("code_review.max_tokens", 2048)
-            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
+            response = self._call_llm(prompt, max_tokens)
 
             # Generate debrief
-            debrief = self.generate_debrief(code, response.text, context)
+            debrief = self.generate_debrief(code, response["text"], context)
 
             # Parse response
             return {
-                "review": response.text,
-                "provider": response.provider,
-                "model": response.model,
+                "review": response["text"],
+                "provider": response.get("provider"),
+                "model": response.get("model"),
                 "debrief": debrief,
             }
 
@@ -189,8 +232,8 @@ Keep it practical and code-focused."""
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_explain", 1500)
-            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
-            return response.text
+            response = self._call_llm(prompt, max_tokens)
+            return response["text"]
         except Exception as e:
             logger.error(f"Explanation failed: {e}")
             return f"Could not generate explanation: {e}"
@@ -225,8 +268,8 @@ Keep suggestions practical and pattern-aware."""
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_suggest", 2048)
-            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
-            return response.text
+            response = self._call_llm(prompt, max_tokens)
+            return response["text"]
         except Exception as e:
             logger.error(f"Suggestions failed: {e}")
             return f"Could not generate suggestions: {e}"
@@ -294,10 +337,10 @@ these improvements more or less challenging]
 
         try:
             max_tokens = self.config.get("code_review.max_tokens_debrief", 1500)
-            response = self.llm_manager.generate(prompt, max_tokens=max_tokens, fallback=True)
+            response = self._call_llm(prompt, max_tokens)
 
             # Parse the response
-            debrief_text = response.text
+            debrief_text = response["text"]
             strategies = []
             difficulty = 5
             explanation = ""

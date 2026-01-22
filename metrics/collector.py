@@ -36,6 +36,7 @@ class MetricsCollector:
         "performance_metrics",
         "deployment_issues",
         "code_generation",
+        "llm_calls",
     ]
 
     # Allowed plan file roots for path traversal protection
@@ -308,6 +309,56 @@ class MetricsCollector:
 
         self.data["code_generation"].append(generation_entry)
         logger.debug(f"Logged code generation: {len(patterns_applied)} patterns applied")
+
+    def log_llm_call(self, event: Dict[str, Any]) -> None:
+        """Log an LLM call event (bridge from LLM telemetry).
+
+        This normalizes telemetry payloads from the LLM client into the
+        metrics collector's format and stores them under the `llm_calls`
+        category for easy inspection and analysis.
+
+        Args:
+            event: Telemetry payload from LLM client
+        """
+        # Minimal validation
+        if not isinstance(event, dict):
+            logger.warning("Ignoring non-dict LLM telemetry event")
+            return
+
+        details = {
+            "success": bool(event.get("success")),
+            "attempts": int(event.get("attempts") or 0),
+            "duration": float(event.get("duration")) if event.get("duration") is not None else None,
+            "provider": event.get("provider"),
+            "model": event.get("model"),
+            "error": event.get("error"),
+            "raw": event,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        self.data["llm_calls"].append(details)
+        logger.debug("Logged LLM call telemetry: provider=%s model=%s success=%s", details["provider"], details["model"], details["success"])
+
+    def get_telemetry_callback(self):
+        """Return a telemetry callback function suitable for passing to
+        `feedback_loop.llm.LLMClient` as its `telemetry_callback`.
+
+        The returned callable will accept an event dict and forward it to
+        `log_llm_call` (ignoring non-llm events).
+        """
+
+        def _callback(event: Dict[str, Any]) -> None:
+            if not isinstance(event, dict):
+                return
+            if event.get("event") != "llm_call":
+                # Ignore unrelated telemetry
+                return
+            try:
+                self.log_llm_call(event)
+            except Exception:
+                logger.exception("Error while handling LLM telemetry event")
+
+        return _callback
 
     def log_from_plan_file(
         self, plan_file: str, section_heading: str = "Patterns to Apply"

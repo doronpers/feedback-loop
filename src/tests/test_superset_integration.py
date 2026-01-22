@@ -11,9 +11,19 @@ from pathlib import Path
 
 import pytest
 
-# Add superset-dashboards to path
-superset_dir = Path(__file__).parent.parent / "superset_dashboards"
-sys.path.insert(0, str(superset_dir / "database"))
+# Add superset-dashboards to path (search upwards to support different repo layouts)
+_curr_path = Path(__file__).resolve()
+_superset_dir = None
+for p in _curr_path.parents:
+    candidate = p / "superset_dashboards"
+    if candidate.exists():
+        _superset_dir = candidate
+        break
+# Fallback to previous heuristic
+if _superset_dir is None:
+    _superset_dir = Path(__file__).parent.parent / "superset_dashboards"
+
+sys.path.insert(0, str(_superset_dir / "database"))
 
 from models import MetricsBug, MetricsCodeGeneration, get_all_models  # noqa: E402
 
