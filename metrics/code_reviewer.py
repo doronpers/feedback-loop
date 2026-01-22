@@ -214,7 +214,7 @@ Focus on these key patterns:
         Returns:
             Detailed explanation
         """
-        if not self.llm_manager.is_any_available():
+        if not (getattr(self, "llm_client", None) is not None or self.llm_manager.is_any_available()):
             return "No LLM providers available. Set API keys to use this feature."
 
         prompt = f"""Explain this Python code issue in detail:
@@ -248,7 +248,7 @@ Keep it practical and code-focused."""
         Returns:
             Improvement suggestions
         """
-        if not self.llm_manager.is_any_available():
+        if not (getattr(self, "llm_client", None) is not None or self.llm_manager.is_any_available()):
             return "No LLM providers available. Set API keys to use this feature."
 
         prompt = f"""Given this Python code:
@@ -287,7 +287,7 @@ Keep suggestions practical and pattern-aware."""
         Returns:
             Dictionary containing improvement strategies and difficulty rating
         """
-        if not self.llm_manager.is_any_available():
+        if not (getattr(self, "llm_client", None) is not None or self.llm_manager.is_any_available()):
             return {
                 "strategies": ["No LLM providers available. Set API keys to use this feature."],
                 "difficulty": 5,
