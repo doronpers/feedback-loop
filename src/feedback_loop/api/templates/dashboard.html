@@ -15,53 +15,53 @@
         </header>
 
         <div class="summary-cards">
-            <div class="card">
+            <div class="card" id="total-bugs-card" role="region" aria-label="Total Bugs">
                 <h3>🐛 Total Bugs</h3>
-                <div class="metric" id="total-bugs">-</div>
+                <div class="metric" id="total-bugs" aria-live="polite">-</div>
             </div>
-            <div class="card">
+            <div class="card" id="total-test-failures-card" role="region" aria-label="Test Failures">
                 <h3>🧪 Test Failures</h3>
-                <div class="metric" id="total-test-failures">-</div>
+                <div class="metric" id="total-test-failures" aria-live="polite">-</div>
             </div>
-            <div class="card">
+            <div class="card" id="total-code-reviews-card" role="region" aria-label="Code Reviews">
                 <h3>👁️ Code Reviews</h3>
-                <div class="metric" id="total-code-reviews">-</div>
+                <div class="metric" id="total-code-reviews" aria-live="polite">-</div>
             </div>
-            <div class="card">
+            <div class="card" id="total-deployments-card" role="region" aria-label="Deployments">
                 <h3>🚀 Deployments</h3>
-                <div class="metric" id="total-deployments">-</div>
+                <div class="metric" id="total-deployments" aria-live="polite">-</div>
             </div>
         </div>
 
-        <div class="charts-grid">
-            <div class="chart-container">
+        <div class="charts-grid" id="charts-grid" role="region" aria-label="Analytics Charts">
+            <div class="chart-container" role="img" aria-label="Pattern Violations Over Time">
                 <h3>📈 Pattern Violations Over Time</h3>
-                <canvas id="patternsOverTimeChart"></canvas>
+                <canvas id="patternsOverTimeChart" aria-label="Line chart showing pattern violations over time"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" role="img" aria-label="Severity Distribution">
                 <h3>🎯 Severity Distribution</h3>
-                <canvas id="severityChart"></canvas>
+                <canvas id="severityChart" aria-label="Doughnut chart showing severity distribution"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" role="img" aria-label="Pattern Effectiveness">
                 <h3>⭐ Pattern Effectiveness</h3>
-                <canvas id="effectivenessChart"></canvas>
+                <canvas id="effectivenessChart" aria-label="Bar chart showing pattern effectiveness percentages"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" role="img" aria-label="Pattern Adoption vs Bug Reduction">
                 <h3>📊 Pattern Adoption vs Bug Reduction</h3>
-                <canvas id="adoptionReductionChart"></canvas>
+                <canvas id="adoptionReductionChart" aria-label="Line chart comparing pattern adoption and bug reduction"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" role="img" aria-label="Pattern ROI Analysis">
                 <h3>💰 Pattern ROI Analysis</h3>
-                <canvas id="roiChart"></canvas>
+                <canvas id="roiChart" aria-label="Bar chart showing return on investment for each pattern"></canvas>
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" role="img" aria-label="Team Pattern Usage">
                 <h3>👥 Team Pattern Usage</h3>
-                <canvas id="teamUsageChart"></canvas>
+                <canvas id="teamUsageChart" aria-label="Radar chart showing team pattern usage across different patterns"></canvas>
             </div>
         </div>
 

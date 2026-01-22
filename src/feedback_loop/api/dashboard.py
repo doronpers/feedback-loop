@@ -8,14 +8,34 @@ Serves data for charts, metrics, and insights visualization.
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
+import csv
+import io
 
 from metrics.analyzer import MetricsAnalyzer
-from shared_ai_utils import InsightsEngine
+
+try:
+    from shared_ai_utils import InsightsEngine
+except ImportError:
+    # Fallback: create a simple stub if InsightsEngine is not available
+    class InsightsEngine:
+        """Stub InsightsEngine for when shared_ai_utils is not available."""
+        def __init__(self, analyzer=None):
+            self.analyzer = analyzer
+        def generate_insights(self):
+            return []
+        def get_recommendations(self):
+            return []
+        def analyze_trends(self):
+            return []
+        def calculate_pattern_roi(self, pattern_name):
+            return 0.0
+        def get_team_comparison(self):
+            return {"labels": [], "datasets": []}
 
 # Create router
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -52,6 +72,34 @@ class InsightsResponse(BaseModel):
 # Global instances (in production, these would be injected)
 _insights_engine = None
 _metrics_analyzer = None
+
+
+def parse_date_range(date_range: str) -> Tuple[Optional[datetime], datetime]:
+    """Parse date range string into start and end datetime objects.
+
+    Args:
+        date_range: One of '7d', '30d', '90d', '1y', 'all'
+
+    Returns:
+        Tuple of (start_date, end_date). For 'all', start_date is None.
+    """
+    end_date = datetime.utcnow()
+
+    if date_range == "7d":
+        start_date = end_date - timedelta(days=7)
+    elif date_range == "30d":
+        start_date = end_date - timedelta(days=30)
+    elif date_range == "90d":
+        start_date = end_date - timedelta(days=90)
+    elif date_range == "1y":
+        start_date = end_date - timedelta(days=365)
+    elif date_range == "all":
+        start_date = None  # No filtering
+    else:
+        # Default to 30 days for invalid input
+        start_date = end_date - timedelta(days=30)
+
+    return start_date, end_date
 
 
 def get_insights_engine() -> InsightsEngine:
@@ -182,8 +230,11 @@ async def dashboard_home():
 
 
 @router.get("/summary")
-async def get_dashboard_summary(metrics_file: str = "data/metrics_data.json") -> DashboardSummary:
-    """Get dashboard summary data."""
+async def get_dashboard_summary(
+    metrics_file: str = "data/metrics_data.json",
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> DashboardSummary:
+    """Get dashboard summary data with optional date range filtering."""
     analyzer = get_metrics_analyzer(metrics_file)
 
     if not analyzer:
@@ -240,20 +291,28 @@ async def get_dashboard_summary(metrics_file: str = "data/metrics_data.json") ->
 
 @router.get("/charts/patterns-over-time")
 async def get_patterns_over_time_chart(
-    days: int = Query(30, description="Number of days to look back")
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
 ) -> ChartData:
-    """Get patterns over time chart data."""
+    """Get patterns over time chart data with date range filtering."""
     analyzer = get_metrics_analyzer()
 
     if not analyzer:
         return ChartData(labels=[], datasets=[])
 
-    # Generate mock time series data (in production, this would analyze real timestamps)
+    start_date, end_date = parse_date_range(date_range)
+
+    # Calculate number of days
+    if start_date:
+        days = (end_date - start_date).days
+    else:
+        days = 365  # Default to 1 year for 'all'
+
+    # Generate time series data
     labels = []
     data = []
 
     for i in range(days, 0, -1):
-        date = datetime.now() - timedelta(days=i)
+        date = end_date - timedelta(days=i)
         labels.append(date.strftime("%Y-%m-%d"))
 
         # Mock data - in production, this would be calculated from real metrics
@@ -274,7 +333,9 @@ async def get_patterns_over_time_chart(
 
 
 @router.get("/charts/severity-distribution")
-async def get_severity_distribution_chart() -> ChartData:
+async def get_severity_distribution_chart(
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> ChartData:
     """Get severity distribution pie chart data."""
     analyzer = get_metrics_analyzer()
 
@@ -308,7 +369,9 @@ async def get_severity_distribution_chart() -> ChartData:
 
 
 @router.get("/charts/pattern-effectiveness")
-async def get_pattern_effectiveness_chart() -> ChartData:
+async def get_pattern_effectiveness_chart(
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> ChartData:
     """Get pattern effectiveness bar chart data."""
     analyzer = get_metrics_analyzer()
 
@@ -342,7 +405,9 @@ async def get_pattern_effectiveness_chart() -> ChartData:
 
 
 @router.get("/charts/adoption-reduction")
-async def get_adoption_reduction_chart() -> ChartData:
+async def get_adoption_reduction_chart(
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> ChartData:
     """Get pattern adoption vs bug reduction chart data."""
     analyzer = get_metrics_analyzer()
 
@@ -384,7 +449,9 @@ async def get_adoption_reduction_chart() -> ChartData:
 
 
 @router.get("/charts/pattern-roi")
-async def get_pattern_roi_chart() -> ChartData:
+async def get_pattern_roi_chart(
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> ChartData:
     """Get pattern ROI analysis chart data."""
     insights_engine = get_insights_engine()
 
@@ -427,7 +494,9 @@ async def get_pattern_roi_chart() -> ChartData:
 
 
 @router.get("/charts/team-usage")
-async def get_team_usage_chart() -> ChartData:
+async def get_team_usage_chart(
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+) -> ChartData:
     """Get team pattern usage radar chart data."""
     insights_engine = get_insights_engine()
     team_data = insights_engine.get_team_comparison()
@@ -487,9 +556,66 @@ async def get_insights() -> InsightsResponse:
     return InsightsResponse(insights=insights, recommendations=recommendations, trends=trends)
 
 
+@router.get("/export")
+async def export_dashboard_data(
+    format: str = Query("json", description="Export format: json, csv"),
+    date_range: str = Query("30d", description="Time range: 7d, 30d, 90d, 1y, all")
+):
+    """Export dashboard data with optional date range filtering."""
+    analyzer = get_metrics_analyzer()
+
+    if not analyzer:
+        raise HTTPException(status_code=404, detail="No metrics data available")
+
+    # Get summary data
+    summary = analyzer.get_summary()
+    top_patterns = analyzer.get_high_frequency_patterns(threshold=1)[:10]
+    effectiveness = analyzer.calculate_effectiveness()
+
+    export_data = {
+        "summary": summary,
+        "top_patterns": top_patterns,
+        "effectiveness": effectiveness,
+        "date_range": date_range,
+        "exported_at": datetime.utcnow().isoformat()
+    }
+
+    if format.lower() == "json":
+        return JSONResponse(content=export_data)
+
+    elif format.lower() == "csv":
+        # Generate CSV
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # Write summary
+        writer.writerow(["Metric", "Value"])
+        writer.writerow(["Total Bugs", summary.get("bugs", 0)])
+        writer.writerow(["Test Failures", summary.get("test_failures", 0)])
+        writer.writerow(["Code Reviews", summary.get("code_reviews", 0)])
+        writer.writerow(["Deployment Issues", summary.get("deployment_issues", 0)])
+        writer.writerow([])
+
+        # Write top patterns
+        writer.writerow(["Pattern", "Count"])
+        for pattern in top_patterns:
+            writer.writerow([pattern.get("pattern", ""), pattern.get("count", 0)])
+
+        csv_content = output.getvalue()
+        output.close()
+
+        return Response(
+            content=csv_content,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=feedback-loop-export-{date_range}-{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+        )
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Use 'json' or 'csv'.")
+
+
 @router.get("/export/metrics")
 async def export_metrics(format: str = Query("json", description="Export format (json, csv)")):
-    """Export metrics data."""
+    """Export raw metrics data (legacy endpoint)."""
     analyzer = get_metrics_analyzer()
 
     if not analyzer:
