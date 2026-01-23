@@ -1,54 +1,6 @@
 [
   {
     "file": "src/feedback_loop/cli/commands/analyze.py",
-    "line": 38,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/analyze.py",
-    "line": 40,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/chat.py",
-    "line": 40,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/chat.py",
-    "line": 41,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/config.py",
-    "line": 43,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/config.py",
-    "line": 47,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/config.py",
     "line": 48,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -56,23 +8,23 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/config.py",
-    "line": 51,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 63,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/config.py",
-    "line": 67,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 69,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/config.py",
+    "file": "src/feedback_loop/cli/commands/analyze.py",
     "line": 70,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -80,135 +32,15 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/dashboard.py",
-    "line": 49,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 72,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/dashboard.py",
-    "line": 52,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/dashboard.py",
-    "line": 54,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/dashboard.py",
-    "line": 55,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/dashboard.py",
-    "line": 57,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/demo.py",
-    "line": 40,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/demo.py",
-    "line": 41,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 40,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 42,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 43,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 44,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 45,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/doctor.py",
-    "line": 46,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/patterns.py",
-    "line": 42,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/patterns.py",
-    "line": 67,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/patterns.py",
-    "line": 71,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "file": "src/feedback_loop/cli/commands/analyze.py",
     "line": 74,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -216,23 +48,247 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/patterns.py",
-    "line": 75,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 77,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/review.py",
-    "line": 50,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 85,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/review.py",
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 87,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 89,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 90,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 107,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 109,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 112,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 130,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 134,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 136,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 141,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 142,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 143,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 144,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 154,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 158,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 167,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 173,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 174,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 175,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 184,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 191,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 192,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 194,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 196,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 199,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 202,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 203,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 204,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
     "line": 52,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -240,47 +296,47 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/review.py",
-    "line": 54,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 53,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
-    "line": 56,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 60,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
-    "line": 57,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 61,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
-    "line": 64,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 66,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
-    "line": 73,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 72,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
+    "file": "src/feedback_loop/cli/commands/config.py",
     "line": 93,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -288,7 +344,47 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 94,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 97,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 98,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 99,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 100,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
     "line": 101,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -296,23 +392,183 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/commands/start.py",
-    "line": 110,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 105,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/main.py",
-    "line": 51,
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 180,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/main.py",
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 181,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 182,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 189,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 190,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 191,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 193,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 195,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 196,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 200,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 201,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 177,
+    "pattern": "bare_except",
+    "description": "Bare except clause catches all exceptions",
+    "suggestion": "Use specific exceptions: except (TypeError, ValueError) as e:",
+    "code_snippet": "except:"
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 48,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 49,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 60,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 61,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 63,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 65,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 67,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 68,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 72,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
     "line": 73,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -320,8 +576,224 @@
     "code_snippet": "print("
   },
   {
-    "file": "src/feedback_loop/cli/main.py",
-    "line": 74,
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 84,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 85,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 87,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 89,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 96,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 97,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 99,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 101,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 111,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 121,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 125,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 147,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 151,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 153,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 154,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 156,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 157,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 164,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 166,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 170,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 171,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 180,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 181,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 184,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 186,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 188,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 190,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 191,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
