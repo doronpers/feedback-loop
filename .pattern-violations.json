@@ -1,38 +1,62 @@
 [
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 22,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 38,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 25,
+    "file": "src/feedback_loop/cli/commands/analyze.py",
+    "line": 40,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 28,
+    "file": "src/feedback_loop/cli/commands/chat.py",
+    "line": 40,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 33,
+    "file": "src/feedback_loop/cli/commands/chat.py",
+    "line": 41,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 43,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 47,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 48,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
     "line": 51,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -40,7 +64,55 @@
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 67,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/config.py",
+    "line": 70,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/dashboard.py",
+    "line": 49,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/dashboard.py",
+    "line": 52,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/dashboard.py",
+    "line": 54,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/dashboard.py",
+    "line": 55,
+    "pattern": "print_statement",
+    "description": "Print statement instead of logger",
+    "suggestion": "Use logger.debug() instead of print()",
+    "code_snippet": "print("
+  },
+  {
+    "file": "src/feedback_loop/cli/commands/dashboard.py",
     "line": 57,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
@@ -48,224 +120,208 @@
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 59,
+    "file": "src/feedback_loop/cli/commands/demo.py",
+    "line": 40,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 62,
+    "file": "src/feedback_loop/cli/commands/demo.py",
+    "line": 41,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 69,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 40,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 82,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 42,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 84,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 43,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 91,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 44,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 95,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 45,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 112,
+    "file": "src/feedback_loop/cli/commands/doctor.py",
+    "line": 46,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 114,
+    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "line": 42,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 121,
+    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "line": 67,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 125,
+    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "line": 71,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 143,
+    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "line": 74,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 145,
+    "file": "src/feedback_loop/cli/commands/patterns.py",
+    "line": 75,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 152,
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 50,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 156,
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 52,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 171,
+    "file": "src/feedback_loop/cli/commands/review.py",
+    "line": 54,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 173,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 56,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 180,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 57,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 181,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 64,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 182,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 73,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 199,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 93,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 202,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 101,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 203,
+    "file": "src/feedback_loop/cli/commands/start.py",
+    "line": 110,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 204,
+    "file": "src/feedback_loop/cli/main.py",
+    "line": 51,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 211,
+    "file": "src/feedback_loop/cli/main.py",
+    "line": 73,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
     "code_snippet": "print("
   },
   {
-    "file": "test_dashboard_enhancements.py",
-    "line": 213,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "test_dashboard_enhancements.py",
-    "line": 216,
-    "pattern": "print_statement",
-    "description": "Print statement instead of logger",
-    "suggestion": "Use logger.debug() instead of print()",
-    "code_snippet": "print("
-  },
-  {
-    "file": "test_dashboard_enhancements.py",
-    "line": 219,
+    "file": "src/feedback_loop/cli/main.py",
+    "line": 74,
     "pattern": "print_statement",
     "description": "Print statement instead of logger",
     "suggestion": "Use logger.debug() instead of print()",
