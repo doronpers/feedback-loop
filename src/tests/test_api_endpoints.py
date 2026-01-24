@@ -245,7 +245,7 @@ class TestAuthentication:
             "/api/v1/auth/login",
             json={
                 "email": "nonexistent@example.com",
-                "password": "password123",
+                "password": "pass123",  # Shorter password
             },
         )
 
