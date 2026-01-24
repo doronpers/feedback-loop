@@ -92,6 +92,6 @@ check_untyped_defs = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-testpaths = ["tests"]
+testpaths = ["src/tests"]
 python_files = ["test_*.py"]
 addopts = "-v --cov=src/feedback_loop --cov-report=term"
