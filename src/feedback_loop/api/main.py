@@ -12,6 +12,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
+from urllib.parse import urlparse
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,10 +25,10 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 from api.dashboard import router as dashboard_router  # noqa: E402
 from api.insights import router as insights_router  # noqa: E402
+from config import FeedbackLoopConfig, get_config  # noqa: E402
+from persistence import PersistenceBackend, get_backend  # noqa: E402
 
 from metrics.env_loader import load_env_file  # noqa: E402
-from config import FeedbackLoopConfig, get_config  # noqa: E402
-from persistence import get_backend, PersistenceBackend  # noqa: E402
 
 load_env_file(project_root)
 
@@ -62,41 +63,136 @@ app = FastAPI(
 
 # CORS configuration for web dashboard.
 # Use FEEDBACK_LOOP_ALLOWED_ORIGINS (comma-separated) to set allowed origins.
+# Production: Set FEEDBACK_LOOP_ALLOWED_ORIGINS to specific domains, e.g.:
+#   FEEDBACK_LOOP_ALLOWED_ORIGINS=https://app.example.com,https://dashboard.example.com
+
+
+def _is_production_environment() -> bool:
+    """Check if running in production environment.
+
+    Cached to avoid repeated environment variable lookups.
+    """
+    env = os.getenv("ENVIRONMENT", "development").lower()
+    return env in ("production", "prod")
+
+
 def parse_allowed_origins(raw_value: Optional[str]) -> List[str]:
-    """Parse allowed origins from env configuration.
+    """Parse and validate allowed origins from env configuration.
 
     Hardened: Defaults to localhost only for security.
     Raises warning if wildcard detected in production.
+    Validates origin URLs for security.
     """
+    is_production = _is_production_environment()
+
     if not raw_value:
         # Strict default - localhost only
+        if is_production:
+            logger.warning(
+                "CORS: No FEEDBACK_LOOP_ALLOWED_ORIGINS set in production! "
+                "Defaulting to localhost only. This may break production frontend."
+            )
         return ["http://localhost:3000"]
 
     origins = [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
-    # Security check: warn if wildcard detected in production
+    # Security check: fail in production if wildcard detected
     if "*" in origins:
-        env = os.getenv("ENVIRONMENT", "development").lower()
-        if env in ("production", "prod"):
-            logger.warning(
-                "SECURITY WARNING: Wildcard CORS origin detected in production! "
-                "This is a major security risk. Use specific origins instead."
+        if is_production:
+            logger.error(
+                "SECURITY ERROR: Wildcard CORS origin ('*') detected in production! "
+                "This is a major security risk. The application will use localhost only. "
+                "Set FEEDBACK_LOOP_ALLOWED_ORIGINS to specific domains."
             )
+            # In production, reject wildcard and use secure default
+            return ["http://localhost:3000"]
         else:
             logger.warning("Wildcard CORS origin detected. This should not be used in production.")
 
-    return origins
+    # Validate origins are proper URLs
+    validated_origins = []
+    for origin in origins:
+        # Basic validation: must start with http:// or https://
+        if not origin.startswith(("http://", "https://")):
+            logger.warning(
+                f"Invalid CORS origin format (must start with http:// or https://): {origin}"
+            )
+            continue
+        # Additional validation: parse URL to ensure it's well-formed
+        try:
+            parsed = urlparse(origin)
+            if not parsed.netloc:
+                logger.warning(f"Invalid CORS origin (missing host): {origin}")
+                continue
+            # Reject file:// and other non-HTTP schemes
+            if parsed.scheme not in ("http", "https"):
+                logger.warning(f"Invalid CORS origin scheme (only http/https allowed): {origin}")
+                continue
+        except Exception as e:
+            logger.warning(f"Error parsing CORS origin {origin}: {e}")
+            continue
+        validated_origins.append(origin)
+
+    if not validated_origins:
+        logger.warning("No valid CORS origins found, defaulting to localhost")
+        return ["http://localhost:3000"]
+
+    if is_production:
+        logger.info(
+            f"CORS configured for production with {len(validated_origins)} allowed origin(s)"
+        )
+    else:
+        logger.debug(f"CORS configured with {len(validated_origins)} allowed origin(s)")
+
+    return validated_origins
+
+
+def get_cors_methods() -> List[str]:
+    """Get allowed HTTP methods for CORS.
+
+    Production: Restrict to necessary methods only.
+    Development: Allow all methods for flexibility.
+    """
+    if _is_production_environment():
+        # Production: restrict to necessary methods
+        return ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    else:
+        # Development: allow all
+        return ["*"]
+
+
+def get_cors_headers() -> List[str]:
+    """Get allowed headers for CORS.
+
+    Production: Restrict to necessary headers.
+    Development: Allow all headers for flexibility.
+    """
+    if _is_production_environment():
+        # Production: common headers needed for API
+        return [
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With",
+            "X-API-Key",
+            "Accept",
+            "Origin",
+        ]
+    else:
+        # Development: allow all
+        return ["*"]
 
 
 allowed_origins = parse_allowed_origins(os.getenv("FEEDBACK_LOOP_ALLOWED_ORIGINS"))
+allowed_methods = get_cors_methods()
+allowed_headers = get_cors_headers()
 
 # CORS middleware for web dashboard
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=allowed_methods,
+    allow_headers=allowed_headers,
 )
 
 security = HTTPBearer()
@@ -610,8 +706,7 @@ async def submit_metrics(metrics: dict, current_user: dict = Depends(get_current
     except Exception as e:
         logger.error(f"Failed to store metrics: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to store metrics"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to store metrics"
         )
 
 
