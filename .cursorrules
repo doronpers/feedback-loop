@@ -479,6 +479,41 @@ feedback-loop/
 └── CURSOR_INTEGRATION.md # Cursor setup guide
 ```
 
+## Reasoning Logs
+
+After completing significant tasks (complex problem-solving, architectural decisions, refactoring, non-obvious bug fixes), create a reasoning log entry:
+
+**Location**: `agent_reasoning_logs/logs/YYYY-MM-DD_feedback-loop_task.md`
+**Template**: `agent_reasoning_logs/templates/reasoning_entry.md`
+
+This helps build institutional knowledge and improves the pattern library.
+
+## Pre-Commit Hook Requirements (MANDATORY)
+
+**CRITICAL**: Before creating new code, ensure you:
+
+1. **Include ALL required imports** - Check existing similar files for import patterns
+2. **Add type hints** - All new functions need type annotations
+3. **Format docstrings correctly** - One-line: `"""Description."""` (no blank line)
+4. **Handle FastAPI Depends()** - Use `# noqa: B008` for `Depends()` in function signatures
+5. **Check YAML indentation** - Use 2 spaces consistently
+6. **Remove unused imports** - Especially in test files
+7. **Run pre-commit hooks** - Execute `pre-commit run --all-files` before committing
+
+**Common failures to avoid:**
+- Missing imports (NameError or mypy: "Name X is not defined")
+- Unused imports (flake8: F401)
+- Wrong YAML indentation (yamllint: indentation errors)
+- Missing docstrings (flake8: D104, D200)
+- Long lines (flake8: E501)
+
+**Always run the pre-commit checklist before finishing:**
+```bash
+black . && yamllint . && pre-commit run --all-files
+```
+
+**See `.agent/workflows/pre-commit-checklist.md` for detailed checklist and common fixes.**
+
 ## Final Notes
 
 **Remember:** These patterns exist because they've prevented real bugs in production. Apply them consistently, and the feedback loop will continue learning and improving.
@@ -490,3 +525,35 @@ feedback-loop/
 ---
 
 See CURSOR_INTEGRATION.md for detailed setup and workflow instructions.
+
+## Planning & Roadmap Guidelines
+
+### Time Estimation Rule
+
+**Rule for Future Planning Agents**: When creating plans or roadmaps:
+
+1. **Do NOT include time estimates** (days, weeks, months) unless you have:
+   - Actual historical data from similar completed tasks in the same codebase
+   - Verified duration data from project management systems
+   - User-provided time constraints
+
+2. **Instead, use**:
+   - **Complexity indicators**: Low, Medium, High, Very High
+   - **Effort indicators**: Small, Medium, Large
+   - **Dependencies**: List blocking dependencies
+   - **Prerequisites**: What must be done first
+
+3. **If time estimates are requested**:
+   - Base them on similar completed tasks in the codebase
+   - Clearly state the assumptions and data sources
+   - Mark estimates as "rough" or "tentative"
+   - Prefer ranges over specific dates
+
+4. **Rationale**: Time estimates are highly variable and depend on:
+   - Developer experience and familiarity
+   - Unexpected technical challenges
+   - External dependencies
+   - Scope changes during implementation
+   - Context switching and interruptions
+
+This rule should be followed when updating ROADMAP.md or any planning documents.

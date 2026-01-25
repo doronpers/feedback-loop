@@ -5,10 +5,9 @@ Scans codebase for pattern violations and provides detailed analysis.
 """
 
 import ast
-import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from rich.console import Console
 from rich.theme import Theme

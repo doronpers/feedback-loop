@@ -1,0 +1,329 @@
+#!/usr/bin/env python3
+"""
+Global Development & Testing CLI
+
+A unified CLI tool for development, testing, and feedback-loop operations.
+Can be used by developers and end users alike.
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Optional
+
+import click
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
+
+# Detect feedback-loop repository location
+FEEDBACK_LOOP_REPO = Path(__file__).parent.parent
+FEEDBACK_LOOP_BIN = FEEDBACK_LOOP_REPO / "bin"
+
+# Common repository paths to check
+REPO_PATHS = [
+    Path.home() / "Gits" / "feedback-loop",
+    Path.home() / "repos" / "feedback-loop",
+    Path("/Volumes/Treehorn/Gits/feedback-loop"),
+    Path.cwd() if (Path.cwd() / "bin" / "fl-dashboard").exists() else None,
+]
+
+# Find feedback-loop if not in expected location
+if not FEEDBACK_LOOP_BIN.exists() or not (FEEDBACK_LOOP_BIN / "fl-dashboard").exists():
+    for repo_path in REPO_PATHS:
+        if repo_path and (repo_path / "bin" / "fl-dashboard").exists():
+            FEEDBACK_LOOP_REPO = repo_path
+            FEEDBACK_LOOP_BIN = repo_path / "bin"
+            break
+
+
+def find_feedback_loop() -> Optional[Path]:
+    """Find feedback-loop repository."""
+    if FEEDBACK_LOOP_BIN.exists() and (FEEDBACK_LOOP_BIN / "fl-dashboard").exists():
+        return FEEDBACK_LOOP_REPO
+    return None
+
+
+def run_fl_command(command: str, *args: str, user_mode: bool = False) -> int:
+    """Run a feedback-loop command."""
+    fl_repo = find_feedback_loop()
+    if not fl_repo:
+        console.print("[red]Error:[/red] feedback-loop repository not found.")
+        console.print("Please ensure feedback-loop is cloned and accessible.")
+        return 1
+
+    cmd_path = fl_repo / "bin" / command
+    if not cmd_path.exists():
+        console.print(f"[red]Error:[/red] Command '{command}' not found in feedback-loop.")
+        return 1
+
+    # For end-user mode, ensure we're in the feedback-loop directory
+    if user_mode:
+        os.chdir(str(fl_repo))
+
+    try:
+        # Execute the command
+        result = subprocess.run(
+            [sys.executable, str(cmd_path)] + list(args),
+            cwd=str(fl_repo) if user_mode else None,
+        )
+        return result.returncode
+    except Exception as e:
+        console.print(f"[red]Error running command:[/red] {e}")
+        return 1
+
+
+@click.group()
+@click.version_option(version="1.0.0")
+def cli():
+    """Global Development & Testing CLI - Unified tool for dev, test, and feedback-loop."""
+    pass
+
+
+@cli.group("fl", help="Feedback Loop commands")
+def fl_group():
+    """Feedback Loop operations."""
+    pass
+
+
+@fl_group.command("dashboard")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_dashboard(user: bool):
+    """Open Feedback Loop dashboard (terminal UI)."""
+    return run_fl_command("fl-dashboard", user_mode=user)
+
+
+@fl_group.command("start")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_start(user: bool):
+    """Quick start: bootstrap + demo + dashboard."""
+    return run_fl_command("fl-start", user_mode=user)
+
+
+@fl_group.command("chat")
+@click.argument("message", required=False)
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_chat(message: Optional[str], user: bool):
+    """Interactive chat assistant for patterns and code generation."""
+    args = [message] if message else []
+    return run_fl_command("fl-chat", *args, user_mode=user)
+
+
+@fl_group.command("review")
+@click.argument("target", required=False)
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_review(target: Optional[str], user: bool):
+    """Code review with pattern-aware analysis."""
+    args = [target] if target else []
+    return run_fl_command("fl-review", *args, user_mode=user)
+
+
+@fl_group.command("explore")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_explore(user: bool):
+    """Explore patterns and metrics."""
+    return run_fl_command("fl-explore", user_mode=user)
+
+
+@fl_group.command("synthesize")
+@click.argument("query", required=False)
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_synthesize(query: Optional[str], user: bool):
+    """Synthesize patterns from metrics."""
+    args = [query] if query else []
+    return run_fl_command("fl-synthesize", *args, user_mode=user)
+
+
+@fl_group.command("doctor")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_doctor(user: bool):
+    """System diagnostics and health check."""
+    return run_fl_command("fl-doctor", user_mode=user)
+
+
+@fl_group.command("demo")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_demo(user: bool):
+    """Interactive demo of feedback-loop features."""
+    return run_fl_command("fl-demo", user_mode=user)
+
+
+@fl_group.command("setup")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_setup(user: bool):
+    """Setup wizard for feedback-loop."""
+    return run_fl_command("fl-setup", user_mode=user)
+
+
+@fl_group.command("bootstrap")
+@click.option(
+    "--user",
+    "-u",
+    is_flag=True,
+    help="Run in end-user mode (changes to feedback-loop directory)",
+)
+def fl_bootstrap(user: bool):
+    """Bootstrap feedback-loop installation."""
+    return run_fl_command("fl-bootstrap", user_mode=user)
+
+
+@cli.group("test", help="Testing commands")
+def test_group():
+    """Testing and quality assurance tools."""
+    pass
+
+
+@test_group.command("run")
+@click.argument("target", required=False)
+@click.option("--coverage", "-c", is_flag=True, help="Run with coverage")
+@click.option("--verbose", "-v", is_flag=True, help="Verbose output")
+def test_run(target: Optional[str], coverage: bool, verbose: bool):
+    """Run tests (pytest)."""
+    cmd = ["pytest"]
+    if coverage:
+        cmd.extend(["--cov", "--cov-report=html", "--cov-report=term"])
+    if verbose:
+        cmd.append("-v")
+    if target:
+        cmd.append(target)
+    else:
+        cmd.append("tests/")
+
+    result = subprocess.run(cmd)
+    return result.returncode
+
+
+@test_group.command("lint")
+@click.argument("target", required=False, default=".")
+def test_lint(target: str):
+    """Run linters (flake8, black check)."""
+    console.print("[cyan]Running linters...[/cyan]")
+
+    # Check black formatting
+    result1 = subprocess.run(["black", "--check", target])
+
+    # Run flake8
+    result2 = subprocess.run(["flake8", target])
+
+    if result1.returncode != 0:
+        console.print("[yellow]Black formatting issues found. Run 'black .' to fix.[/yellow]")
+    if result2.returncode != 0:
+        console.print("[yellow]Flake8 issues found.[/yellow]")
+
+    return max(result1.returncode, result2.returncode)
+
+
+@test_group.command("format")
+@click.argument("target", required=False, default=".")
+def test_format(target: str):
+    """Format code (black)."""
+    console.print("[cyan]Formatting code...[/cyan]")
+    result = subprocess.run(["black", target])
+    return result.returncode
+
+
+@cli.group("dev", help="Development commands")
+def dev_group():
+    """Development tools and utilities."""
+    pass
+
+
+@dev_group.command("install")
+@click.argument("package")
+def dev_install(package: str):
+    """Install a package in development mode."""
+    cmd = (
+        ["pip", "install", "-e", f".[{package}]"]
+        if "[" in package
+        else ["pip", "install", "-e", package]
+    )
+    result = subprocess.run(cmd)
+    return result.returncode
+
+
+@dev_group.command("deps")
+def dev_deps():
+    """Show dependency information."""
+    console.print("[cyan]Checking dependencies...[/cyan]")
+
+    # Check if pyproject.toml exists
+    if Path("pyproject.toml").exists():
+        console.print("Found pyproject.toml")
+        result = subprocess.run(["pip", "list"], capture_output=True, text=True)
+        console.print(result.stdout)
+    else:
+        console.print("[yellow]No pyproject.toml found in current directory.[/yellow]")
+
+    return 0
+
+
+@cli.command("info")
+def info():
+    """Show CLI information and available commands."""
+    console.print(Panel.fit("[bold]Global Development & Testing CLI[/bold]", border_style="blue"))
+    console.print()
+    console.print("[cyan]Available command groups:[/cyan]")
+    console.print("  [bold]fl[/bold]     - Feedback Loop commands")
+    console.print("  [bold]test[/bold]   - Testing commands")
+    console.print("  [bold]dev[/bold]    - Development commands")
+    console.print()
+
+    fl_repo = find_feedback_loop()
+    if fl_repo:
+        console.print(f"[green]✓[/green] Feedback Loop found at: {fl_repo}")
+    else:
+        console.print("[yellow]⚠[/yellow] Feedback Loop repository not found")
+    console.print()
+    console.print("Use [cyan]--help[/cyan] with any command group for more information.")
+    console.print("Example: [cyan]dev-cli fl --help[/cyan]")
+
+
+if __name__ == "__main__":
+    sys.exit(cli())

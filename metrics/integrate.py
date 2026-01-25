@@ -27,6 +27,7 @@ from metrics.collector import MetricsCollector  # noqa: E402
 from metrics.pattern_manager import PatternManager  # noqa: E402
 from metrics.sync_client import LocalSyncClient, SyncClient  # noqa: E402
 from metrics.synthesizer import CodeSynthesizer  # noqa: E402
+from metrics.code_reviewer import CouncilCodeReviewer  # Expose for tests that patch metrics.integrate.CouncilCodeReviewer
 
 logger = logging.getLogger(__name__)
 
@@ -813,7 +814,8 @@ def _handle_council_review(
     prefer_local: bool,
 ) -> None:
     """Handle council review command."""
-    from metrics.code_reviewer import CouncilCodeReviewer
+
+    # Use module-level `CouncilCodeReviewer` so the class can be patched in tests
 
     if file_path:
         code = Path(file_path).read_text()

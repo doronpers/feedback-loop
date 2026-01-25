@@ -1,10 +1,97 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "feedback-loop"
+version = "1.0.0"
+description = "AI-assisted development with automated metrics and pattern learning"
+readme = "README.md"
+authors = [
+    {name = "Feedback Loop Contributors"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.13"
+dependencies = [
+    "anthropic>=0.7.0",
+    "openai>=1.0.0",
+    "google-genai>=0.1.0",
+    "google-generativeai>=0.3.0",
+    "numpy>=1.20.0",
+    "fastapi>=0.100.0",
+    "python-multipart>=0.0.6",
+    "httpx>=0.24.0",
+    "uvicorn>=0.23.0",
+    "pygls>=1.0.0",
+    "requests>=2.28.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+    "email-validator>=2.0.0",
+    "memu-py>=0.1.0",
+    "python-dotenv>=1.0.0",
+    "passlib[bcrypt]>=1.7.4",
+    "rich>=13.0.0",
+    "ast-comments>=1.1.0",
+    "shared-ai-utils>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.scripts]
+feedback-loop = "feedback_loop.cli.main:cli"
+fl = "feedback_loop.cli.main:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py311", "py312"]
+extend-exclude = '''
+/(
+  ^venv.*
+  | ^\.venv
+)/
+'''
 
-[tool.isort]
-profile = "black"
-line_length = 100
+[tool.ruff]
+line-length = 100
+target-version = "py312"
 
-[tool.bandit]
-exclude_dirs = ["tests"]
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B"]
+ignore = ["B008"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["src/tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=src/feedback_loop --cov-report=term"

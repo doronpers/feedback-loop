@@ -25,7 +25,6 @@ from pathlib import Path
 database_dir = Path(__file__).parent.parent / "database"
 sys.path.insert(0, str(database_dir))
 
-from models import Base
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)

@@ -209,9 +209,42 @@ feedback-loop integrates with **Apache Superset** to provide powerful analytics 
 
 See **[Superset Integration Guide](documentation/SUPERSET_INTEGRATION.md)** for setup instructions.
 
+## 🛡️ Production Readiness
+
+feedback-loop now includes a production-ready persistence layer for team collaboration and data durability:
+
+**Development** (Zero Configuration):
+
+```bash
+# SQLite backend, perfect for demos and testing
+python3 bin/fl-start
+```
+
+**Production** (Durable Storage):
+
+```bash
+# PostgreSQL backend with connection pooling
+export FL_DB_URI=postgresql://user:password@db.example.com/feedback_loop
+python3 bin/fl-start
+```
+
+✅ Automatic schema migrations
+✅ Health checks and diagnostics (`curl localhost:8000/api/v1/health`)
+✅ Comprehensive test coverage (51 tests passing)
+✅ Full backup and recovery support
+
+See **[Production Readiness Guide](documentation/PRODUCTION_READINESS.md)** for deployment instructions, PostgreSQL setup, and monitoring guidance.
+
 ## Project status
 
 See **[documentation/Status/RESULTS.md](documentation/Status/RESULTS.md)** for test coverage and verification details.
+
+## 🆘 Need Help?
+
+- **Troubleshooting**: See **[TROUBLESHOOTING.md](documentation/TROUBLESHOOTING.md)** for common issues and quick fixes
+- **Diagnostics**: Run `python3 bin/fl-doctor` for detailed environment diagnostics
+- **Documentation**: Full guides in **[documentation/INDEX.md](documentation/INDEX.md)**
+- **Chat with AI**: Run `python3 bin/fl-chat` to ask questions
 
 ## Agent Instructions
 

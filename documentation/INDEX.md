@@ -24,6 +24,7 @@ The `CONTRIBUTING.md` file is at the repository root and should be referenced as
 ## ⚡ Getting Started
 
 - **[Getting Started](GETTING_STARTED.md)** — install, run demos, understand the loop
+- **[Troubleshooting](TROUBLESHOOTING.md)** — common issues, diagnostics, and quick fixes
 
 ## 🛠️ IDE Integration
 
@@ -40,6 +41,8 @@ The `CONTRIBUTING.md` file is at the repository root and should be referenced as
 - **[FastAPI Guide](FASTAPI_GUIDE.md)** — streaming uploads + deployment tips
 - **[Memory Integration](MEMORY_INTEGRATION.md)** ⭐ NEW — semantic pattern learning with MemU
 - **[Superset Integration](SUPERSET_INTEGRATION.md)** ⭐ NEW — analytics dashboards
+- **[Production Readiness](PRODUCTION_READINESS.md)** ⭐ NEW — persistence layer, PostgreSQL setup, deployment
+- **[LLM Robustness](LLM_ROBUSTNESS.md)** ⭐ NEW — retries, timeouts, and provider adapters
 
 ## Reference
 

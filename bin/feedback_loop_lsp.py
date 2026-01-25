@@ -15,7 +15,7 @@ Then configure your IDE to use this language server for Python files.
 
 import ast
 import logging
-from typing import List, Optional
+from typing import List
 
 try:
     from pygls.lsp.types import (

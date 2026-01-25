@@ -1,122 +1,276 @@
 # Global Agent Knowledge Base & Instructional Set
 
-This document is the **Single Source of Truth** for all AI agents (Claude, Cursor, etc.) working on Sonotheia and related repositories. You MUST refer to this before and during your tasks.
+This document is the **Single Source of Truth** for all AI agents (Claude, Cursor, Gemini, etc.) working on Sonotheia and related repositories. You MUST refer to this before and during your tasks.
+
+> **License**: This document and the associated codebase are licensed under the [MIT License](LICENSE). When using or adapting code from this repository, include the original copyright notice. Third-party dependencies retain their original licenses.
+
+> **NOTE**: This file is auto-generated from modular rules in `shared-ai-utils`.
+> DO NOT EDIT DIRECTLY. Update the source files in `shared-ai-utils/src/shared_ai_utils/rules/`.
 
 ---
 
 ## 0. Prime Directives (NON-NEGOTIABLE)
 
 1. **Patent Compliance**:
-    * **NEVER** use Linear Predictive Coding (LPC), source-filter models, glottal closure/opening detection, or static formant values. These are patent-protected.
-    * **ALWAYS** use dynamic trajectories, phase analysis, and velocity-based methods (e.g., GlottalInertia, PhaseCoherence).
-    * See `documentation/PATENT_COMPLIANCE.md` if available.
+    * **NEVER** use Linear Predictive Coding (LPC), source-filter models, glottal closure/opening detection, or static formant values.
+    * **ALWAYS** use dynamic trajectories, phase analysis, and velocity-based methods.
 
 2. **Security & Privacy**:
-    * **NEVER** log raw audio bytes, PII (Personal Identifiable Information), or secrets (API keys).
-    * **ALWAYS** use `get_error_response` for errors to avoid leaking internal stack traces to clients (log them instead).
+    * **NEVER** log raw audio bytes, PII, or API keys.
+    * **ALWAYS** use environment variables for secrets.
 
 3. **Design Philosophy (The Advisory Council)**:
-    * **Dieter Rams**: "Less but Better". Remove clutter. Unify styles.
-    * **Martin Dempsey**: "Make it matter". Focus on mission command and decentralized execution.
-    * **Daniel Kahneman**: Reduce cognitive load. "System 1 vs System 2".
-    * **Julian Treasure**: Conscious listening. Authentic sound.
-    * **CONSTRAINT**: Use these "lenses" to audit and improve, but **DO NOT** brand features with these names (e.g., no "Rams Protocol"). Use descriptive functional names.
+    * **Dieter Rams ("Less but Better")**: Radical simplification. If a feature adds complexity without proportional value, kill it.
+    * **Daniel Kahneman ("System 2 Thinking")**: Code should handle failure gracefully. validation before execution.
+    * **Constraint**: No "branding" of these names in code. Use descriptive names.
 
-4. **Accuracy & Consistency**:
-    * Prioritize increasing detection accuracy. Verify changes do not degrade performance.
+4. **Agent Behavior: "Defense Against Complexity"**:
+    * **Stop and Think**: Before writing code, ask: "Is this the simplest way to solve the user's *actual* problem?"
+    * **No Speculative Features**: Do not add "nice to have" flexibility. Build exactly what is needed now.
+    * **Refactor First**: If the code is hard to change, refactor it first. Do not pile hacks on top of technical debt.
+    * **Error Prevention**:
+        * **Type Safety**: Use Pydantic strict mode where possible.
+        * **Fail Fast**: Validate inputs at the boundary (API/CLI), not deep in the stack.
+        * **Atomic Operations**: Side effects (DB writes, File IO) should be isolated.
+
 
 ---
 
 ## 1. Operational Guardrails
 
-* **Configuration**: `backend/config/settings.yaml` (or equivalent) is the **SINGLE** source of truth for sensor weights, thresholds, and fusion config. **DO NOT** hardcode weights.
-* **Audio Format**: All sensors expect **float32 mono numpy arrays at 16kHz**. Use `backend/sensors/utils.py` for loading/preprocessing.
-* **Demo Mode**: **DO NOT** disable `DEMO_MODE` or convert demo features to production without explicit tests, configuration updates, and approval.
-* **Dependencies**: **DO NOT** upgrade critical frontend deps (`react`, `react-dom`, `@mui/*`) beyond specified versions (React 18, MUI 5) to maintain build compatibility.
+* **Config**: `pyproject.toml` is the source of truth for tooling. `settings.yaml` (or equivalent) for app config.
+* **Audio**: Float32 mono 16kHz numpy arrays only.
+* **Dependencies**: Lock versions. Do not upgrade without explicit instruction. Use pragmatic dependency management - avoid unnecessary dependencies, but framework dependencies (e.g., FastAPI for API modules) are acceptable when appropriate.
+
+### Dependency Tiers
+
+Minimize dependencies while allowing appropriate framework usage:
+
+* **Core Modules** (sensors, VAD, JSON utils): `numpy` + `pydantic` only
+* **CLI Modules**: Core + `Rich`, `Click` (interactive formatting)
+* **API/Assessment Modules**: Core + `FastAPI`, `textstat`, lightweight analysis libraries
+* **Avoid**: Vendor-specific SDKs, heavy ML frameworks (TensorFlow/PyTorch), libraries with C extensions (unless critical)
+
+**Guideline**: Core contracts remain dependency-free. API-specific modules may include framework dependencies when they provide clear net gain over manual implementation.
+
 
 ---
 
-## 2. Coding Standards
+## 2. Coding Standards (The "Gold Standard")
 
 * **Python**:
-  * Formatter: `black`
-  * Linter: `flake8`
-  * Style: `snake_case` for functions/vars, `PascalCase` for classes.
-  * Validation: Use **Pydantic** models for all data structures.
+  * **Formatter**: `black` (line-length: 100)
+  * **Linter**: `ruff` (Select: E, F, I, N, W, B). Imports must be sorted (`I`).
+  * **Typing**: `mypy` required for all new code.
+  * **Style**: Use `snake_case` for functions and variables, `PascalCase` for classes.
 * **Frontend**:
-  * Framework: React 18 + Material-UI (MUI).
-  * Style: Functional components with hooks. `camelCase` for vars, `PascalCase` for components.
-* **Testing**:
-  * Backend: `pytest`. Run `pytest` before committing.
-  * Frontend: `npm test` (Vitest/Jest).
-* **Error Handling**:
-  * Sensors must **NEVER** raise exceptions during `analyze()`. Return `SensorResult(passed=None, detail="...")`.
-* **Whitespace & Formatting**:
-  * **NEVER** introduce trailing whitespace in any file.
-  * **NEVER** create multiple consecutive blank lines (max 1 blank line between sections).
-  * **ALWAYS** run `black` (Python) and format checkers before committing.
-  * **ALWAYS** ensure Markdown files pass `markdownlint` (no MD009, MD012, MD032 violations).
-  * When editing files, preserve existing whitespace patterns unless fixing violations.
-  * **IDE Configuration (CRITICAL for preventing whitespace errors)**:
-    * **Format on Save**: **MUST** enable "Format on Save" in your IDE (VS Code, Cursor, or PyCharm). If a bulk edit merges two lines into one, the formatter will immediately try (and usually fail) to fix it, highlighting the syntax error with a red underline before you even switch files.
-    * **Linter Overlays**: **MUST** ensure your IDE is using the repository's `.pre-commit-config.yaml` as the source of truth for its internal linting. This ensures IDE warnings match pre-commit hook behavior and catch issues early.
-  * **Bulk Operations (CRITICAL for preventing errors across many files)**:
-    * **Audit the Diff**: When performing a bulk operation across hundreds of files, **MUST** use `git diff --stat` to see which files changed, and then spot-check a few using `git diff <filename>` to verify the changes are correct.
-    * **Syntax Check Smoke Test**: After any bulk edit, **MUST** run a quick syntax check before committing:
+  * **Framework**: React 18 + MUI 5
+  * **Style**: Use `camelCase` for JavaScript variables and functions, `PascalCase` for components.
+* **Structure**:
+  * **src-layout**: All code lives in `src/<package_name>/`.
+  * **No Root Scripts**: Scripts belong in `scripts/` or `bin/`.
+* **Configuration**: `backend/config/settings.yaml` is the SINGLE source of truth for application configuration.
 
-      ```bash
-      python3 -m compileall .
-      ```
-
-      This command will attempt to compile every file in the directory and will report any `SyntaxError` immediately.
 
 ---
 
-## 3. Sensor Development Workflow
+## 3. Common Pitfalls & Anti-Patterns
 
-When adding or modifying a sensor:
+### Code Duplication
 
-1. **Extend BaseSensor**: Inherit from `BaseSensor`.
-2. **Define Category**:
-    * `"prosecution"`: Detects FAKE (high score = suspicious).
-    * `"defense"`: Detects REAL (high score = authentic).
-    * **MUST** include `metadata={"category": self.category}` in `SensorResult`.
-3. **Register**: Add to `backend/sensors/registry.py`.
-4. **Configure**: Add weights/thresholds to `settings.yaml`.
-5. **Test**: Add unit tests in `tests/`.
+* **Duplicate Logic**: Do not copy-paste LLM handling or Config loading. Use `shared-ai-utils`.
+* **Custom Providers**: Never implement custom LLM provider logic. Use `shared-ai-utils.LLMManager`.
+
+### Error Handling
+
+* **Silent Failures**: Never `except Exception: pass`. Log the error or re-raise.
+* **Bare Except**: Use specific exception types: `except (TypeError, ValueError) as e:`
+
+### Architecture
+
+* **Global State**: Minimize module-level globals. Use dependency injection.
+* **Magic Numbers**: Extract constants to a config or constants file.
+
+### Environment & Tooling
+
+* **Virtual Environments**: Always use `.venv` (not `venv`). Check for duplicates before creating new ones.
+* **Pre-commit Hooks**: When updating Python versions, ensure pre-commit tool versions support it (e.g., `black 26.1.0+` for Python 3.13).
+* **Version Conflicts**: If pre-commit fails with "invalid target-version", update the tool in `.pre-commit-config.yaml`, not `pyproject.toml`.
+* **Bypassing Hooks**: Use `--no-verify` only for structural migrations, not to hide code quality issues.
+* **IDE Setup**: Enable "Format on Save" and configure linter to use `.pre-commit-config.yaml` (see AGENT_KNOWLEDGE_BASE.md).
+* **Bulk Operations**: Use `git diff --stat` to audit changes, then run `python3 -m compileall .` before committing (see AGENT_KNOWLEDGE_BASE.md).
+
+### Pre-Commit Hook Compliance (MANDATORY)
+
+**Before creating any new code, you MUST ensure compliance with pre-commit hooks:**
+
+1. **Import Completeness**: Include ALL required imports. Check similar existing files for patterns:
+   - FastAPI: `APIRouter`, `Depends`, `HTTPException`, `status`
+   - Pydantic: `BaseModel`, `Field`
+   - Typing: `Any`, `Dict`, `List`, `Optional`
+   - Standard library: `datetime`, `BytesIO`, etc.
+
+2. **Type Annotations**: All new functions must have complete type hints. Run type checking before committing if mypy is enabled.
+
+3. **Docstring Format**:
+   - One-line: `"""Description."""` (no blank line, period at end)
+   - All public modules need docstrings (even empty `__init__.py`)
+
+4. **FastAPI Patterns**: Use `# noqa: B008` for `Depends()` in function signatures (this is acceptable FastAPI pattern).
+
+5. **YAML Formatting**: Use 2-space indentation consistently. Run `yamllint .` before committing.
+
+6. **Unused Imports**: Remove all unused imports, especially in test files.
+
+7. **Pre-Commit Verification**: Always run `pre-commit run --all-files` before committing. Fix any failures.
+
+**Common Pre-Commit Failures to Avoid:**
+- Missing imports → NameError or mypy: "Name X is not defined"
+- Unused imports → flake8: F401
+- Wrong YAML indentation → yamllint: indentation errors
+- Missing docstrings → flake8: D104, D200
+- Long lines → flake8: E501
+- Missing type hints → mypy: function has no return type annotation
+
+**Note**: flake8 and mypy are currently commented out in `.pre-commit-config.yaml`. If you enable them, ensure compliance with the above requirements.
+
+### Import Management
+
+* **Circular Imports**: Use Protocol pattern (typing.Protocol) for dependency-free interfaces.
+* **Import Order**: Run `ruff check --fix` or `isort` to auto-fix import sorting issues.
+* **Import Completeness**: When creating new files, check existing similar files for required imports to avoid failures.
+
 
 ---
 
-## 4. Common Patterns
+## 4. Key Commands
 
-**FastAPI Endpoint:**
+### Python
 
-```python
-@router.post("/process")
-@limiter.limit("20/minute")
-async def process(request: Request, body: MyModel, api_key: str = Depends(verify_api_key)):
-    # Validate and process
+```bash
+black .              # Format Python
+flake8 .             # Lint Python (if using flake8 instead of ruff)
+pytest               # Test backend
 ```
 
-**Logging:**
+### Frontend
 
-* `logger.info`: High-level flow.
-* `logger.error`: Exceptions (use `exc_info=True`).
-* `logger.debug`: Detailed steps (NOT in production).
+```bash
+npm test             # Test frontend
+```
 
----
-
-## 5. Quick Reference (Core Platform Map)
-
-*(Note: File paths below refer to the primary `sono-platform` repository. Other repositories may follow `src/` and `tests/` structures.)*
-
-* `backend/api/main.py`: Entry point.
-* `backend/config/settings.yaml`: Configuration.
-* `backend/sensors/`: Sensor implementations.
-* `frontend/src/App.js`: Frontend entry.
 
 ---
 
-## Documentation Standards
+## 5. Key Paths
 
-Follow [Documentation Organization Standards](documentation/governance/DOCUMENTATION_ORGANIZATION_STANDARDS.md)
+* `backend/api/main.py` - Entry point
+* `backend/config/settings.yaml` - Configuration
+* `backend/sensors/` - Sensor implementations
+* `frontend/src/App.js` - Frontend entry
+
+
+---
+
+## 6. AI-Assisted Development
+
+* **Feedback Loop**: When generating code, checking for errors, or reviewing PRs, ALWAYS consider patterns from the **Feedback Loop** library if available (run `feedback-loop memory query` or check `.feedback_loop/patterns.json`).
+* **Learn from Failures**: If a test fails, run `feedback-loop analyze` to update the pattern library before attempting a fix.
+
+
+---
+
+## 7. Documentation
+
+### Documentation Maintenance (REQUIRED)
+
+**CRITICAL**: Documentation maintenance is a mandatory part of every task completion. This is not optional.
+
+* **Always Update Documentation**: As part of completing any task, you MUST update relevant documentation to reflect changes, additions, or improvements.
+
+* **Prefer Existing Documentation**: Add new documents ONLY when absolutely necessary for clarity and understandability. When possible, add information to existing documentation files to maintain organization and reduce fragmentation.
+
+* **Maintain Organization**: Keep documentation organized by:
+  * Adding to existing relevant sections rather than creating new files
+  * Following established documentation structure and patterns
+  * Grouping related information together
+
+* **Revise Outdated Content**: When you encounter outdated, irrelevant, or redundant information in documentation during your work, you MUST:
+  * Update outdated information to reflect current state
+  * Remove or consolidate redundant content
+  * Mark or remove irrelevant sections
+  * Do not leave documentation in a worse state than you found it
+
+* **Update These Files When Relevant**:
+  * `README.md` - If installation steps, setup, or project overview changes
+  * `AGENT_KNOWLEDGE_BASE.md` - If you discover new recurrent issues, patterns, or guidelines
+  * `ROADMAP.md` - If completing TODOs or adding new tasks
+  * API documentation - If endpoints, parameters, or responses change
+  * Code comments and docstrings - If function behavior or interfaces change
+
+* **Documentation as Part of Definition of Done**: A task is not complete until:
+  1. Code changes are implemented and tested
+  2. All relevant documentation is updated
+  3. Outdated information encountered during the task is revised
+  4. Documentation passes linting checks (markdownlint)
+
+### Documentation Standards
+
+* **Markdown Linting**: When creating or editing markdown files, ensure all headings are unique to avoid markdownlint MD024 errors. If multiple sections use the same heading text (e.g., "Problem Statement", "Solution Overview"), make them unique by adding context (e.g., "Problem Statement - Error Handling", "Problem Statement - Onboarding"). Always run markdownlint before committing documentation changes.
+
+* **Heading Spacing (MD022)**: Headings must be surrounded by blank lines both above and below. This applies to all heading levels (##, ###, ####, etc.). For example:
+
+  ```markdown
+  ## Section Title
+
+  Content here...
+
+  ### Subsection
+
+  More content...
+  ```
+
+  Always ensure there's a blank line after headings, especially before code blocks, lists, or other content.
+
+* **Code Block Spacing (MD031)**: Fenced code blocks (```) must be surrounded by blank lines both above and below. Always add a blank line before opening a code block and after closing it.
+
+* **Markdown Tables**: When creating markdown tables, use the "compact" style format required by markdownlint MD060. This means separator rows must have spaces around pipes: `| ------ | ------ |` instead of `|------|------|`. The header row and separator row must have consistent spacing. Always verify table formatting with markdownlint before committing.
+
+
+---
+
+## 9. Framework Guidelines
+
+To ensure consistency and maintainability across the workspace, adherence to these framework choices is **mandatory**.
+
+### Frontend Stack
+
+* **Core**: React 18+
+* **UI Library**: Material UI (MUI) 5+
+* **State**: Context API or Zustand (avoid Redux unless necessary)
+* **Build**: Vite (preferred over CRA)
+
+**Anti-Pattern**: Do not mix UI libraries (e.g., Tailwind + MUI) without explicit approval. Stick to the MUI system for theming and layout.
+
+### Backend Stack
+
+* **Framework**: FastAPI
+* **Validation**: Pydantic v2 (Strict mode preferred)
+* **ORM**: SQLAlchemy 2.0+ (Async)
+* **Task Queue**: Celery or ARQ
+
+### Testing
+
+* **Unit/Integration**: Pytest
+* **E2E**: Playwright
+* **Mocking**: `unittest.mock` or `pytest-mock`
+
+
+---
+
+## 8. Reasoning Logs
+
+After significant tasks (complex, architectural, refactoring, non-obvious bug fixes), create a reasoning log entry at `feedback-loop/agent_reasoning_logs/logs/YYYY-MM-DD_sono-platform_task.md` (see template: `feedback-loop/agent_reasoning_logs/templates/reasoning_entry.md`).
+
+
+---

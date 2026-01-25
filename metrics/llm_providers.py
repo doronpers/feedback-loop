@@ -9,7 +9,16 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
+from types import SimpleNamespace
+
+# Import the LLMClient interface so we can wrap legacy providers when a
+# telemetry_callback is supplied. We do a local import inside functions to
+# avoid heavy startup costs for packages that may be missing in test envs.
+try:
+    from feedback_loop.llm import LLMProviderInterface
+except Exception:
+    LLMProviderInterface = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -291,7 +300,15 @@ class GeminiProvider(LLMProvider):
 
 
 class LLMManager:
-    """Manages multiple LLM providers with automatic fallback."""
+    """Manages multiple LLM providers with automatic fallback.
+
+    This manager now accepts an optional `telemetry_callback` parameter in
+    `generate(...)` to allow callers to route telemetry into their own
+    collectors (eg, `MetricsCollector.get_telemetry_callback()`). When a
+    telemetry callback is provided, the manager wraps the legacy provider in a
+    small adapter and calls it via the `LLMClient` to get retry/timeout/telemetry
+    behavior.
+    """
 
     def __init__(self, preferred_provider: Optional[str] = None):
         """Initialize LLM manager.
@@ -322,6 +339,7 @@ class LLMManager:
         prompt: str,
         provider: Optional[str] = None,
         fallback: bool = True,
+        telemetry_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
         **kwargs,
     ) -> LLMResponse:
         """Generate response using specified or preferred provider.
@@ -330,10 +348,11 @@ class LLMManager:
             prompt: Input prompt
             provider: Specific provider to use (None = use preferred)
             fallback: If True, try other providers on failure
+            telemetry_callback: Optional callable to receive LLM telemetry events
             **kwargs: Provider-specific parameters
 
         Returns:
-            LLMResponse with generated text
+            LLMResponse-like object with generated text
 
         Raises:
             RuntimeError: If no providers are available or all fail
@@ -344,9 +363,43 @@ class LLMManager:
         # Determine which provider to use
         target_provider = provider or self.preferred_provider
 
+        # Helper to use telemetry-enabled path when a callback is provided
+        def _call_with_telemetry(prov_name: str, prov_obj: LLMProvider):
+            # Lazy import to avoid heavy deps at module import time
+            try:
+                from feedback_loop.llm import get_llm_client
+            except Exception as e:
+                logger.debug("Could not import LLM client for telemetry: %s", e)
+                raise
+
+            # Adapter that turns legacy `.generate()` into `.call()` for LLMClient
+            class ProviderAdapter:
+                def __init__(self, provider_instance):
+                    self._p = provider_instance
+
+                def call(self, prompt: str, **kwargs):
+                    res = self._p.generate(prompt, **kwargs)
+                    # Normalize into a dict-like response
+                    return {
+                        "text": getattr(res, "text", None),
+                        "provider": getattr(res, "provider", None),
+                        "model": getattr(res, "model", None),
+                        "tokens_used": getattr(res, "tokens_used", None),
+                        "metadata": getattr(res, "metadata", None),
+                    }
+
+            adapter = ProviderAdapter(prov_obj)
+            client = get_llm_client(provider=adapter, telemetry_callback=telemetry_callback)
+            out = client.call(prompt, **kwargs)
+            # Normalize client output into a simple object with attributes like the
+            # legacy `LLMResponse` so existing callers keep working.
+            return SimpleNamespace(text=out.get("text"), provider=out.get("provider"), model=out.get("model"))
+
         # Try preferred provider first
         if target_provider in self.providers:
             try:
+                if telemetry_callback is not None:
+                    return _call_with_telemetry(target_provider, self.providers[target_provider])
                 return self.providers[target_provider].generate(prompt, **kwargs)
             except Exception as e:
                 logger.warning(f"Provider {target_provider} failed: {e}")
@@ -360,6 +413,8 @@ class LLMManager:
                     continue  # Already tried
                 try:
                     logger.info(f"Falling back to provider: {name}")
+                    if telemetry_callback is not None:
+                        return _call_with_telemetry(name, prov)
                     return prov.generate(prompt, **kwargs)
                 except Exception as e:
                     logger.warning(f"Provider {name} failed: {e}")

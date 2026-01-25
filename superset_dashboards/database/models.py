@@ -6,7 +6,6 @@ that can be visualized in Apache Superset dashboards.
 """
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, Float, Index, Integer, String, Text
 from sqlalchemy.orm import declarative_base

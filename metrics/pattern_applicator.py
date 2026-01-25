@@ -4,14 +4,12 @@ Pattern Applicator Module
 Applies patterns to code with impact preview and guided workflow.
 """
 
-import ast
 import difflib
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from rich.console import Console
-from rich.layout import Layout
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
