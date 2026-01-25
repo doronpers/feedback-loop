@@ -61,7 +61,7 @@ See how patterns are validated:
 pytest tests/ -v
 ```
 
-You'll see **119 tests** covering all patterns. Every pattern has:
+You'll see the test suite covering core patterns. Every pattern has:
 
 - Tests showing correct usage
 - Tests catching incorrect usage
@@ -89,9 +89,13 @@ By default, feedback-loop stores learning artifacts in these locations:
 
 - **Metrics** (test runs): `data/metrics_data.json`
 - **Patterns** (learned library): `data/patterns.json`
-- **Optional markdown sync** (pattern guide): `docs/AI_PATTERNS_GUIDE.md`
+- **Pattern guide (canonical documentation)**: `documentation/AI_PATTERNS_GUIDE.md`
 
 If you change paths via CLI flags, keep these files together so the metrics and pattern sync stay aligned.
+
+> **Note on markdown sync defaults:** Some CLI helpers default to writing synced patterns to `docs/AI_PATTERNS_GUIDE.md` (a legacy path). If you want to sync directly into the canonical guide, run:
+>
+> `feedback-loop sync-to-markdown --markdown-file documentation/AI_PATTERNS_GUIDE.md`
 
 ## What's Next?
 

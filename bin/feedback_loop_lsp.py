@@ -18,12 +18,19 @@ import logging
 from typing import List, Optional
 
 try:
-    from pygls.lsp.types import (TEXT_DOCUMENT_CODE_ACTION,
-                                 TEXT_DOCUMENT_DID_CHANGE,
-                                 TEXT_DOCUMENT_DID_OPEN, CodeAction,
-                                 CodeActionKind, Diagnostic,
-                                 DiagnosticSeverity, Position, Range, TextEdit,
-                                 WorkspaceEdit)
+    from pygls.lsp.types import (
+        TEXT_DOCUMENT_CODE_ACTION,
+        TEXT_DOCUMENT_DID_CHANGE,
+        TEXT_DOCUMENT_DID_OPEN,
+        CodeAction,
+        CodeActionKind,
+        Diagnostic,
+        DiagnosticSeverity,
+        Position,
+        Range,
+        TextEdit,
+        WorkspaceEdit,
+    )
     from pygls.server import LanguageServer
 
     PYGLS_AVAILABLE = True
@@ -108,12 +115,8 @@ class PatternChecker:
                     diagnostics.append(
                         Diagnostic(
                             range=Range(
-                                start=Position(
-                                    line=node.lineno - 1, character=node.col_offset
-                                ),
-                                end=Position(
-                                    line=node.lineno - 1, character=node.col_offset + 6
-                                ),
+                                start=Position(line=node.lineno - 1, character=node.col_offset),
+                                end=Position(line=node.lineno - 1, character=node.col_offset + 6),
                             ),
                             message="Use specific exception types (e.g., 'except ValueError:') instead of bare 'except:'. Pattern: specific_exceptions",
                             severity=DiagnosticSeverity.Warning,
@@ -134,12 +137,8 @@ class PatternChecker:
                     diagnostics.append(
                         Diagnostic(
                             range=Range(
-                                start=Position(
-                                    line=node.lineno - 1, character=node.col_offset
-                                ),
-                                end=Position(
-                                    line=node.lineno - 1, character=node.col_offset + 5
-                                ),
+                                start=Position(line=node.lineno - 1, character=node.col_offset),
+                                end=Position(line=node.lineno - 1, character=node.col_offset + 5),
                             ),
                             message="Consider using logger.debug() instead of print() for better debugging. Pattern: logger_debug",
                             severity=DiagnosticSeverity.Information,
@@ -163,12 +162,8 @@ class PatternChecker:
                     diagnostics.append(
                         Diagnostic(
                             range=Range(
-                                start=Position(
-                                    line=node.lineno - 1, character=node.col_offset
-                                ),
-                                end=Position(
-                                    line=node.lineno - 1, character=node.col_offset + 10
-                                ),
+                                start=Position(line=node.lineno - 1, character=node.col_offset),
+                                end=Position(line=node.lineno - 1, character=node.col_offset + 10),
                             ),
                             message="Consider checking list bounds before access. Pattern: bounds_checking",
                             severity=DiagnosticSeverity.Hint,
@@ -202,13 +197,10 @@ class PatternChecker:
                         and isinstance(node.func.value, ast.Name)
                         and node.func.value.id == "json"
                     ):
-
                         diagnostics.append(
                             Diagnostic(
                                 range=Range(
-                                    start=Position(
-                                        line=node.lineno - 1, character=node.col_offset
-                                    ),
+                                    start=Position(line=node.lineno - 1, character=node.col_offset),
                                     end=Position(
                                         line=node.lineno - 1,
                                         character=node.col_offset + 11,
@@ -282,13 +274,7 @@ class PatternChecker:
                     kind=CodeActionKind.QuickFix,
                     diagnostics=[diagnostic],
                     edit=WorkspaceEdit(
-                        changes={
-                            uri: [
-                                TextEdit(
-                                    range=diagnostic.range, new_text="logger.debug"
-                                )
-                            ]
-                        }
+                        changes={uri: [TextEdit(range=diagnostic.range, new_text="logger.debug")]}
                     ),
                 )
             )

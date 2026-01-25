@@ -55,7 +55,7 @@ def main():
         sys.exit(0)
 
     quiet = is_quiet()
-    
+
     if not quiet:
         print("\n🔄 Feedback Loop: Analyzing merged changes...")
 
@@ -92,7 +92,7 @@ def main():
                 capture_output=quiet,
                 text=True
             )
-        
+
         if result.returncode == 0:
             if not quiet:
                 print("✓ Merge analysis complete")

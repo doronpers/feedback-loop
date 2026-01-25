@@ -102,7 +102,7 @@ Apache Superset offers several advantages for feedback-loop metrics:
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.13+
 - feedback-loop installed
 - Docker (recommended for Superset) or manual Superset installation
 
@@ -116,12 +116,14 @@ pip install sqlalchemy psycopg2-binary
 ### Step 2: Choose Database Backend
 
 **Option A: SQLite (Development)**
+
 ```bash
 # No additional setup needed
 # Database will be created automatically
 ```
 
 **Option B: PostgreSQL (Production)**
+
 ```bash
 # Using Docker
 docker run -d \
@@ -139,6 +141,7 @@ docker run -d \
 ### Step 3: Install Apache Superset
 
 **Option A: Docker (Recommended)**
+
 ```bash
 # Clone official Apache Superset
 git clone https://github.com/apache/superset.git
@@ -154,6 +157,7 @@ docker-compose -f docker-compose-non-dev.yml up -d
 **Note:** If you need custom modifications, you can use a fork (e.g., `https://github.com/doronpers/superset`), but for most use cases, the official Apache Superset repository is recommended.
 
 **Option B: Manual Installation**
+
 ```bash
 pip install apache-superset
 superset db upgrade
@@ -192,25 +196,27 @@ python superset-dashboards/scripts/export_to_db.py --format postgresql --db-uri 
 
 ### Step 6: Configure Superset Database Connection
 
-1. Open Superset: http://localhost:8088
+1. Open Superset: <http://localhost:8088>
 2. Log in (admin/admin)
 3. Navigate to: **Data** → **Databases** → **+ Database**
 4. Fill in connection details:
 
 **For SQLite:**
+
 ```
 Database: Feedback Loop Metrics
 SQLAlchemy URI: sqlite:////absolute/path/to/feedback-loop/metrics.db
 ```
 
 **For PostgreSQL:**
+
 ```
 Database: Feedback Loop Metrics
 SQLAlchemy URI: postgresql://feedback_user:secure_password@localhost:5432/feedback_loop
 ```
 
-5. Click **Test Connection**
-6. Click **Connect**
+1. Click **Test Connection**
+2. Click **Connect**
 
 ### Step 7: Add Datasets
 
@@ -231,10 +237,12 @@ SQLAlchemy URI: postgresql://feedback_user:secure_password@localhost:5432/feedba
 You can either:
 
 **Option A: Create dashboards manually**
+
 - Use the Superset UI to create charts and dashboards
 - Follow the examples in `superset-dashboards/dashboards/`
 
 **Option B: Import pre-configured dashboards** (if export/import is available in your Superset version)
+
 ```bash
 # Import dashboard configurations
 # (Note: This requires Superset CLI or API access)
@@ -365,6 +373,7 @@ ORDER BY confidence_bucket;
 ### Exporting Data
 
 From any dashboard or chart:
+
 - **CSV**: Click **⋮** → **Download as CSV**
 - **JSON**: Click **⋮** → **Download as JSON**
 - **Image**: Click **⋮** → **Download as Image**
@@ -374,6 +383,7 @@ From any dashboard or chart:
 ### Database Management
 
 1. **Regular Backups**
+
    ```bash
    # PostgreSQL
    pg_dump feedback_loop > backup_$(date +%Y%m%d).sql
@@ -383,6 +393,7 @@ From any dashboard or chart:
    ```
 
 2. **Index Optimization**
+
    ```sql
    -- Add indexes for common queries
    CREATE INDEX idx_bugs_pattern_timestamp ON metrics_bugs(pattern, timestamp);
@@ -390,6 +401,7 @@ From any dashboard or chart:
    ```
 
 3. **Data Retention**
+
    ```sql
    -- Archive old data (older than 1 year)
    DELETE FROM metrics_bugs WHERE timestamp < NOW() - INTERVAL '1 year';
@@ -406,6 +418,7 @@ From any dashboard or chart:
 ### Performance Optimization
 
 1. **Materialized Views** (PostgreSQL)
+
    ```sql
    CREATE MATERIALIZED VIEW pattern_summary AS
    SELECT
@@ -429,6 +442,7 @@ From any dashboard or chart:
 **Problem**: "Cannot connect to database"
 
 **Solution**:
+
 - Verify database is running
 - Check connection URI
 - Test connection with psql or sqlite3
@@ -439,6 +453,7 @@ From any dashboard or chart:
 **Problem**: "No data in dashboards"
 
 **Solution**:
+
 ```bash
 # Verify metrics were collected
 cat metrics_data.json
@@ -455,6 +470,7 @@ sqlite3 metrics.db "SELECT COUNT(*) FROM metrics_bugs;"
 **Problem**: "Dashboard not loading"
 
 **Solution**:
+
 - Check Superset logs: `docker logs superset_app`
 - Verify dataset is properly configured
 - Refresh browser cache (Ctrl+Shift+R)
@@ -464,6 +480,7 @@ sqlite3 metrics.db "SELECT COUNT(*) FROM metrics_bugs;"
 **Problem**: "Slow dashboard performance"
 
 **Solution**:
+
 - Add database indexes
 - Reduce time range filter
 - Enable query caching
@@ -482,6 +499,7 @@ Apache Superset is licensed under Apache License 2.0.
 
 **Required Attribution:**
 When distributing or modifying, include:
+
 - Apache License 2.0 notice
 - Acknowledgment of Apache Superset use
 
@@ -490,5 +508,6 @@ This integration code is licensed under MIT (same as feedback-loop).
 ## Support
 
 For issues or questions:
-- feedback-loop: https://github.com/doronpers/feedback-loop/issues
-- Apache Superset: https://github.com/apache/superset/issues
+
+- feedback-loop: <https://github.com/doronpers/feedback-loop/issues>
+- Apache Superset: <https://github.com/apache/superset/issues>

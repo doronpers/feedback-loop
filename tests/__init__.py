@@ -1,3 +1,1 @@
-"""
-Tests package for validating good patterns.
-"""
+"""Tests package for validating good patterns."""

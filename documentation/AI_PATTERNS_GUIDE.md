@@ -7,6 +7,7 @@
 ## What is a pattern?
 
 A pattern is a reusable fix captured from test failures and recurring reviews. Each pattern includes:
+
 - **Problem** — what goes wrong in real code.
 - **Solution** — a reliable fix.
 - **Examples** — good vs. bad implementations.
@@ -34,6 +35,7 @@ Use the **[Quick Reference](QUICK_REFERENCE.md)** for concrete good/bad examples
 ## When to use patterns
 
 Use patterns whenever you see:
+
 - Repeated review comments.
 - Failure clusters in metrics.
 - Bug classes that reappear across sprints.
@@ -53,11 +55,17 @@ For contribution steps, see **[CONTRIBUTING.md](../CONTRIBUTING.md)**.
 
 ### Applying patterns in generation
 
-- Use the CLI to generate code with pattern hints.
-- Prefer explicit pattern names for high-risk features.
+- Use the CLI to generate code with pattern awareness:
 
 ```bash
-feedback-loop generate "Create a safe file handler" --patterns large_file_processing,structured_logging
+feedback-loop generate "Create a safe file handler"
+```
+
+- To bias toward the patterns you actually see failing in your project, run analysis first:
+
+```bash
+pytest --enable-metrics
+feedback-loop analyze
 ```
 
 ### Applying patterns in review
@@ -68,6 +76,7 @@ feedback-loop generate "Create a safe file handler" --patterns large_file_proces
 ## Metrics-driven iteration
 
 The system is designed to keep the pattern library current. If patterns stop preventing failures, it means:
+
 - The pattern is too generic.
 - The fix is missing an edge case.
 - The project’s context has shifted.
@@ -79,6 +88,7 @@ When that happens, revise the pattern and re-run tests.
 The `.cursorrules` file ensures Cursor IDE automatically applies these patterns during code generation. The patterns are the same across both the CLI and IDE integration, creating a consistent developer experience.
 
 **Key principles (from .cursorrules):**
+
 - Patterns exist because they've prevented real bugs in production
 - Apply them consistently, and the feedback loop continues learning
 - When in doubt, check existing code in `/examples/` or `/tests/` for pattern application examples

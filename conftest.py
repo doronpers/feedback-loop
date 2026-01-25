@@ -8,6 +8,7 @@ import logging
 import os
 import re
 from pathlib import Path
+from typing import Optional
 
 import pytest
 
@@ -65,9 +66,7 @@ class MetricsPlugin:
                 config_manager = ConfigManager.get_instance()
                 if config_manager.should_auto_enable_metrics():
                     self.enable_metrics = True
-                    logger.info(
-                        "Auto-enabled metrics collection (config or history detected)"
-                    )
+                    logger.info("Auto-enabled metrics collection (config or history detected)")
             except ImportError:
                 # Config manager not available, check environment variable
                 import os
@@ -174,7 +173,7 @@ class MetricsPlugin:
         except Exception as e:
             logger.warning(f"Failed to log test failure: {e}")
 
-    def _detect_pattern_from_failure(self, failure_reason: str, report) -> str:
+    def _detect_pattern_from_failure(self, failure_reason: str, report) -> Optional[str]:
         """Detect which pattern was violated from the failure.
 
         Args:
@@ -188,11 +187,7 @@ class MetricsPlugin:
 
         # Pattern detection heuristics
         if "typeerror" in failure_lower and "json" in failure_lower:
-            if (
-                "float64" in failure_lower
-                or "int64" in failure_lower
-                or "numpy" in failure_lower
-            ):
+            if "float64" in failure_lower or "int64" in failure_lower or "numpy" in failure_lower:
                 return "numpy_json_serialization"
 
         if "indexerror" in failure_lower or "list index out of range" in failure_lower:
@@ -206,9 +201,7 @@ class MetricsPlugin:
         if "print" in failure_lower and "logger" in failure_lower:
             return "logger_debug"
 
-        if "file" in failure_lower and (
-            "not closed" in failure_lower or "leak" in failure_lower
-        ):
+        if "file" in failure_lower and ("not closed" in failure_lower or "leak" in failure_lower):
             return "temp_file_handling"
 
         if "memory" in failure_lower or "memoryerror" in failure_lower:
@@ -231,7 +224,7 @@ class MetricsPlugin:
 
         return None
 
-    def _extract_code_snippet(self, item, report) -> str:
+    def _extract_code_snippet(self, item, report) -> Optional[str]:
         """Extract code snippet related to the failure.
 
         Args:
@@ -247,9 +240,7 @@ class MetricsPlugin:
                 lines = report.longreprtext.split("\n")
                 # Find lines with code (usually indented)
                 code_lines = [
-                    line
-                    for line in lines
-                    if line.startswith("    ") or line.startswith(">   ")
+                    line for line in lines if line.startswith("    ") or line.startswith(">   ")
                 ]
                 if code_lines:
                     return "\n".join(code_lines[:10])  # Limit to 10 lines
@@ -282,9 +273,7 @@ class MetricsPlugin:
 
                 # Automatic Analysis (can be skipped via environment variable)
                 if os.getenv("FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS"):
-                    logger.info(
-                        "Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)"
-                    )
+                    logger.info("Auto-analysis skipped (FEEDBACK_LOOP_SKIP_AUTO_ANALYSIS set)")
                     if not self._is_quiet():
                         print("\n✓ Metrics saved. Auto-analysis skipped.")
                     return
@@ -308,9 +297,7 @@ class MetricsPlugin:
 
                 if not should_analyze:
                     if not is_quiet:
-                        print(
-                            f"\n✓ Metrics saved ({failure_count} failures, below threshold)"
-                        )
+                        print(f"\n✓ Metrics saved ({failure_count} failures, below threshold)")
                     return
 
                 try:
@@ -328,8 +315,7 @@ class MetricsPlugin:
                     if config_manager:
                         try:
                             if config_manager.should_show_dashboard():
-                                from bin.fl_dashboard import \
-                                    main as dashboard_main
+                                from bin.fl_dashboard import main as dashboard_main
 
                                 dashboard_main()
                         except Exception:

@@ -74,9 +74,10 @@ def main():
 
     # Save snippets to temp files
     import tempfile
+
     temp_files = []
     for i, snippet in enumerate(snippets):
-        f = tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False)
+        f = tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False)
         f.write(snippet)
         f.close()
         temp_files.append(f.name)
@@ -85,13 +86,12 @@ def main():
     try:
         integration = MetricsIntegration()
         integration.synthesize_code(
-            prompt=prompt,
-            input_files=temp_files,
-            output_file="synthesized_code.py"
+            prompt=prompt, input_files=temp_files, output_file="synthesized_code.py"
         )
     finally:
         # Cleanup temp files
         import os
+
         for f in temp_files:
             try:
                 os.unlink(f)

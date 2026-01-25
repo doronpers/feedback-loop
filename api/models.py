@@ -7,7 +7,7 @@ Uses SQLAlchemy for ORM and supports both SQLite (local) and PostgreSQL (product
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from sqlalchemy import JSON, Boolean, Column, DateTime
 from sqlalchemy import Enum as SQLEnum
@@ -15,7 +15,7 @@ from sqlalchemy import ForeignKey, Integer, String, Table, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
 class UserRole(str, Enum):
@@ -63,15 +63,9 @@ class Organization(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    teams = relationship(
-        "Team", back_populates="organization", cascade="all, delete-orphan"
-    )
-    users = relationship(
-        "User", back_populates="organization", cascade="all, delete-orphan"
-    )
-    patterns = relationship(
-        "Pattern", back_populates="organization", cascade="all, delete-orphan"
-    )
+    teams = relationship("Team", back_populates="organization", cascade="all, delete-orphan")
+    users = relationship("User", back_populates="organization", cascade="all, delete-orphan")
+    patterns = relationship("Pattern", back_populates="organization", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Organization(id={self.id}, name='{self.name}', tier='{self.subscription_tier}')>"
@@ -98,14 +92,10 @@ class Team(Base):
     # Relationships
     organization = relationship("Organization", back_populates="teams")
     users = relationship("User", secondary=user_teams, back_populates="teams")
-    patterns = relationship(
-        "Pattern", back_populates="team", cascade="all, delete-orphan"
-    )
+    patterns = relationship("Pattern", back_populates="team", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return (
-            f"<Team(id={self.id}, name='{self.name}', org_id={self.organization_id})>"
-        )
+        return f"<Team(id={self.id}, name='{self.name}', org_id={self.organization_id})>"
 
 
 class User(Base):
@@ -143,12 +133,8 @@ class User(Base):
     # Relationships
     organization = relationship("Organization", back_populates="users")
     teams = relationship("Team", secondary=user_teams, back_populates="users")
-    patterns = relationship(
-        "Pattern", back_populates="author", foreign_keys="Pattern.author_id"
-    )
-    audit_logs = relationship(
-        "AuditLog", back_populates="user", cascade="all, delete-orphan"
-    )
+    patterns = relationship("Pattern", back_populates="author", foreign_keys="Pattern.author_id")
+    audit_logs = relationship("AuditLog", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', role='{self.role}')>"
@@ -212,9 +198,7 @@ class AuditLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Event details
-    action = Column(
-        String(100), nullable=False, index=True
-    )  # create, update, delete, login, etc.
+    action = Column(String(100), nullable=False, index=True)  # create, update, delete, login, etc.
     resource_type = Column(String(100), nullable=False)  # pattern, user, team, etc.
     resource_id = Column(Integer, nullable=True)
 

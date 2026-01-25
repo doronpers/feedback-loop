@@ -12,18 +12,19 @@ These tests focus on "silent failures" and edge cases that AI often misses:
 import io
 import logging
 import os
-import tempfile
 from unittest.mock import patch
 
 import numpy as np
 import pytest
 from fastapi import HTTPException, UploadFile
 
-from examples.fastapi_audio_patterns import (convert_numpy_audio_result,
-                                             process_audio_file_chunked,
-                                             safe_audio_upload_workflow,
-                                             stream_upload_to_disk,
-                                             validate_audio_file_header)
+from examples.fastapi_audio_patterns import (
+    convert_numpy_audio_result,
+    process_audio_file_chunked,
+    safe_audio_upload_workflow,
+    stream_upload_to_disk,
+    validate_audio_file_header,
+)
 
 
 class TestStreamUploadToDisk:
@@ -98,9 +99,7 @@ class TestDiskFullSimulation:
         file = UploadFile(filename="test.wav", file=io.BytesIO(content))
 
         # Mock tempfile.mkstemp to raise OSError
-        with patch(
-            "tempfile.mkstemp", side_effect=OSError(28, "No space left on device")
-        ):
+        with patch("tempfile.mkstemp", side_effect=OSError(28, "No space left on device")):
             with pytest.raises(HTTPException) as exc_info:
                 await stream_upload_to_disk(file)
 
@@ -120,9 +119,7 @@ class TestProcessAudioFileChunked:
         test_data = b"x" * (2560 * 1024)
         test_file.write_bytes(test_data)
 
-        result = await process_audio_file_chunked(
-            str(test_file), chunk_size=1024 * 1024
-        )
+        result = await process_audio_file_chunked(str(test_file), chunk_size=1024 * 1024)
 
         assert result["file_size_bytes"] == len(test_data)
         assert result["chunks_processed"] == 3  # 2.5MB / 1MB = 3 chunks
@@ -377,9 +374,7 @@ class TestEdgeCases:
 
     def test_numpy_array_with_mixed_types(self):
         """Test converting complex nested structures."""
-        result = {
-            "metrics": [np.int64(1), np.float64(2.5), {"nested": np.float64(np.nan)}]
-        }
+        result = {"metrics": [np.int64(1), np.float64(2.5), {"nested": np.float64(np.nan)}]}
         converted = convert_numpy_audio_result(result)
 
         assert isinstance(converted["metrics"][0], int)
@@ -391,9 +386,7 @@ class TestAdditionalCoverage:
     """Additional tests to achieve 100% coverage."""
 
     @pytest.mark.asyncio
-    async def test_safe_audio_upload_workflow_cleanup_failure(
-        self, monkeypatch, caplog
-    ):
+    async def test_safe_audio_upload_workflow_cleanup_failure(self, monkeypatch, caplog):
         """Test workflow when cleanup fails."""
         import os as os_module
 
@@ -401,7 +394,6 @@ class TestAdditionalCoverage:
         file = UploadFile(filename="test.wav", file=io.BytesIO(content))
 
         # Mock os.unlink to raise OSError during cleanup
-        original_unlink = os_module.unlink
 
         def mock_unlink(path):
             raise OSError("Permission denied")
@@ -440,8 +432,6 @@ class TestAdditionalCoverage:
             fd, path = original_mkstemp(suffix=suffix, prefix=prefix, dir=dir)
             # Create a mock that will fail when os.fdopen is called
             return fd, path
-
-        original_fdopen = os.fdopen
 
         def mock_fdopen(fd, mode):
             raise IOError("Failed to open file descriptor")
@@ -486,9 +476,7 @@ class TestAdditionalCoverage:
         assert result is False
 
     @pytest.mark.asyncio
-    async def test_validate_audio_file_header_io_error(
-        self, monkeypatch, tmp_path, caplog
-    ):
+    async def test_validate_audio_file_header_io_error(self, monkeypatch, tmp_path, caplog):
         """Test validating file when IOError occurs."""
         test_file = tmp_path / "test.wav"
         test_file.write_bytes(b"test")
@@ -530,9 +518,7 @@ class TestAdditionalCoverage:
         """Test AudioProcessingError model."""
         from examples.fastapi_audio_patterns import AudioProcessingError
 
-        error = AudioProcessingError(
-            error="ValidationError", detail="Invalid file format"
-        )
+        error = AudioProcessingError(error="ValidationError", detail="Invalid file format")
 
         assert error.error == "ValidationError"
         assert error.detail == "Invalid file format"

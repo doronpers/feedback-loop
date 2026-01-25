@@ -16,9 +16,46 @@ feedback-loop is a production-ready framework that transforms test failures into
 - **Improves AI outputs**: pattern-aware code generation and review.
 - **Supports teams** (optional): cloud sync and shared configuration.
 
-## Quick start
+## 🚀 Quick Start (30 seconds!)
 
-### Installation
+**Easiest option:** Download and run automatically!
+
+```bash
+# 🌟 One-liner install + setup + demo + dashboard
+curl -fsSL https://raw.githubusercontent.com/doronpers/feedback-loop/main/install.sh | bash
+```
+
+---
+
+**Already cloned?** Run this single command (from the repo root):
+
+```bash
+# ✨ Auto-setup + interactive demo + dashboard - everything you need!
+python3 bin/fl-start
+```
+
+Both options will:
+
+- ✅ Auto-detect your environment and install everything
+- 🎭 Launch an interactive demo showing patterns in action
+- 📊 Open the analytics dashboard in your browser
+- 🚀 Get you productive immediately
+
+**First time?** Just run one command and explore!
+
+**[📖 Complete Guide](documentation/QUICKSTART.md)** - For detailed instructions and advanced usage.
+
+## Installation
+
+### Automated Setup (Recommended)
+
+The bootstrap command handles everything automatically:
+
+```bash
+python3 bin/fl-bootstrap
+```
+
+### Manual Installation
 
 **Requirements:** Python 3.13+
 
@@ -27,14 +64,12 @@ feedback-loop is a production-ready framework that transforms test failures into
 git clone https://github.com/doronpers/feedback-loop.git
 cd feedback-loop
 
-# Recommended: Install with testing extras (includes dev dependencies)
-pip install -e .[test]
-
-# Or install core runtime only
+# Install with dependencies
 pip install -e .
 ```
 
-**Alternative:** If you prefer using requirements.txt:
+**Alternative:** Using requirements.txt:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -50,12 +85,7 @@ pip install -r requirements.txt
 # 4. Start coding with pattern-aware AI assistance!
 ```
 
-See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
-
-- Complete setup instructions
-- Pattern-aware code generation with Cursor Composer
-- Interactive workflows and tasks
-- Language server integration
+See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for complete setup.
 
 ### Desktop Launchers (Easy Mode!)
 
@@ -63,25 +93,6 @@ See **[Cursor Integration Guide](CURSOR_INTEGRATION.md)** for:
 **Windows:** Double-click `launch-feedback-loop.bat`
 
 These launchers provide an interactive menu to run any feedback-loop tool. See [DESKTOP_LAUNCHERS.md](DESKTOP_LAUNCHERS.md) for details.
-
-### Interactive setup
-
-```bash
-./bin/fl-setup
-```
-
-### Chat assistant
-
-```bash
-./bin/fl-chat
-```
-
-### See the patterns in action
-
-```bash
-python demo.py
-python demo_metrics.py
-```
 
 ## Common workflows
 
@@ -94,6 +105,9 @@ feedback-loop analyze
 
 # Generate code with pattern awareness
 feedback-loop generate "Create a safe file handler"
+
+# Multi-perspective review with Council AI (local import or HTTP)
+feedback-loop council-review --file path/to/file.py
 ```
 
 ## Documentation
@@ -101,6 +115,7 @@ feedback-loop generate "Create a safe file handler"
 **Start here:** See **[documentation/INDEX.md](documentation/INDEX.md)** for a complete table of contents.
 
 **Key guides:**
+
 - **[Getting Started](documentation/GETTING_STARTED.md)** - Installation and first steps
 - **[AI Patterns Guide](documentation/AI_PATTERNS_GUIDE.md)** - Living pattern library philosophy
 - **[Cursor Integration](CURSOR_INTEGRATION.md)** - IDE setup with pattern-aware AI
@@ -109,7 +124,7 @@ feedback-loop generate "Create a safe file handler"
 
 ## Memory-Enhanced Patterns (Optional)
 
-feedback-loop now supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
+feedback-loop supports intelligent pattern memory via [MemU](https://github.com/NevaMind-AI/memU), enabling:
 
 ✨ **Semantic Search**: Query patterns by concept, not just name
 🧠 **Self-Evolving**: Patterns improve based on usage over time
@@ -119,20 +134,17 @@ feedback-loop now supports intelligent pattern memory via [MemU](https://github.
 ### Quick Setup
 
 ```bash
-# 1. Install MemU
-pip install memu-py
-
-# 2. Enable memory (optional)
+# 1. Enable memory (optional)
 export FEEDBACK_LOOP_MEMORY_ENABLED=true
 export OPENAI_API_KEY=sk-...  # For embeddings
 
-# 3. Sync patterns to memory
+# 2. Sync patterns to memory
 feedback-loop memory sync
 
-# 4. Query semantically
+# 3. Query semantically
 feedback-loop memory query "How do I handle JSON serialization with NumPy?"
 
-# 5. Get recommendations
+# 4. Get recommendations
 feedback-loop memory recommend --context "Building FastAPI file upload endpoint"
 ```
 

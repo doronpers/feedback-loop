@@ -16,12 +16,12 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional
 
 
 def find_tools() -> List[Dict[str, str]]:
     """Find all available tools in bin/ directory."""
-    tools = []
+    tools: List[Dict[str, str]] = []
     bin_dir = Path("bin")
 
     if not bin_dir.exists():
@@ -52,9 +52,7 @@ def find_tools() -> List[Dict[str, str]]:
 
                     tools.append(
                         {
-                            "name": script.stem.replace("fl-", "")
-                            .replace("-", " ")
-                            .title(),
+                            "name": script.stem.replace("fl-", "").replace("-", " ").title(),
                             "script": str(script),
                             "description": description,
                         }
@@ -74,7 +72,7 @@ def find_demos() -> List[str]:
     return demos
 
 
-def find_superset_quickstart() -> str:
+def find_superset_quickstart() -> Optional[str]:
     """Find the Superset quickstart script."""
     superset_script = Path("superset-dashboards/quickstart_superset.py")
     if superset_script.exists():
@@ -83,10 +81,9 @@ def find_superset_quickstart() -> str:
 
 
 def generate_mac_launcher(
-    tools: List[Dict[str, str]], demos: List[str], superset_script: str = None
+    tools: List[Dict[str, str]], demos: List[str], superset_script: Optional[str] = None
 ) -> str:
     """Generate Mac launcher script content."""
-
     # Calculate max tool name width for alignment
     max_name_width = max((len(tool["name"]) for tool in tools), default=10)
     max_name_width = max(max_name_width, 10)  # At least 10 characters
@@ -136,9 +133,7 @@ def generate_mac_launcher(
 
     # Add demo if available
     if demos:
-        menu_items.append(
-            f'    echo "  {item_num}) 🎬 Demo              - See patterns in action"'
-        )
+        menu_items.append(f'    echo "  {item_num}) 🎬 Demo              - See patterns in action"')
         case_items.append(
             f"""        {item_num})
             echo "🚀 Running Demo..."
@@ -319,10 +314,9 @@ done
 
 
 def generate_windows_launcher(
-    tools: List[Dict[str, str]], demos: List[str], superset_script: str = None
+    tools: List[Dict[str, str]], demos: List[str], superset_script: Optional[str] = None
 ) -> str:
     """Generate Windows batch file content."""
-
     # Calculate max tool name width for alignment
     max_name_width = max((len(tool["name"]) for tool in tools), default=10)
     max_name_width = max(max_name_width, 10)  # At least 10 characters
@@ -346,9 +340,7 @@ def generate_windows_launcher(
         emoji, desc = tool_map.get(tool_key, ("🔧", tool.get("description", "Tool")))
         label = tool_key.upper()
 
-        menu_items.append(
-            f'echo   {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}'
-        )
+        menu_items.append(f'echo   {item_num}) {emoji} {tool["name"]:<{max_name_width}} - {desc}')
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto {label}')
 
         script_path = tool["script"].replace("/", "\\")
@@ -376,9 +368,7 @@ goto START"""
 
     # Add demo
     if demos:
-        menu_items.append(
-            f"echo   {item_num}) 🎬 Demo              - See patterns in action"
-        )
+        menu_items.append(f"echo   {item_num}) 🎬 Demo              - See patterns in action")
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto DEMO')
         sections.append(
             f""":DEMO
@@ -405,9 +395,7 @@ goto START"""
     # Add Superset quickstart
     if superset_script:
         script_path = superset_script.replace("/", "\\")
-        menu_items.append(
-            f"echo   {item_num}) 📊 Superset Setup   - Set up analytics dashboards"
-        )
+        menu_items.append(f"echo   {item_num}) 📊 Superset Setup   - Set up analytics dashboards")
         goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto SUPERSET')
         sections.append(
             f""":SUPERSET
@@ -434,7 +422,6 @@ goto START"""
     # Add docs and exit
     menu_items.append(f"echo   {item_num}) 📚 Open Documentation")
     goto_checks.append(f'if "%CHOICE%"=="{item_num}" goto DOCS')
-    docs_num = item_num
     item_num += 1
 
     menu_items.append(f"echo   {item_num}) 🚪 Exit")
@@ -442,7 +429,7 @@ goto START"""
     exit_num = item_num
 
     sections.append(
-        f""":DOCS
+        """:DOCS
 echo 📚 Opening documentation...
 start https://github.com/doronpers/feedback-loop
 echo.

@@ -15,16 +15,19 @@ This ensures the launchers always include the latest tools without manual editin
 ## 📁 Available Launchers
 
 ### For Mac (macOS)
+
 **File:** `launch-feedback-loop.command`
 
 ### For Windows (PC)
+
 **File:** `launch-feedback-loop.bat`
 
 ## 🚀 How to Use
 
-### On Mac:
+### On Mac
 
 1. **Copy to Desktop (Optional)**
+
    ```bash
    cp launch-feedback-loop.command ~/Desktop/
    ```
@@ -40,7 +43,7 @@ This ensures the launchers always include the latest tools without manual editin
    - Doctor - Diagnose and fix issues
    - Demo - See patterns in action
 
-### On Windows (PC):
+### On Windows (PC)
 
 1. **Copy to Desktop (Optional)**
    - Right-click `launch-feedback-loop.bat` → "Copy"
@@ -54,7 +57,8 @@ This ensures the launchers always include the latest tools without manual editin
 ## 📋 Requirements
 
 Both launchers will:
-- ✅ Check if Python 3.8+ is installed
+
+- ✅ Check if Python 3.13+ is installed
 - ✅ Offer to install feedback-loop if not already installed
 - ✅ Display the current directory
 - ✅ Keep the window open after each tool finishes
@@ -65,6 +69,7 @@ Both launchers will:
 If Python is not installed:
 
 **Mac:**
+
 ```bash
 # Using Homebrew
 brew install python3
@@ -74,7 +79,8 @@ https://www.python.org/downloads/
 ```
 
 **Windows:**
-- Download from: https://www.python.org/downloads/
+
+- Download from: <https://www.python.org/downloads/>
 - ⚠️ **Important:** Check "Add Python to PATH" during installation
 
 ## 🎯 Quick Start
@@ -85,6 +91,7 @@ After copying to your desktop:
 **Windows:** Double-click `launch-feedback-loop.bat`
 
 The launcher will:
+
 1. Check your Python installation
 2. Verify feedback-loop is installed (or offer to install it)
 3. Present an interactive menu
@@ -94,22 +101,26 @@ The launcher will:
 ## 🔧 Troubleshooting
 
 ### "Permission denied" on Mac
+
 ```bash
 chmod +x launch-feedback-loop.command
 ```
 
 ### "Python not found" error
-- Make sure Python 3.8+ is installed
+
+- Make sure Python 3.13+ is installed
 - Verify it's in your PATH:
   - Mac: `python3 --version`
   - Windows: `python --version`
 
 ### "Cannot open" security warning on Mac
+
 - Right-click the file → "Open"
 - Click "Open" in the security dialog
 - Future launches will work with double-click
 
 ### Scripts don't launch tools correctly
+
 - Make sure you're running the script from the feedback-loop directory
 - Or ensure feedback-loop is installed globally: `pip install -e .`
 
@@ -144,6 +155,7 @@ python scripts/update_launchers.py
 ```
 
 The GitHub Actions workflow (`.github/workflows/update-launchers.yml`) automatically runs this script when:
+
 - New scripts are added to `bin/`
 - Demo files change
 - Requirements or setup files change
@@ -151,6 +163,6 @@ The GitHub Actions workflow (`.github/workflows/update-launchers.yml`) automatic
 ## 📖 More Information
 
 For detailed documentation, visit:
-https://github.com/doronpers/feedback-loop
+<https://github.com/doronpers/feedback-loop>
 
 Or select option 6 from the launcher menu to open the documentation in your browser.

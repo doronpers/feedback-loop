@@ -86,9 +86,7 @@ class PlanParser:
         return {
             "goal": parsed["goal"],
             "current_phase": parsed["current_phase"],
-            "phase_status": (
-                current_phase_info.get("status") if current_phase_info else None
-            ),
+            "phase_status": (current_phase_info.get("status") if current_phase_info else None),
             "deliverables": self._extract_deliverables(parsed.get("phases", [])),
         }
 
@@ -210,9 +208,7 @@ class PlanParser:
                 phase_name = match.group(2).strip()
 
                 # Check if marked as current
-                is_current = (
-                    "current" in phase_name.lower() or "(current)" in phase_name.lower()
-                )
+                is_current = "current" in phase_name.lower() or "(current)" in phase_name.lower()
 
                 phases.append(
                     {

@@ -45,9 +45,7 @@ class PatternSuggester:
         # Score each pattern based on task description
         scored_patterns = []
         for pattern in all_patterns:
-            score = self._calculate_relevance_score(
-                pattern, task_lower, metrics_context
-            )
+            score = self._calculate_relevance_score(pattern, task_lower, metrics_context)
             if score > 0:
                 scored_patterns.append(
                     {
@@ -86,10 +84,7 @@ class PatternSuggester:
 
             # Format: - [ ] pattern_name (confidence: 0.85, from feedback-loop)
             confidence_pct = f"{confidence:.0%}"
-            line = (
-                f"- [ ] {pattern_name} "
-                f"(confidence: {confidence_pct}, from feedback-loop)"
-            )
+            line = f"- [ ] {pattern_name} " f"(confidence: {confidence_pct}, from feedback-loop)"
 
             # Add severity indicator for high/critical patterns
             if severity in ["high", "critical"]:
@@ -121,17 +116,23 @@ class PatternSuggester:
 
         score = 0.0
 
-        # Keyword matching rules
-        keyword_rules = {
-            "numpy_json_serialization": ["numpy", "json", "serialize", "array", "api"],
-            "bounds_checking": ["list", "array", "index", "first", "last", "access"],
-            "specific_exceptions": ["exception", "error", "try", "catch", "handle"],
-            "logger_debug": ["log", "debug", "print", "logging"],
-            "metadata_categorization": ["categorize", "classify", "metadata", "type"],
-            "temp_file_handling": ["temp", "file", "temporary", "cleanup"],
-            "large_file_processing": ["large", "file", "upload", "stream", "memory"],
-            "fastapi": ["fastapi", "endpoint", "api", "route", "upload"],
-        }
+        # Keyword matching rules - can be overridden via config
+        from metrics.config_manager import ConfigManager
+
+        config = ConfigManager()
+        keyword_rules = config.get(
+            "pattern_matching.keyword_rules",
+            {
+                "numpy_json_serialization": ["numpy", "json", "serialize", "array", "api"],
+                "bounds_checking": ["list", "array", "index", "first", "last", "access"],
+                "specific_exceptions": ["exception", "error", "try", "catch", "handle"],
+                "logger_debug": ["log", "debug", "print", "logging"],
+                "metadata_categorization": ["categorize", "classify", "metadata", "type"],
+                "temp_file_handling": ["temp", "file", "temporary", "cleanup"],
+                "large_file_processing": ["large", "file", "upload", "stream", "memory"],
+                "fastapi": ["fastapi", "endpoint", "api", "route", "upload"],
+            },
+        )
 
         # Check pattern-specific keywords
         keywords = keyword_rules.get(pattern_name, [])
@@ -145,9 +146,7 @@ class PatternSuggester:
 
         # Boost score if pattern description keywords match
         pattern_keywords = pattern_desc.split()[:5]  # First 5 words
-        desc_matches = sum(
-            1 for kw in pattern_keywords if len(kw) > 3 and kw in task_description
-        )
+        desc_matches = sum(1 for kw in pattern_keywords if len(kw) > 3 and kw in task_description)
         if pattern_keywords:
             score = min(1.0, score + (desc_matches / len(pattern_keywords)) * 0.2)
 

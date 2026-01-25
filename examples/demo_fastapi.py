@@ -15,16 +15,16 @@ import tempfile
 import numpy as np
 from fastapi import UploadFile
 
-from examples.fastapi_audio_patterns import (convert_numpy_audio_result,
-                                             process_audio_file_chunked,
-                                             safe_audio_upload_workflow,
-                                             stream_upload_to_disk,
-                                             validate_audio_file_header)
+from examples.fastapi_audio_patterns import (
+    convert_numpy_audio_result,
+    process_audio_file_chunked,
+    safe_audio_upload_workflow,
+    stream_upload_to_disk,
+    validate_audio_file_header,
+)
 
 # Configure logging
-logging.basicConfig(
-    level=logging.DEBUG, format="%(levelname)s - %(name)s - %(message)s"
-)
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(name)s - %(message)s")
 
 
 async def demo_streaming_upload():
@@ -75,7 +75,7 @@ async def demo_chunked_processing():
 
         result = await process_audio_file_chunked(test_path, chunk_size=1024 * 1024)
 
-        print(f"\nProcessing results:")
+        print("\nProcessing results:")
         print(f"  - Chunks processed: {result['chunks_processed']}")
         print(f"  - Total bytes: {result['total_bytes_processed']}")
         print(f"  - Size (MB): {result['file_size_mb']:.2f}")
@@ -100,7 +100,7 @@ async def demo_complete_workflow():
 
     result = await safe_audio_upload_workflow(file)
 
-    print(f"\nWorkflow completed successfully!")
+    print("\nWorkflow completed successfully!")
     print(f"  - File size: {result['file_size_mb']:.2f} MB")
     print(f"  - Chunks processed: {result['chunks_processed']}")
     print("✅ Complete workflow: upload → process → cleanup!")

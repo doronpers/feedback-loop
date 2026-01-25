@@ -1,12 +1,7 @@
-"""
-Comprehensive tests for the metrics collection and pattern-aware code generation system.
-"""
+"""Comprehensive tests for the metrics collection and pattern-aware code generation system."""
 
 import json
-import os
-import tempfile
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import pytest
 
@@ -222,9 +217,7 @@ class TestMetricsCollector:
         """Test missing categories are defaulted to empty lists."""
         collector = MetricsCollector()
 
-        json_str = json.dumps(
-            {"bugs": [{"pattern": "p", "count": 1}], "test_failures": []}
-        )
+        json_str = json.dumps({"bugs": [{"pattern": "p", "count": 1}], "test_failures": []})
 
         collector.load_from_json(json_str)
 
@@ -252,9 +245,7 @@ class TestMetricsCollector:
         with pytest.raises(ValueError, match=r"bugs.*str"):
             collector.load_from_json(invalid_json)
 
-        assert (
-            collector.data == previous_data
-        ), "Data should be restored after load failure"
+        assert collector.data == previous_data, "Data should be restored after load failure"
 
     def test_log_from_plan_file_extracts_patterns_and_logs_generation(self, tmp_path):
         """Ensure plan file patterns are parsed and recorded in code generation metrics."""
@@ -320,9 +311,7 @@ class TestMetricsAnalyzer:
     def test_detect_new_patterns(self):
         """Test detecting new patterns."""
         data = {
-            "bugs": [
-                {"pattern": "new_pattern", "error": "test", "code": "test", "count": 3}
-            ],
+            "bugs": [{"pattern": "new_pattern", "error": "test", "code": "test", "count": 3}],
             "test_failures": [{"pattern_violated": "known_pattern", "count": 1}],
             "code_reviews": [],
             "performance_metrics": [],
@@ -545,9 +534,7 @@ class TestPatternManager:
 
         # Add pattern with recent timestamp
         recent_date = datetime.now().isoformat()
-        manager.patterns.append(
-            {"name": "recent_pattern", "last_occurrence": recent_date}
-        )
+        manager.patterns.append({"name": "recent_pattern", "last_occurrence": recent_date})
 
         # Archive patterns older than 90 days
         archived = manager.archive_unused_patterns(days=90)

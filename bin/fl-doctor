@@ -28,6 +28,7 @@ def _ensure_venv():
         except OSError:
             pass
 
+
 _ensure_venv()
 
 # Add parent directory to path
@@ -93,6 +94,7 @@ def fix_pytest_plugin():
     """Install pytest plugin."""
     try:
         import metrics
+
         feedback_loop_path = Path(metrics.__file__).parent.parent
         conftest_src = feedback_loop_path / "conftest.py"
 
@@ -118,6 +120,7 @@ def fix_git_hook():
     """Install git pre-commit hook."""
     try:
         import metrics
+
         feedback_loop_path = Path(metrics.__file__).parent.parent
         hook_src = feedback_loop_path / "hooks" / "pre-commit"
         hook_dst = Path(".git/hooks/pre-commit")
@@ -145,6 +148,7 @@ def fix_github_workflow():
     """Install GitHub Actions workflow."""
     try:
         import metrics
+
         feedback_loop_path = Path(metrics.__file__).parent.parent
         workflow_src = feedback_loop_path / ".github" / "workflows" / "feedback-loop.yml"
         workflow_dst = Path(".github/workflows/feedback-loop.yml")
@@ -163,6 +167,7 @@ def check_metrics_collected():
     metrics_file = Path("data/metrics_data.json")
     if metrics_file.exists():
         import json
+
         with open(metrics_file) as f:
             data = json.load(f)
             total = sum(len(v) for v in data.values())
@@ -177,6 +182,7 @@ def check_patterns_exist():
     patterns_file = Path("data/patterns.json")
     if patterns_file.exists():
         import json
+
         with open(patterns_file) as f:
             data = json.load(f)
             patterns = data.get("patterns", [])
@@ -190,6 +196,7 @@ def check_package_installed():
     """Check if feedback-loop is installed."""
     try:
         import metrics
+
         return True, "Installed"
     except ImportError:
         return False, "Not installed"

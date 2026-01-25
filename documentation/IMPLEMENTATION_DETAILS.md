@@ -17,12 +17,14 @@ Three major improvements have been implemented:
 Automatically collects test failure metrics without manual intervention.
 
 **Features:**
+
 - Auto-detects pattern violations from test failures
 - Extracts code snippets and error information
 - Supports pattern detection heuristics
 - Saves metrics to JSON file
 
 **Usage:**
+
 ```bash
 # Enable automatic metrics collection
 pytest tests/ --enable-metrics
@@ -32,6 +34,7 @@ pytest tests/ --metrics-output=metrics_ci.json
 ```
 
 **How it works:**
+
 - Hooks into pytest's test execution
 - Captures failures in real-time
 - Detects patterns like:
@@ -45,18 +48,21 @@ pytest tests/ --metrics-output=metrics_ci.json
 Analyzes staged changes before allowing commits.
 
 **Installation:**
+
 ```bash
 cp hooks/pre-commit .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 ```
 
 **Features:**
+
 - Scans staged Python files for pattern violations
 - Shows warnings with file/line numbers
 - Provides suggestions for fixes
 - Non-blocking (warnings only)
 
 **Example output:**
+
 ```
 🔄 Running feedback loop pattern analysis...
 
@@ -76,6 +82,7 @@ chmod +x .git/hooks/pre-commit
 The metrics system now tracks code generation events.
 
 **New method in `MetricsCollector`:**
+
 ```python
 collector.log_code_generation(
     prompt="Create a function to process JSON",
@@ -95,17 +102,20 @@ This creates a feedback loop where the system learns from its own code generatio
 Replaced hardcoded templates with actual Anthropic Claude API integration.
 
 **Key improvements:**
+
 - Uses Claude Sonnet 4.5 for intelligent code generation
 - Enriches prompts with pattern context from metrics
 - Includes pattern examples and effectiveness scores
 - Falls back to templates if API unavailable
 
 **Environment setup:**
+
 ```bash
 export ANTHROPIC_API_KEY=your_api_key_here
 ```
 
 **Usage:**
+
 ```bash
 python -m metrics.integrate generate "Create a function to process NumPy arrays and return JSON"
 ```
@@ -122,6 +132,7 @@ python -m metrics.integrate generate "Create a function to process NumPy arrays 
 5. **Feedback Logging**: Logs generation results back to metrics
 
 **Example enriched prompt:**
+
 ```
 Create a function to process NumPy arrays and return JSON
 
@@ -138,12 +149,15 @@ return json.dumps(result)
 ```
 
 ## Instructions
+
 Generate production-ready Python code that:
+
 1. Implements the requested functionality
 2. Applies all required patterns
 3. Includes proper error handling
 4. Has clear comments explaining pattern usage
 5. Is syntactically correct and ready to run
+
 ```
 
 ### Code Validation
@@ -158,11 +172,13 @@ All generated code is automatically validated.
 
 **Validation output:**
 ```
+
 Validation Results:
   Syntax Valid: ✓
   Warnings: 1
     - Code contains print() statements - consider using logger.debug()
   Overall: ✗ Issues Found
+
 ```
 
 ## 3. Continuous Feedback via GitHub Actions
@@ -178,30 +194,33 @@ Automatically runs on every push and pull request.
    pytest tests/ -v --metrics-output=metrics_ci.json --enable-metrics
    ```
 
-2. **Analyze git diff for pattern violations**
+1. **Analyze git diff for pattern violations**
+
    ```bash
    python -m metrics.integrate analyze-commit \
      --base=${{ github.event.pull_request.base.sha }} \
      --head=${{ github.sha }}
    ```
 
-3. **Analyze metrics and update patterns**
+2. **Analyze metrics and update patterns**
+
    ```bash
    python -m metrics.integrate analyze \
      --metrics-file=metrics_ci.json \
      --patterns-file=patterns.json
    ```
 
-4. **Generate and post report as PR comment**
+3. **Generate and post report as PR comment**
    - Automatic comment on PR with pattern violations
    - Updates existing comment if already present
    - Includes suggestions and file/line references
 
-5. **Upload artifacts**
+4. **Upload artifacts**
    - Metrics data (30 day retention)
    - Pattern library (90 day retention)
 
 **Example PR comment:**
+
 ```markdown
 ## 🔄 Feedback Loop Analysis
 
@@ -224,31 +243,35 @@ Automatically runs on every push and pull request.
 
 ## 4. Bidirectional Pattern Sync
 
-### Sync from patterns.json to AI_PATTERNS.md
+### Sync from `data/patterns.json` to the patterns guide
 
 The pattern library now maintains bidirectional sync.
 
 **New method in `PatternManager`:**
+
 ```python
-pattern_manager.sync_to_markdown("AI_PATTERNS.md")
+pattern_manager.sync_to_markdown("documentation/AI_PATTERNS_GUIDE.md")
 ```
 
 **CLI command:**
+
 ```bash
-python -m metrics.integrate sync-to-markdown
+feedback-loop sync-to-markdown --markdown-file documentation/AI_PATTERNS_GUIDE.md
 ```
 
 **What it does:**
+
 - Reads all patterns from `patterns.json`
 - Generates markdown sections with:
   - Pattern name and ID
   - Frequency and effectiveness metrics
   - Bad and good examples
   - Description
-- Preserves non-pattern content in AI_PATTERNS.md
+- Preserves non-pattern content in the patterns guide
 - Sorts patterns by occurrence frequency
 
 **Generated markdown example:**
+
 ```markdown
 ### 1. Numpy Json Serialization
 
@@ -266,10 +289,12 @@ return json.dumps(result)  # TypeError!
 ```
 
 ✅ Good Pattern:
+
 ```python
 result = {"mean": float(np.mean(data))}
 return json.dumps(result)  # Works!
 ```
+
 ```
 
 ## 5. New CLI Commands
@@ -286,6 +311,7 @@ python -m metrics.integrate analyze-commit \
 ```
 
 **Output:**
+
 ```json
 {
   "base_sha": "abc123",
@@ -306,12 +332,12 @@ python -m metrics.integrate analyze-commit \
 
 ### `sync-to-markdown`
 
-Syncs patterns from patterns.json to AI_PATTERNS.md.
+Syncs patterns from `data/patterns.json` to the patterns guide.
 
 ```bash
-python -m metrics.integrate sync-to-markdown \
-  --patterns-file=patterns.json \
-  --markdown-file=AI_PATTERNS.md
+feedback-loop sync-to-markdown \
+  --patterns-file=data/patterns.json \
+  --markdown-file=documentation/AI_PATTERNS_GUIDE.md
 ```
 
 ## How the Feedback Loop Now Works
@@ -321,7 +347,7 @@ python -m metrics.integrate sync-to-markdown \
 ```
 Metrics → patterns.json → (dead end)
                            ↓
-                    AI_PATTERNS.md (static)
+                    documentation/AI_PATTERNS_GUIDE.md (static)
                            ↓
                     Code generation (hardcoded templates)
                            ↓
@@ -337,7 +363,7 @@ Metrics → patterns.json → (dead end)
                           ↓
 3. Analyze patterns → Update frequencies & effectiveness
                           ↓
-4. Sync to markdown → AI_PATTERNS.md updated
+4. Sync to markdown → documentation/AI_PATTERNS_GUIDE.md updated
                           ↓
 5. Code generation → LLM uses pattern context
                           ↓
@@ -369,6 +395,7 @@ python -m metrics.integrate analyze --metrics-file=metrics.json
 ```
 
 Output:
+
 ```
 ✓ High Frequency Patterns: 3
   - numpy_json_serialization: 5 occurrences
@@ -386,8 +413,9 @@ python -m metrics.integrate sync-to-markdown
 ```
 
 Output:
+
 ```
-✓ Patterns synced to AI_PATTERNS.md
+✓ Patterns synced to documentation/AI_PATTERNS_GUIDE.md
 ```
 
 ### Step 5: Generate code with pattern awareness
@@ -397,6 +425,7 @@ python -m metrics.integrate generate "Create a function to process NumPy arrays 
 ```
 
 Output:
+
 ```
 ============================================================
 GENERATED CODE:
@@ -456,6 +485,7 @@ Validation Results:
 ### Step 6: CI/CD automatically analyzes PRs
 
 When you create a PR:
+
 1. GitHub Actions runs tests
 2. Collects metrics
 3. Analyzes commit diff
@@ -464,12 +494,14 @@ When you create a PR:
 ## Files Modified/Created
 
 ### New Files
+
 - `conftest.py` - Pytest plugin for auto-metrics
 - `hooks/pre-commit` - Git pre-commit hook
 - `.github/workflows/feedback-loop.yml` - CI/CD workflow
 - `FEEDBACK_LOOP_IMPROVEMENTS.md` - This documentation
 
 ### Modified Files
+
 - `metrics/collector.py` - Added `log_code_generation()` method
 - `metrics/pattern_manager.py` - Added `sync_to_markdown()` method
 - `metrics/code_generator.py` - Rewritten to use real LLM, added validation
@@ -478,6 +510,7 @@ When you create a PR:
 ## Impact
 
 ### Before
+
 - Manual metrics logging required
 - Hardcoded code generation templates
 - No CI/CD integration
@@ -485,6 +518,7 @@ When you create a PR:
 - No actual feedback loop
 
 ### After
+
 - ✅ Automatic metrics collection from tests
 - ✅ Real AI code generation with pattern context
 - ✅ CI/CD automatically analyzes every PR
@@ -493,33 +527,37 @@ When you create a PR:
 
 ## Next Steps
 
-### For developers using this system:
+### For developers using this system
 
 1. **Install the pre-commit hook:**
+
    ```bash
    cp hooks/pre-commit .git/hooks/pre-commit
    chmod +x .git/hooks/pre-commit
    ```
 
 2. **Set up your API key:**
+
    ```bash
    export ANTHROPIC_API_KEY=your_key
    # Add to ~/.bashrc or ~/.zshrc for persistence
    ```
 
 3. **Run tests with metrics:**
+
    ```bash
    pytest tests/ --enable-metrics
    ```
 
 4. **Review generated patterns:**
+
    ```bash
-   python -m metrics.integrate analyze
-   python -m metrics.integrate sync-to-markdown
-   git diff AI_PATTERNS.md  # See what changed
+   feedback-loop analyze
+   feedback-loop sync-to-markdown --markdown-file documentation/AI_PATTERNS_GUIDE.md
+   git diff documentation/AI_PATTERNS_GUIDE.md  # See what changed
    ```
 
-### For teams adopting this:
+### For teams adopting this
 
 1. Configure GitHub repository secrets with `ANTHROPIC_API_KEY`
 2. Enable GitHub Actions in repository settings
@@ -529,25 +567,33 @@ When you create a PR:
 ## Troubleshooting
 
 ### "ANTHROPIC_API_KEY not found"
+
 Set the environment variable:
+
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ### Pytest plugin not working
+
 Ensure `conftest.py` is in the repository root:
+
 ```bash
 ls -la conftest.py
 ```
 
 ### Pre-commit hook not running
+
 Make it executable:
+
 ```bash
 chmod +x .git/hooks/pre-commit
 ```
 
 ### GitHub Actions failing
+
 Check workflow logs in GitHub Actions tab. Common issues:
+
 - API key not configured in secrets
 - Python dependencies not installed
 

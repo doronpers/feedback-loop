@@ -64,9 +64,7 @@ class CodeSynthesizer:
         else:
             # Generate Candidates with different "personas" or focus areas
             logger.info(f"Generating {num_candidates} candidates")
-            candidates = self._generate_candidates(
-                prompt, num_candidates, metrics_context
-            )
+            candidates = self._generate_candidates(prompt, num_candidates, metrics_context)
 
         # 2. Synthesize using LLM
         if self.generator.use_llm and self.generator.llm_manager:
@@ -85,9 +83,7 @@ class CodeSynthesizer:
             synthesis_logic=logic,
         )
 
-    def _load_candidates_from_files(
-        self, file_paths: List[str]
-    ) -> List[GenerationResult]:
+    def _load_candidates_from_files(self, file_paths: List[str]) -> List[GenerationResult]:
         """Load code from files and create GenerationResult objects."""
         from metrics.code_generator import GenerationResult
 
@@ -147,9 +143,7 @@ class CodeSynthesizer:
 
             # Augment prompt with strategy
             augmented_prompt = (
-                f"{prompt}\n\n"
-                f"STRATEGY: {strategy_name}\n"
-                f"INSTRUCTION: {strategy_inst}"
+                f"{prompt}\n\n" f"STRATEGY: {strategy_name}\n" f"INSTRUCTION: {strategy_inst}"
             )
 
             # Generate code
@@ -170,9 +164,9 @@ class CodeSynthesizer:
         self, prompt: str, candidates: List[GenerationResult]
     ) -> tuple[str, str]:
         """Use LLM to merge candidates into the best version."""
-
         synthesis_prompt = f"""
-You are a Lead Senior Software Engineer. I need you to synthesize the best possible code implementation from multiple candidate solutions.
+You are a Lead Senior Software Engineer. I need you to synthesize the best possible
+code implementation from multiple candidate solutions.
 
 ORIGINAL REQUEST:
 {prompt}
@@ -204,9 +198,10 @@ OUTPUT FORMAT:
 """
 
         try:
-            response = self.generator.llm_manager.generate(
-                synthesis_prompt, max_tokens=4096
-            )
+            if not self.generator.llm_manager:
+                raise ValueError("LLM Manager not available")
+
+            response = self.generator.llm_manager.generate(synthesis_prompt, max_tokens=4096)
             text = response.text
 
             # Extract Logic and Code
@@ -229,9 +224,7 @@ OUTPUT FORMAT:
             logger.error(f"Synthesis failed: {e}")
             return self._synthesize_fallback(candidates)
 
-    def _synthesize_fallback(
-        self, candidates: List[GenerationResult]
-    ) -> tuple[str, str]:
+    def _synthesize_fallback(self, candidates: List[GenerationResult]) -> tuple[str, str]:
         """Fallback synthesis: pick the valid candidate with highest confidence."""
         best_cand = max(
             candidates,
@@ -246,9 +239,7 @@ OUTPUT FORMAT:
             f"Fallback: Selected best candidate ({strategy}) based on validation and confidence.",
         )
 
-    def _generate_synthesis_report(
-        self, candidates: List[GenerationResult], logic: str
-    ) -> str:
+    def _generate_synthesis_report(self, candidates: List[GenerationResult], logic: str) -> str:
         """Generate a user-facing report of the synthesis process."""
         lines = [
             "=== Code Synthesis Report ===",

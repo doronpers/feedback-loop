@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Pattern Explorer
+
+Interactive terminal UI for exploring the pattern library with search, filtering,
+and detailed pattern information.
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load .env file from project root
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
+
+from rich.console import Console
+from rich.theme import Theme
+
+from metrics.pattern_explorer import PatternExplorer
+
+# Custom theme
+custom_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold blue",
+        "accent": "magenta",
+    }
+)
+
+console = Console(theme=custom_theme)
+
+
+def main():
+    """Main entry point for fl-explore."""
+    parser = argparse.ArgumentParser(
+        description="Explore the feedback-loop pattern library interactively",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  fl-explore                    # Interactive exploration
+  fl-explore --search numpy     # Search for numpy patterns
+  fl-explore --category serialization  # Filter by category
+  fl-explore --export patterns.md     # Export patterns to file
+        """,
+    )
+
+    parser.add_argument(
+        "--patterns-file",
+        default="data/patterns.json",
+        help="Path to patterns JSON file (default: data/patterns.json)",
+    )
+
+    parser.add_argument("--search", help="Search patterns by name, description, or category")
+
+    parser.add_argument("--category", help="Filter patterns by category")
+
+    parser.add_argument(
+        "--severity", choices=["high", "medium", "low"], help="Filter patterns by severity level"
+    )
+
+    parser.add_argument(
+        "--sort",
+        choices=["name", "frequency", "severity", "success_rate"],
+        default="name",
+        help="Sort patterns by criteria (default: name)",
+    )
+
+    parser.add_argument("--export", help="Export filtered patterns to JSON file")
+
+    parser.add_argument("--list", action="store_true", help="List all patterns and exit")
+
+    parser.add_argument("--details", action="store_true", help="Show detailed pattern information")
+
+    args = parser.parse_args()
+
+    # Initialize explorer
+    explorer = PatternExplorer(args.patterns_file)
+
+    # Load patterns
+    if not explorer.load_patterns():
+        return 1
+
+    # Apply filters
+    if args.search:
+        explorer.filtered_patterns = explorer.search_patterns(args.search)
+        console.print(
+            f"🔍 Search results for '{args.search}': {len(explorer.filtered_patterns)} patterns",
+            style="info",
+        )
+
+    if args.category:
+        explorer.filtered_patterns = explorer.filter_by_category(args.category)
+        console.print(
+            f"🏷️  Filtered by category '{args.category}': {len(explorer.filtered_patterns)} patterns",
+            style="info",
+        )
+
+    if args.severity:
+        explorer.filtered_patterns = explorer.filter_by_severity(args.severity)
+        console.print(
+            f"⚠️  Filtered by severity '{args.severity}': {len(explorer.filtered_patterns)} patterns",
+            style="info",
+        )
+
+    # Sort results
+    explorer.filtered_patterns = explorer.sort_patterns(explorer.filtered_patterns, args.sort)
+
+    # Handle different modes
+    if args.list:
+        # Just list patterns and exit
+        explorer.show_pattern_catalog(show_details=args.details)
+        return 0
+
+    elif args.export:
+        # Export patterns and exit
+        explorer.export_patterns(args.export, explorer.filtered_patterns)
+        return 0
+
+    elif args.search or args.category or args.severity:
+        # Show filtered results and exit
+        explorer.show_pattern_catalog(show_details=args.details)
+        return 0
+
+    else:
+        # Interactive mode (default)
+        console.print("[bold blue]🔍 Welcome to the Pattern Explorer![/bold blue]")
+        console.print("Discover and learn about coding patterns that improve reliability.\n")
+
+        # Check if we have patterns
+        if not explorer.patterns:
+            console.print("❌ No patterns found in the library.", style="error")
+            console.print("\nTo generate patterns:", style="info")
+            console.print("  1. Run some tests: pytest --enable-metrics", style="accent")
+            console.print("  2. Analyze results: feedback-loop analyze", style="accent")
+            console.print("  3. Try exploring again!", style="accent")
+            return 1
+
+        console.print(
+            f"✅ Loaded {len(explorer.patterns)} patterns from the library.", style="success"
+        )
+        console.print("Use the interactive menu to explore patterns, search, and learn.\n")
+
+        # Run interactive exploration
+        explorer.interactive_search()
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

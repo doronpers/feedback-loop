@@ -78,9 +78,7 @@ class PatternManager:
                 data = json.load(f)
                 self.patterns = data.get("patterns", [])
                 self.changelog = data.get("changelog", [])
-            logger.debug(
-                f"Loaded {len(self.patterns)} patterns from {self.pattern_library_path}"
-            )
+            logger.debug(f"Loaded {len(self.patterns)} patterns from {self.pattern_library_path}")
         except (json.JSONDecodeError, IOError) as e:
             logger.debug(f"Failed to load patterns: {e}")
             self.patterns = []
@@ -88,44 +86,42 @@ class PatternManager:
 
     def save_patterns(self) -> None:
         """Save patterns to JSON file using atomic write strategy.
-        
+
         Optimized: Uses temporary file + atomic rename to prevent data corruption
         during power failures or crashes during write operations.
         """
-        import tempfile
         import shutil
-        
+        import tempfile
+
         try:
             data = {
                 "patterns": self.patterns,
                 "changelog": self.changelog,
                 "last_updated": datetime.now().isoformat(),
             }
-            
+
             # Atomic write: write to temp file first, then rename
             pattern_path = Path(self.pattern_library_path)
             pattern_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Create temporary file in same directory for atomic rename
             temp_fd, temp_path = tempfile.mkstemp(
                 suffix=".json",
                 dir=pattern_path.parent,
                 prefix=pattern_path.stem + "_",
             )
-            
+
             try:
                 # Write to temporary file
                 with os.fdopen(temp_fd, "w") as f:
                     json.dump(data, f, indent=2)
                     f.flush()
                     os.fsync(f.fileno())  # Ensure data is written to disk
-                
+
                 # Atomic rename (works on POSIX and Windows)
                 shutil.move(temp_path, self.pattern_library_path)
-                
-                logger.debug(
-                    f"Saved {len(self.patterns)} patterns to {self.pattern_library_path}"
-                )
+
+                logger.debug(f"Saved {len(self.patterns)} patterns to {self.pattern_library_path}")
             except Exception:
                 # Clean up temp file on error
                 try:
@@ -133,7 +129,7 @@ class PatternManager:
                 except Exception:
                     pass
                 raise
-                
+
         except IOError as e:
             logger.error(
                 f"Failed to save patterns to {self.pattern_library_path}: {e}",
@@ -182,9 +178,7 @@ class PatternManager:
         logger.info(f"Synced {synced_count}/{len(self.patterns)} patterns to memory")
         return synced_count
 
-    async def retrieve_similar_patterns(
-        self, query: str, limit: int = 5
-    ) -> List[Dict[str, Any]]:
+    async def retrieve_similar_patterns(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         """Retrieve patterns using semantic search.
 
         Args:
@@ -199,9 +193,7 @@ class PatternManager:
             return self._keyword_search(query, limit)
 
         try:
-            result = await self.memory.retrieve_patterns(
-                query, method="rag", limit=limit
-            )
+            result = await self.memory.retrieve_patterns(query, method="rag", limit=limit)
             if result and "results" in result:
                 return result["results"]
             return []
@@ -234,9 +226,7 @@ class PatternManager:
 
         return matches
 
-    def load_from_ai_patterns_md(
-        self, md_path: str = "docs/AI_PATTERNS_GUIDE.md"
-    ) -> None:
+    def load_from_ai_patterns_md(self, md_path: str = "docs/AI_PATTERNS_GUIDE.md") -> None:
         """Load patterns from AI_PATTERNS_GUIDE.md file.
 
         Args:
@@ -318,9 +308,7 @@ class PatternManager:
 
             # Get pattern name from first line
             pattern_name = lines[0].strip()
-            pattern_id = pattern_mappings.get(
-                pattern_name, pattern_name.lower().replace(" ", "_")
-            )
+            pattern_id = pattern_mappings.get(pattern_name, pattern_name.lower().replace(" ", "_"))
 
             # Extract bad and good examples
             bad_example = self._extract_code_block(section, "❌ Bad Pattern")
@@ -400,11 +388,7 @@ class PatternManager:
             elif line.startswith("**") or line.startswith("###"):
                 break
 
-        return (
-            " ".join(description_lines)
-            if description_lines
-            else "No description available"
-        )
+        return " ".join(description_lines) if description_lines else "No description available"
 
     def _find_pattern_by_name(self, name: str) -> Optional[Dict[str, Any]]:
         """Find pattern by name.
@@ -427,7 +411,7 @@ class PatternManager:
             frequency_data: List of patterns with counts from analyzer
         """
         for freq_item in frequency_data:
-            pattern_name = freq_item.get("pattern")
+            pattern_name = str(freq_item.get("pattern", "unknown"))
             count = freq_item.get("count", 0)
 
             pattern = self._find_pattern_by_name(pattern_name)
@@ -456,7 +440,7 @@ class PatternManager:
             new_patterns: List of new patterns with details
         """
         for new_pattern in new_patterns:
-            pattern_name = new_pattern.get("pattern")
+            pattern_name = str(new_pattern.get("pattern", "unknown"))
             count = new_pattern.get("count", 1)
             details = new_pattern.get("details", [])
 
@@ -680,9 +664,7 @@ class PatternManager:
                     )
                 else:
                     # No patterns section found, append
-                    new_content = (
-                        existing_content + "\n\n## Core Patterns\n\n" + pattern_sections
-                    )
+                    new_content = existing_content + "\n\n## Core Patterns\n\n" + pattern_sections
             else:
                 # Create new file
                 new_content = self._generate_full_markdown(pattern_sections)
@@ -730,7 +712,9 @@ class PatternManager:
 
             section = f"### {idx}. {display_name}\n\n"
             section += f"**Pattern:** `{name}`\n\n"
-            section += f"**Metrics:** Frequency: {frequency} | Effectiveness: {effectiveness:.1%}\n\n"
+            section += (
+                f"**Metrics:** Frequency: {frequency} | Effectiveness: {effectiveness:.1%}\n\n"
+            )
             section += f"**Problems:**\n{description}\n\n"
 
             if bad_example:

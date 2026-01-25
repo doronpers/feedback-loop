@@ -11,10 +11,7 @@ import secrets
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional
-
-from sqlalchemy.orm import Session as DbSession
-from sqlalchemy import or_
+from typing import Dict, List, Optional
 
 # Load .env file from project root
 project_root = Path(__file__).parent.parent
@@ -29,8 +26,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 
-from api.db import models
-from api.deps import get_db
+# Import dashboard router
+from api.dashboard import router as dashboard_router
+from api.insights import router as insights_router
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +87,10 @@ app.add_middleware(
 )
 
 security = HTTPBearer()
+
+# Include dashboard router
+app.include_router(dashboard_router)
+app.include_router(insights_router)
 
 
 # ============================================================================
@@ -161,6 +163,19 @@ class ConfigResponse(BaseModel):
 
 
 # ============================================================================
+# In-Memory Storage (Replace with database in production)
+# ============================================================================
+
+# TODO: PRODUCTION - Replace with PostgreSQL database
+# In-memory dictionaries lose data on restart and don't support concurrent access
+# See Documentation/PRODUCTION_CHECKLIST.md for migration plan
+USERS_DB: Dict[int, dict] = {}
+SESSIONS_DB: Dict[str, dict] = {}
+PATTERNS_DB: Dict[int, Dict[str, dict]] = {}
+CONFIG_DB: Dict[int, dict] = {}
+
+
+# ============================================================================
 # Authentication & Authorization
 # ============================================================================
 
@@ -172,12 +187,20 @@ def create_token_str(user_id: int) -> str:
 
 
 def hash_password(password: str) -> str:
-    """Hash password using bcrypt."""
+    """Hash password using bcrypt for better GPU-resistance than PBKDF2.
+
+    Optimized: Uses bcrypt via passlib CryptContext for standardized,
+    production-ready password hashing.
+    """
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against bcrypt hash."""
+    """Verify password against bcrypt hash.
+
+    Optimized: Standardized on CryptContext; removed legacy SHA-256 fallback
+    to prevent downgrade attacks.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -210,7 +233,7 @@ async def require_admin(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     """Require admin role for endpoint access."""
-    if current_user.role != "admin":
+    if current_user.get("role") != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
@@ -369,6 +392,12 @@ async def register(request: UserCreate, db: DbSession = Depends(get_db)):
 @app.get("/api/v1/auth/me", response_model=UserResponse)
 async def get_current_user_info(current_user: models.User = Depends(get_current_user)):
     """Get current authenticated user information."""
+    user = USERS_DB.get(current_user["user_id"])
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
     return UserResponse(
         id=current_user.id,
         username=current_user.username,
@@ -382,9 +411,7 @@ async def get_current_user_info(current_user: models.User = Depends(get_current_
 
 @app.post("/api/v1/patterns/sync", response_model=PatternSyncResponse)
 async def sync_patterns(
-    request: PatternSync,
-    current_user: models.User = Depends(get_current_user),
-    db: DbSession = Depends(get_db),
+    request: PatternSync, current_user: dict = Depends(get_current_user)
 ):
     """
     Sync patterns to cloud storage.
@@ -635,22 +662,12 @@ async def list_users(
 
 @app.delete("/api/v1/admin/patterns/{pattern_name}")
 async def delete_pattern(
-    pattern_name: str,
-    current_user: models.User = Depends(require_admin),
-    db: DbSession = Depends(get_db),
+    pattern_name: str, current_user: dict = Depends(require_admin)
 ):
     """Delete a pattern (admin only)."""
+    org_id = current_user["organization_id"]
 
-    pattern = (
-        db.query(models.Pattern)
-        .filter(
-            models.Pattern.organization_id == current_user.organization_id,
-            models.Pattern.name == pattern_name,
-        )
-        .first()
-    )
-
-    if not pattern:
+    if org_id not in PATTERNS_DB or pattern_name not in PATTERNS_DB[org_id]:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Pattern not found"
         )

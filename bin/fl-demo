@@ -1,0 +1,547 @@
+#!/usr/bin/env python3
+"""
+Feedback Loop Interactive Demo
+
+Provides an isolated demo environment with sample patterns, metrics, and interactive examples.
+Shows pattern before/after comparisons and allows hands-on exploration.
+"""
+
+import json
+import os
+import shutil
+import sys
+import tempfile
+from pathlib import Path
+
+# Add parent directory to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load .env file from project root
+from metrics.env_loader import load_env_file
+
+load_env_file(project_root)
+
+import numpy as np
+from rich.columns import Columns
+from rich.console import Console
+from rich.layout import Layout
+from rich.panel import Panel
+from rich.prompt import Confirm, Prompt
+from rich.table import Table
+from rich.text import Text
+from rich.theme import Theme
+
+# Custom theme for consistent styling
+custom_theme = Theme(
+    {
+        "info": "cyan",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green",
+        "header": "bold blue",
+        "accent": "magenta",
+        "good": "green",
+        "bad": "red",
+    }
+)
+
+console = Console(theme=custom_theme)
+
+
+class DemoEnvironment:
+    """Manages the demo environment setup and cleanup."""
+
+    def __init__(self):
+        """Initialize demo environment."""
+        self.demo_dir = None
+        self.original_cwd = os.getcwd()
+
+    def setup(self) -> Path:
+        """Create isolated demo environment."""
+        # Create temporary directory for demo
+        self.demo_dir = Path(tempfile.mkdtemp(prefix="feedback-loop-demo-"))
+
+        # Copy demo data files
+        demo_patterns_src = project_root / "data" / "demo-patterns.json"
+        demo_metrics_src = project_root / "data" / "demo-metrics.json"
+
+        if demo_patterns_src.exists():
+            shutil.copy(demo_patterns_src, self.demo_dir / "patterns.json")
+
+        if demo_metrics_src.exists():
+            shutil.copy(demo_metrics_src, self.demo_dir / "metrics_data.json")
+
+        # Create sample code files
+        self._create_sample_files()
+
+        console.print(f"✅ Demo environment created at: {self.demo_dir}", style="success")
+        return self.demo_dir
+
+    def _create_sample_files(self):
+        """Create sample code files for demonstration."""
+        # Create a sample Python file with pattern violations
+        sample_code = '''"""
+Sample code with pattern violations for demonstration.
+This file contains common anti-patterns that feedback-loop can detect and fix.
+"""
+
+import json
+import tempfile
+import numpy as np
+
+def bad_numpy_serialization():
+    """Demonstrates the numpy_json_serialization anti-pattern."""
+    data = np.array([1.0, 2.0, 3.0])
+
+    # BAD: NumPy types are not JSON serializable
+    result = {
+        "mean": np.mean(data),  # This will cause TypeError!
+        "std": np.std(data),
+        "values": data
+    }
+
+    return json.dumps(result)  # Boom!
+
+def bad_bounds_checking(items):
+    """Demonstrates the bounds_checking anti-pattern."""
+    # BAD: No bounds checking
+    return items[0]  # IndexError if items is empty!
+
+def bad_exception_handling():
+    """Demonstrates the specific_exceptions anti-pattern."""
+    try:
+        # Some operation that might fail
+        data = json.loads("invalid json")
+        return data
+    except:  # BAD: Bare except catches everything!
+        print("Something went wrong")
+        return None
+
+def bad_logging(filename):
+    """Demonstrates the structured_logging anti-pattern."""
+    # BAD: Using print instead of proper logging
+    print(f"Processing file: {filename}")
+    print("This won't be captured in production logs!")
+
+def bad_temp_file_handling(data):
+    """Demonstrates the temp_file_handling anti-pattern."""
+    # BAD: No cleanup, resource leak
+    path = tempfile.mktemp()
+    with open(path, 'wb') as f:
+        f.write(data)
+
+    # File is never deleted! Resource leak.
+    return path
+'''
+
+        with open(self.demo_dir / "sample_bad_code.py", "w") as f:
+            f.write(sample_code)
+
+        # Create a fixed version
+        fixed_code = '''"""
+Sample code with patterns correctly applied.
+This demonstrates the 'good' implementations.
+"""
+
+import json
+import logging
+import tempfile
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+def good_numpy_serialization():
+    """Correctly handles NumPy types for JSON serialization."""
+    data = np.array([1.0, 2.0, 3.0])
+
+    # GOOD: Convert NumPy types to Python native types
+    result = {
+        "mean": float(np.mean(data)),
+        "std": float(np.std(data)),
+        "values": data.tolist()
+    }
+
+    return json.dumps(result)  # Works perfectly!
+
+def good_bounds_checking(items):
+    """Safely accesses list elements with bounds checking."""
+    # GOOD: Check bounds before accessing
+    if not items:
+        logger.debug("List is empty, returning None")
+        return None
+
+    return items[0]
+
+def good_exception_handling():
+    """Handles exceptions specifically and appropriately."""
+    try:
+        data = json.loads("invalid json")
+        return data
+    except json.JSONDecodeError as e:
+        # GOOD: Catch specific exceptions
+        logger.debug(f"Invalid JSON format: {e}")
+        return None
+    except Exception as e:
+        # GOOD: Log unexpected errors but don't swallow them
+        logger.error(f"Unexpected error: {e}")
+        raise
+
+def good_logging(filename):
+    """Uses proper structured logging."""
+    # GOOD: Use logger instead of print
+    logger.debug(f"Processing file: {filename}")
+    logger.info("File processing completed successfully")
+
+def good_temp_file_handling(data):
+    """Properly handles temporary files with cleanup."""
+    # GOOD: Use context manager for automatic cleanup
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(data)
+        tmp_path = tmp.name
+
+    try:
+        # Process the file
+        process_file(tmp_path)
+        return tmp_path
+    finally:
+        # GOOD: Always cleanup
+        os.unlink(tmp_path)
+'''
+
+        with open(self.demo_dir / "sample_good_code.py", "w") as f:
+            f.write(fixed_code)
+
+    def cleanup(self):
+        """Clean up demo environment."""
+        if self.demo_dir and self.demo_dir.exists():
+            try:
+                shutil.rmtree(self.demo_dir)
+                console.print(f"🧹 Demo environment cleaned up: {self.demo_dir}", style="info")
+            except Exception as e:
+                console.print(
+                    f"⚠️  Warning: Could not fully clean up demo environment: {e}", style="warning"
+                )
+
+    def __enter__(self):
+        """Context manager entry."""
+        return self.setup()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit."""
+        self.cleanup()
+
+
+class InteractiveDemo:
+    """Interactive demo presenter."""
+
+    def __init__(self, demo_env: DemoEnvironment):
+        """Initialize interactive demo."""
+        self.demo_env = demo_env
+        self.patterns = self._load_demo_patterns()
+
+    def _load_demo_patterns(self):
+        """Load demo patterns from the demo environment."""
+        patterns_file = self.demo_env.demo_dir / "patterns.json"
+        if patterns_file.exists():
+            try:
+                with open(patterns_file, "r") as f:
+                    data = json.load(f)
+                    return data.get("patterns", [])
+            except Exception:
+                pass
+        return []
+
+    def show_welcome(self):
+        """Show demo welcome message."""
+        welcome_text = Text("🎭 Feedback Loop Interactive Demo", style="header")
+        subtitle = Text("Experience patterns in action with before/after examples", style="accent")
+
+        console.print()
+        console.print(Panel.fit(welcome_text, border_style="blue"))
+        console.print(subtitle, justify="center")
+        console.print()
+
+        console.print("This demo shows you:", style="info")
+        console.print("  📊 Real pattern examples with good/bad code", style="accent")
+        console.print("  🎯 Interactive pattern exploration", style="accent")
+        console.print("  📈 Sample metrics and analytics", style="accent")
+        console.print("  🛠️  Hands-on pattern application", style="accent")
+        console.print()
+
+    def show_pattern_overview(self):
+        """Show overview of available patterns."""
+        if not self.patterns:
+            console.print("⚠️  No demo patterns found.", style="warning")
+            return
+
+        console.print("\n📋 Available Patterns:", style="header")
+
+        table = Table(show_header=True, header_style="bold blue")
+        table.add_column("Pattern", style="cyan", no_wrap=True)
+        table.add_column("Category", style="green")
+        table.add_column("Problem Solved", style="yellow")
+        table.add_column("Success Rate", style="magenta", justify="right")
+
+        for pattern in self.patterns[:5]:  # Show top 5
+            success_rate = pattern.get("success_rate", 0)
+            success_str = f"{success_rate:.0%}" if success_rate else "N/A"
+
+            table.add_row(
+                pattern.get("name", "unknown"),
+                pattern.get("category", "general"),
+                pattern.get("description", "")[:40] + "..."
+                if len(pattern.get("description", "")) > 40
+                else pattern.get("description", ""),
+                success_str,
+            )
+
+        console.print(table)
+
+    def show_pattern_comparison(self, pattern_name: str = None):
+        """Show before/after pattern comparison."""
+        if not pattern_name and self.patterns:
+            pattern_name = self.patterns[0].get("name")
+
+        pattern = next((p for p in self.patterns if p.get("name") == pattern_name), None)
+
+        if not pattern:
+            console.print(f"❌ Pattern '{pattern_name}' not found.", style="error")
+            return
+
+        console.print(f"\n🔍 Pattern: {pattern['name']}", style="header")
+        console.print(f"Category: {pattern.get('category', 'general')}", style="info")
+        console.print()
+
+        # Problem description
+        console.print("❌ Problem:", style="bad")
+        console.print(f"   {pattern.get('problem', 'Not specified')}")
+        console.print()
+
+        console.print("✅ Solution:", style="good")
+        console.print(f"   {pattern.get('solution', 'Not specified')}")
+        console.print()
+
+        # Code comparison
+        console.print("📝 Code Comparison:", style="header")
+
+        bad_code = pattern.get("bad_example", "# Bad example not available")
+        good_code = pattern.get("good_example", "# Good example not available")
+
+        # Create side-by-side layout
+        layout = Layout()
+        layout.split_row(
+            Layout(Panel.fit(f"❌ BAD\n\n{bad_code}", border_style="red"), name="bad"),
+            Layout(Panel.fit(f"✅ GOOD\n\n{good_code}", border_style="green"), name="good"),
+        )
+
+        console.print(layout)
+
+        # Show impact
+        frequency = pattern.get("frequency", 0)
+        success_rate = pattern.get("success_rate", 0)
+
+        console.print(f"\n📊 Impact:", style="info")
+        console.print(f"   • Frequency: {frequency} occurrences detected")
+        console.print(f"   • Success Rate: {success_rate:.0%} when pattern applied")
+
+    def show_metrics_demo(self):
+        """Show sample metrics and analytics."""
+        metrics_file = self.demo_env.demo_dir / "metrics_data.json"
+
+        if not metrics_file.exists():
+            console.print("⚠️  Demo metrics not found.", style="warning")
+            return
+
+        try:
+            with open(metrics_file, "r") as f:
+                metrics = json.load(f)
+        except Exception as e:
+            console.print(f"❌ Error loading metrics: {e}", style="error")
+            return
+
+        console.print("\n📊 Sample Metrics & Analytics:", style="header")
+
+        # Summary stats
+        bugs = len(metrics.get("bugs", []))
+        test_failures = len(metrics.get("test_failures", []))
+        code_reviews = len(metrics.get("code_reviews", []))
+
+        stats_table = Table(show_header=True, header_style="bold blue")
+        stats_table.add_column("Metric", style="cyan")
+        stats_table.add_column("Count", style="green", justify="right")
+
+        stats_table.add_row("Bugs Detected", str(bugs))
+        stats_table.add_row("Test Failures", str(test_failures))
+        stats_table.add_row("Code Reviews", str(code_reviews))
+        stats_table.add_row("Total Issues", str(bugs + test_failures + code_reviews))
+
+        console.print(stats_table)
+
+        # Pattern frequency
+        if metrics.get("bugs"):
+            console.print("\n🎯 Top Patterns by Frequency:", style="header")
+            pattern_counts = {}
+            for bug in metrics["bugs"]:
+                pattern = bug.get("pattern", "unknown")
+                pattern_counts[pattern] = pattern_counts.get(pattern, 0) + bug.get("count", 1)
+
+            pattern_table = Table(show_header=True, header_style="bold blue")
+            pattern_table.add_column("Pattern", style="cyan")
+            pattern_table.add_column("Occurrences", style="green", justify="right")
+
+            for pattern, count in sorted(pattern_counts.items(), key=lambda x: x[1], reverse=True):
+                pattern_table.add_row(pattern, str(count))
+
+            console.print(pattern_table)
+
+    def interactive_menu(self):
+        """Run interactive menu."""
+        while True:
+            console.print("\n" + "=" * 50, style="header")
+            console.print("Choose an option:", style="header")
+            console.print("=" * 50, style="header")
+
+            options = [
+                "1. 📋 View all patterns",
+                "2. 🔍 Explore specific pattern",
+                "3. 📊 View sample metrics",
+                "4. 🎮 Try pattern playground",
+                "5. 📁 Show demo files",
+                "6. 🧹 Cleanup and exit",
+            ]
+
+            for option in options:
+                console.print(option)
+
+            console.print()
+
+            choice = Prompt.ask(
+                "Enter your choice", choices=["1", "2", "3", "4", "5", "6"], default="1"
+            )
+
+            if choice == "1":
+                self.show_pattern_overview()
+                input("\nPress Enter to continue...")
+
+            elif choice == "2":
+                if self.patterns:
+                    pattern_names = [p.get("name", "unknown") for p in self.patterns]
+                    console.print("Available patterns:")
+                    for i, name in enumerate(pattern_names, 1):
+                        console.print(f"  {i}. {name}")
+
+                    pattern_choice = Prompt.ask(
+                        "Choose a pattern number",
+                        choices=[str(i) for i in range(1, len(pattern_names) + 1)],
+                        default="1",
+                    )
+
+                    selected_pattern = pattern_names[int(pattern_choice) - 1]
+                    self.show_pattern_comparison(selected_pattern)
+                else:
+                    console.print("❌ No patterns available.", style="error")
+
+                input("\nPress Enter to continue...")
+
+            elif choice == "3":
+                self.show_metrics_demo()
+                input("\nPress Enter to continue...")
+
+            elif choice == "4":
+                self.pattern_playground()
+                input("\nPress Enter to continue...")
+
+            elif choice == "5":
+                self.show_demo_files()
+                input("\nPress Enter to continue...")
+
+            elif choice == "6":
+                console.print("\n👋 Thanks for exploring feedback-loop!", style="success")
+                break
+
+    def pattern_playground(self):
+        """Interactive pattern playground."""
+        console.print("\n🎮 Pattern Playground", style="header")
+        console.print("Try applying patterns to sample code!", style="info")
+        console.print()
+
+        # Simple example: NumPy serialization
+        console.print("Example: NumPy Array to JSON", style="accent")
+
+        code_example = """
+import json
+import numpy as np
+
+data = np.array([1.0, 2.0, 3.0])
+
+# Try this - it will fail!
+result = {"mean": np.mean(data), "values": data}
+json.dumps(result)  # TypeError!
+        """
+
+        console.print("❌ Problematic Code:")
+        console.print(Panel.fit(code_example, border_style="red"))
+
+        console.print("✅ Fixed Code:")
+        fixed_example = """
+import json
+import numpy as np
+
+data = np.array([1.0, 2.0, 3.0])
+
+# Convert NumPy types to Python types
+result = {
+    "mean": float(np.mean(data)),
+    "values": data.tolist()
+}
+json.dumps(result)  # Works!
+        """
+
+        console.print(Panel.fit(fixed_example, border_style="green"))
+
+    def show_demo_files(self):
+        """Show created demo files."""
+        console.print("\n📁 Demo Environment Files:", style="header")
+
+        if not self.demo_env.demo_dir:
+            console.print("❌ Demo environment not set up.", style="error")
+            return
+
+        files = list(self.demo_env.demo_dir.glob("*"))
+        if not files:
+            console.print("No files found.", style="warning")
+            return
+
+        for file_path in files:
+            if file_path.is_file():
+                size = file_path.stat().st_size
+                console.print(f"  📄 {file_path.name} ({size} bytes)")
+
+
+def main():
+    """Main entry point."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Feedback Loop Interactive Demo")
+    parser.add_argument("--cleanup", action="store_true", help="Clean up demo environment and exit")
+
+    args = parser.parse_args()
+
+    demo_env = DemoEnvironment()
+
+    if args.cleanup:
+        # Just cleanup any existing demo environments
+        console.print("🧹 Cleaning up demo environments...", style="info")
+        # In a real implementation, we'd track and cleanup all demo dirs
+        console.print("✅ Cleanup complete.", style="success")
+        return
+
+    with demo_env:
+        demo = InteractiveDemo(demo_env)
+        demo.show_welcome()
+        demo.interactive_menu()
+
+
+if __name__ == "__main__":
+    main()

@@ -13,8 +13,7 @@ import json
 from pathlib import Path
 
 from metrics.integrate import MetricsIntegration
-from metrics.sync_client import (CloudSyncClient, LocalSyncClient,
-                                 create_sync_client)
+from metrics.sync_client import CloudSyncClient, LocalSyncClient, create_sync_client
 
 
 def example_local_sync():
@@ -138,7 +137,7 @@ def example_metrics_integration():
         print("\n✓ Using local sync (not logged in)")
 
     # Create integration with sync client
-    integration = MetricsIntegration(sync_client=sync_client)
+    _integration = MetricsIntegration(sync_client=sync_client)
 
     print(f"  Sync client type: {type(sync_client).__name__}")
     print(f"  Authenticated: {sync_client.is_authenticated()}")
@@ -162,7 +161,7 @@ def example_factory():
         api_key="",  # Empty key - will fall back
     )
     print(f"\n✓ Attempted cloud client: {type(client).__name__}")
-    print(f"  (Falls back to local when credentials missing)")
+    print("  (Falls back to local when credentials missing)")
 
 
 def main():

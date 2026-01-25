@@ -33,9 +33,17 @@ from sqlalchemy.orm import sessionmaker
 database_dir = Path(__file__).parent.parent / "database"
 sys.path.insert(0, str(database_dir))
 
-from models import (Base, MetricsBug, MetricsCodeGeneration, MetricsCodeReview,
-                    MetricsDeployment, MetricsPerformance, MetricsSummary,
-                    MetricsTestFailure, PatternEffectiveness)
+from models import (
+    Base,
+    MetricsBug,
+    MetricsCodeGeneration,
+    MetricsCodeReview,
+    MetricsDeployment,
+    MetricsPerformance,
+    MetricsSummary,
+    MetricsTestFailure,
+    PatternEffectiveness,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -171,8 +179,7 @@ class MetricsExporter:
                     details=details,
                     timestamp=self._parse_timestamp(metric.get("timestamp")),
                     function_name=details.get("function"),
-                    execution_time_ms=details.get("avg_time_ms")
-                    or details.get("max_time_ms"),
+                    execution_time_ms=details.get("avg_time_ms") or details.get("max_time_ms"),
                     memory_usage_bytes=details.get("memory_usage"),
                     file_size_bytes=details.get("file_size"),
                 )
@@ -250,9 +257,7 @@ class MetricsExporter:
             )
             logger.info(f"  ✓ Exported {failures_count} test failure records")
 
-            reviews_count = self.export_code_reviews(
-                metrics_data.get("code_reviews", []), session
-            )
+            reviews_count = self.export_code_reviews(metrics_data.get("code_reviews", []), session)
             logger.info(f"  ✓ Exported {reviews_count} code review records")
 
             perf_count = self.export_performance(
@@ -274,12 +279,7 @@ class MetricsExporter:
             session.commit()
 
             total = (
-                bugs_count
-                + failures_count
-                + reviews_count
-                + perf_count
-                + deploy_count
-                + gen_count
+                bugs_count + failures_count + reviews_count + perf_count + deploy_count + gen_count
             )
             logger.info(f"\n✓ Successfully exported {total} total records")
 
@@ -312,9 +312,7 @@ class MetricsExporter:
             return datetime.fromisoformat(timestamp_str)
         except (ValueError, AttributeError):
             # If parsing fails, return current time
-            logger.warning(
-                f"Failed to parse timestamp: {timestamp_str}, using current time"
-            )
+            logger.warning(f"Failed to parse timestamp: {timestamp_str}, using current time")
             return datetime.utcnow()
 
 

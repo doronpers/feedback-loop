@@ -34,7 +34,7 @@ def parse_config_bad(config_str):
         # BAD: Bare except catches everything, including KeyboardInterrupt
         config = json.loads(config_str)
         return config["database"]["host"]
-    except:
+    except:  # noqa: B001, E722
         print("Error parsing config")
         return None
 
@@ -71,7 +71,7 @@ class DataProcessor:
         try:
             self.host = config["host"]
             self.port = config["port"]
-        except:
+        except:  # noqa: B001, E722
             print("Config error")
             self.host = "localhost"
             self.port = 5432

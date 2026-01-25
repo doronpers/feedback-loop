@@ -5,12 +5,8 @@ Tests the abstraction layer for pattern and metrics synchronization.
 """
 
 import json
-from pathlib import Path
 
-import pytest
-
-from metrics.sync_client import (CloudSyncClient, LocalSyncClient, SyncClient,
-                                 create_sync_client)
+from metrics.sync_client import CloudSyncClient, LocalSyncClient, create_sync_client
 
 
 class TestLocalSyncClient:
@@ -21,9 +17,7 @@ class TestLocalSyncClient:
         patterns_file = tmp_path / "patterns.json"
         metrics_file = tmp_path / "metrics.json"
 
-        client = LocalSyncClient(
-            patterns_file=str(patterns_file), metrics_file=str(metrics_file)
-        )
+        client = LocalSyncClient(patterns_file=str(patterns_file), metrics_file=str(metrics_file))
 
         assert client.patterns_file == patterns_file
         assert client.metrics_file == metrics_file
@@ -152,9 +146,7 @@ class TestCloudSyncClient:
 
     def test_sync_patterns_placeholder(self):
         """Test syncing patterns (placeholder implementation)."""
-        client = CloudSyncClient(
-            api_url="http://localhost:8000", api_key="test_key_123"
-        )
+        client = CloudSyncClient(api_url="http://localhost:8000", api_key="test_key_123")
 
         patterns = [
             {"name": "pattern1", "description": "Test pattern 1"},

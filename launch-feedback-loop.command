@@ -72,21 +72,48 @@ while true; do
     echo "Please select a tool to launch:"
     echo "════════════════════════════════════════════════════════════════════"
     echo ""
-    echo "  1) 💬 Chat       - Interactive AI-powered chat for coding help"
-    echo "  2) 📊 Dashboard  - View metrics and pattern insights"
-    echo "  3) 🩺 Doctor     - Diagnose and fix common issues"
-    echo "  4) ⚙️ Setup      - Configure feedback-loop for your project"
-    echo "  5) 🔧 Synthesize - Interactive Code Synthesizer"
-    echo "  6) 🎬 Demo              - See patterns in action"
-    echo "  7) 📊 Superset Setup   - Set up analytics dashboards"
-    echo "  8) 📚 Open Documentation"
+    echo "  ⭐) 🚀 QUICK START    - One-click setup + demo + dashboard!"
+    echo ""
+    echo "  1) 💬 Chat           - Interactive AI-powered chat for coding help"
+    echo "  2) 📊 Dashboard      - View metrics and pattern insights"
+    echo "  3) 🩺 Doctor         - Diagnose and fix common issues"
+    echo "  4) ⚙️ Setup          - Configure feedback-loop for your project"
+    echo "  5) 🔧 Synthesize     - Interactive Code Synthesizer"
+    echo "  6) 🎬 Demo           - See patterns in action"
+    echo "  7) 📊 Superset Setup - Set up analytics dashboards"
+    echo "  8) 📚 Documentation  - Open docs and guides"
     echo "  9) 🚪 Exit"
     echo ""
-    echo -n "Enter your choice (1-9): "
+    echo -n "Enter ⭐ for Quick Start, or 1-9: "
     read -r choice
     echo ""
 
     case $choice in
+        "⭐"|"star"|"quick"|"start")
+            echo "🚀 Starting Quick Start Experience..."
+            echo "════════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "This will:"
+            echo "  • Auto-setup feedback-loop if needed"
+            echo "  • Launch an interactive demo"
+            echo "  • Open the analytics dashboard in your browser"
+            echo ""
+            echo "Press Ctrl+C when you're done exploring!"
+            echo ""
+            python3 bin/fl-start
+            STATUS=$?
+            echo ""
+            echo "════════════════════════════════════════════════════════════════════"
+            if [ $STATUS -eq 0 ]; then
+                echo "✓ Quick Start completed successfully"
+            else
+                echo "⚠️  Quick Start exited with code: $STATUS"
+            fi
+            echo ""
+            echo "Press any key to return to menu..."
+            read -n 1 -s
+            echo ""
+            ;;
         1)
             echo "🚀 Launching Chat..."
             echo "════════════════════════════════════════════════════════════════════"

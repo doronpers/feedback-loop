@@ -1,13 +1,17 @@
 # Feedback Loop - Cursor AI Rules
-# 
-# This file teaches Cursor about the feedback-loop patterns and best practices.
-# Cursor automatically reads this file and applies these rules to all AI interactions.
+
+#
+
+# This file teaches Cursor about the feedback-loop patterns and best practices
+
+# Cursor automatically reads this file and applies these rules to all AI interactions
 
 ## Project Overview
 
 This is the feedback-loop repository - a framework for AI-assisted development that learns from test failures and builds reusable patterns.
 
 **Core Philosophy:**
+
 - Learn from failures, not just successes
 - Build living pattern libraries
 - Pattern-aware code generation
@@ -16,6 +20,7 @@ This is the feedback-loop repository - a framework for AI-assisted development t
 ## The 9 Core Patterns (ALWAYS APPLY)
 
 ### 1. NumPy Type Conversion
+
 **Problem:** NumPy types (np.int64, np.float64, etc.) are not JSON serializable
 **Solution:** Convert to Python native types using .item() or .tolist()
 
@@ -34,12 +39,14 @@ json.dumps(result)  # Works!
 ```
 
 **When to apply:**
+
 - ANY time you use NumPy operations
 - Before JSON serialization
 - When returning API responses
 - When storing in databases
 
 ### 2. Bounds Checking
+
 **Problem:** Accessing list/array indices without checking length causes IndexError
 **Solution:** Always validate bounds before accessing
 
@@ -60,12 +67,14 @@ def get_first(items):
 ```
 
 **When to apply:**
+
 - Accessing list/array elements by index
 - Slicing operations
 - Getting first/last elements
 - Any direct index access
 
 ### 3. Specific Exception Handling
+
 **Problem:** Bare except: catches everything, including KeyboardInterrupt and SystemExit
 **Solution:** Catch specific exceptions only
 
@@ -88,6 +97,7 @@ except Exception as e:
 ```
 
 **When to apply:**
+
 - ALL try/except blocks
 - Error handling in API endpoints
 - File operations
@@ -95,6 +105,7 @@ except Exception as e:
 - Any exception handling
 
 ### 4. Structured Logging
+
 **Problem:** print() statements don't work in production/tests and clutter output
 **Solution:** Use proper logging with appropriate levels
 
@@ -112,6 +123,7 @@ logger.error(f"Error occurred: {error}", exc_info=True)
 ```
 
 **When to apply:**
+
 - ALL debug output
 - Error messages
 - Status updates
@@ -119,6 +131,7 @@ logger.error(f"Error occurred: {error}", exc_info=True)
 - Instead of ANY print() statement
 
 ### 5. Metadata-Based Logic
+
 **Problem:** String matching and pattern detection is fragile
 **Solution:** Use explicit metadata and configuration
 
@@ -134,12 +147,14 @@ if priority == "high":
 ```
 
 **When to apply:**
+
 - Business logic decisions
 - Routing/dispatching
 - Feature flags
 - Configuration-based behavior
 
 ### 6. Temp File Handling
+
 **Problem:** Temp files not cleaned up, file descriptor leaks
 **Solution:** Always use proper cleanup with context managers
 
@@ -174,12 +189,14 @@ finally:
 ```
 
 **When to apply:**
+
 - ANY temp file creation
 - File processing pipelines
 - Upload handling
 - Testing with files
 
 ### 7. Large File Processing
+
 **Problem:** Loading entire files into memory causes OOM errors
 **Solution:** Stream/chunk large files
 
@@ -198,6 +215,7 @@ def process_file(path, chunk_size=1024*1024):
 ```
 
 **When to apply:**
+
 - Files > 100MB
 - User uploads
 - Video/audio processing
@@ -205,6 +223,7 @@ def process_file(path, chunk_size=1024*1024):
 - Any file of unknown size
 
 ### 8. FastAPI Streaming Uploads
+
 **Problem:** Loading entire upload into memory before processing
 **Solution:** Stream directly to disk or processing
 
@@ -229,12 +248,14 @@ async def upload(file: UploadFile):
 ```
 
 **When to apply:**
+
 - FastAPI file uploads
 - Any async file handling
 - API endpoints receiving files
 - Uploads > 10MB
 
 ### 9. NumPy NaN/Inf Handling
+
 **Problem:** NaN and Inf are not valid in JSON and cause silent errors
 **Solution:** Explicitly check and handle NaN/Inf
 
@@ -260,6 +281,7 @@ result = {
 ```
 
 **When to apply:**
+
 - ANY NumPy calculations
 - Division operations
 - Mathematical functions (sqrt, log, etc.)
@@ -269,19 +291,32 @@ result = {
 ## Code Style & Standards
 
 ### Python
+
 - **Line length:** 88 characters (Black formatter)
 - **Imports:** Group stdlib, third-party, local (isort)
 - **Type hints:** Required for all function parameters and returns
 - **Docstrings:** Google style for public functions
 - **Testing:** pytest with fixtures, 80%+ coverage target
 
+### IDE Configuration (CRITICAL for preventing whitespace errors)
+
+- **Format on Save**: **MUST** enable "Format on Save" in your IDE (VS Code, Cursor, or PyCharm). If a bulk edit merges two lines into one, the formatter will immediately try (and usually fail) to fix it, highlighting the syntax error with a red underline before you even switch files.
+- **Linter Overlays**: **MUST** ensure your IDE is using the repository's `.pre-commit-config.yaml` as the source of truth for its internal linting. This ensures IDE warnings match pre-commit hook behavior and catch issues early.
+
+### Bulk Operations (CRITICAL for preventing errors across many files)
+
+- **Audit the Diff**: When performing a bulk operation across hundreds of files, **MUST** use `git diff --stat` to see which files changed, and then spot-check a few using `git diff <filename>` to verify the changes are correct.
+- **Syntax Check Smoke Test**: After any bulk edit, **MUST** run `python3 -m compileall .` to check for syntax errors before committing.
+
 ### Documentation
+
 - **Comments:** Explain WHY, not WHAT
 - **TODOs:** Include ticket number or @username
 - **Examples:** Always include working examples
 - **Updates:** Keep docstrings in sync with code
 
 ### Error Handling
+
 - **Always log errors** with context
 - **Include error types** in except clauses
 - **Preserve stack traces** with exc_info=True
@@ -290,28 +325,31 @@ result = {
 
 ## Testing Requirements
 
-### Every function must have tests for:
+### Every function must have tests for
+
 1. **Happy path** - Normal operation
 2. **Edge cases** - Empty inputs, boundaries, None
 3. **Error cases** - Invalid inputs, exceptions
 4. **Type validation** - Especially with NumPy types
 
 ### Test Structure
+
 ```python
 def test_function_name_scenario():
     """Test function_name with specific scenario."""
     # Arrange - Setup
     data = setup_test_data()
-    
+
     # Act - Execute
     result = function_name(data)
-    
+
     # Assert - Verify
     assert result is not None
     assert isinstance(result, expected_type)
 ```
 
 ### Test Patterns
+
 - Use fixtures for reusable setup
 - Mock external dependencies
 - Test with metrics: `pytest --enable-metrics`
@@ -320,33 +358,39 @@ def test_function_name_scenario():
 ## Common Pitfalls to Avoid
 
 ### 1. NumPy Type Issues
+
 - ❌ Returning np.int64, np.float64 directly
 - ❌ JSON serializing NumPy arrays without .tolist()
 - ❌ Not handling NaN/Inf in calculations
 
 ### 2. File Handling
+
 - ❌ Not cleaning up temp files
 - ❌ Loading large files entirely into memory
 - ❌ Using tempfile.mktemp() instead of mkstemp()
 
 ### 3. Error Handling
+
 - ❌ Bare except: clauses
 - ❌ Not logging errors
 - ❌ Swallowing exceptions silently
 
 ### 4. Production Issues
+
 - ❌ Using print() instead of logging
 - ❌ Hardcoded paths or configuration
 - ❌ Missing input validation
 
 ### 5. API Development
+
 - ❌ Not streaming large uploads
 - ❌ Missing proper error responses
 - ❌ Not validating content types/sizes
 
 ## When Generating Code
 
-### Always Include:
+### Always Include
+
 1. **Type hints** - For parameters and returns
 2. **Error handling** - Specific exceptions
 3. **Logging** - Not print statements
@@ -354,14 +398,16 @@ def test_function_name_scenario():
 5. **Docstrings** - Google style
 6. **Tests** - At least happy path and error cases
 
-### For API Endpoints:
+### For API Endpoints
+
 1. **Request validation** - Pydantic models
 2. **Error responses** - Proper HTTP status codes
 3. **Streaming** - For file uploads/downloads
 4. **Logging** - Request/response context
 5. **Documentation** - OpenAPI annotations
 
-### For Data Processing:
+### For Data Processing
+
 1. **NumPy type conversion** - Before serialization
 2. **NaN/Inf handling** - Explicit checks
 3. **Chunked processing** - For large data
@@ -371,7 +417,9 @@ def test_function_name_scenario():
 ## Integration with Tools
 
 ### Cursor Commands
+
 When user asks for code generation, ALWAYS:
+
 1. Apply relevant patterns from above
 2. Include proper error handling
 3. Add type hints
@@ -379,7 +427,9 @@ When user asks for code generation, ALWAYS:
 5. Include basic tests
 
 ### Code Review
+
 When reviewing code, check for:
+
 1. All 9 patterns applied where relevant
 2. No bare except clauses
 3. No print() statements
@@ -387,7 +437,9 @@ When reviewing code, check for:
 5. Test coverage
 
 ### Refactoring
+
 When refactoring, ensure:
+
 1. Patterns are not broken
 2. Tests still pass
 3. No regression in error handling
@@ -397,6 +449,7 @@ When refactoring, ensure:
 ## Questions to Ask
 
 Before generating code, consider:
+
 - **Will this handle NumPy types?** → Apply pattern #1 and #9
 - **Could this access an empty list?** → Apply pattern #2
 - **Could this fail?** → Apply pattern #3 (specific exceptions)

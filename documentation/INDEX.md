@@ -2,6 +2,8 @@
 
 **Table of Contents** - Non-redundant navigation to all documentation resources.
 
+If you prefer a shorter starting point, see the [Documentation Hub](README.md).
+
 ## Documentation Root Policy
 
 **All documentation lives in the `documentation/` directory.** Internal links should use `documentation/` paths (not `docs/`). This ensures consistency and prevents broken links. When referencing documentation files:
@@ -12,26 +14,32 @@
 
 The `CONTRIBUTING.md` file is at the repository root and should be referenced as `../CONTRIBUTING.md` from within `documentation/`.
 
-## Start here
+## 🚀 Quick Start (5 minutes)
 
-1. **[Getting Started](GETTING_STARTED.md)** — install, run demos, understand the loop.
-2. **[Quick Reference](QUICK_REFERENCE.md)** — the 9 patterns on one page.
+**New users start here:**
 
-## IDE Integration
+1. **[Quick Start Guide](QUICKSTART.md)** ⭐ — unified setup, choose your path (Developer/Team Lead/Manager)
+2. **[Quick Reference](QUICK_REFERENCE.md)** — the 9 patterns on one page
 
-- **[Cursor Integration Guide](../CURSOR_INTEGRATION.md)** ⭐ NEW — complete setup for Cursor IDE with pattern-aware AI.
-- **[Desktop Launchers](../DESKTOP_LAUNCHERS.md)** — double-click launchers for Mac/Windows.
-- **[Integrations](INTEGRATIONS.md)** — VS Code, GitHub Actions, pre-commit hooks.
+## ⚡ Getting Started
 
-## Core guides
+- **[Getting Started](GETTING_STARTED.md)** — install, run demos, understand the loop
 
-- **[AI Patterns Guide](AI_PATTERNS_GUIDE.md)** — condensed workflows + pattern catalog.
-- **[Metrics Guide](METRICS_GUIDE.md)** — collection, analysis, CI/CD.
-- **[LLM Integration Guide](LLM_GUIDE.md)** — provider setup + prompts.
-- **[Cloud Sync](CLOUD_SYNC.md)** — team sync + API usage.
-- **[FastAPI Guide](FASTAPI_GUIDE.md)** — streaming uploads + deployment tips.
-- **[Memory Integration](MEMORY_INTEGRATION.md)** ⭐ NEW — semantic pattern learning with MemU.
-- **[Superset Integration](SUPERSET_INTEGRATION.md)** ⭐ NEW — analytics dashboards.
+## 🛠️ IDE Integration
+
+- **[Cursor Integration Guide](../CURSOR_INTEGRATION.md)** ⭐ NEW — complete setup for Cursor IDE with pattern-aware AI
+- **[Desktop Launchers](../DESKTOP_LAUNCHERS.md)** — double-click launchers for Mac/Windows
+- **[Integrations](INTEGRATIONS.md)** — VS Code, GitHub Actions, pre-commit hooks
+
+## 📚 Core Guides
+
+- **[AI Patterns Guide](AI_PATTERNS_GUIDE.md)** — condensed workflows + pattern catalog
+- **[Metrics Guide](METRICS_GUIDE.md)** — collection, analysis, CI/CD
+- **[LLM Integration Guide](LLM_GUIDE.md)** — provider setup + prompts
+- **[Cloud Sync](CLOUD_SYNC.md)** — team sync + API usage
+- **[FastAPI Guide](FASTAPI_GUIDE.md)** — streaming uploads + deployment tips
+- **[Memory Integration](MEMORY_INTEGRATION.md)** ⭐ NEW — semantic pattern learning with MemU
+- **[Superset Integration](SUPERSET_INTEGRATION.md)** ⭐ NEW — analytics dashboards
 
 ## Reference
 

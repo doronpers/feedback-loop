@@ -10,12 +10,18 @@ import os
 import numpy as np
 import pytest
 
-from examples.good_patterns import (DataProcessor, categorize_by_metadata_good,
-                                    cleanup_temp_file_good,
-                                    convert_numpy_types, debug_processing_good,
-                                    get_first_item_good, parse_config_good,
-                                    process_data_good, process_large_file_good,
-                                    write_temp_file_good)
+from examples.good_patterns import (
+    DataProcessor,
+    categorize_by_metadata_good,
+    cleanup_temp_file_good,
+    convert_numpy_types,
+    debug_processing_good,
+    get_first_item_good,
+    parse_config_good,
+    process_data_good,
+    process_large_file_good,
+    write_temp_file_good,
+)
 
 
 class TestNumpyTypeConversion:
